@@ -28,6 +28,7 @@
   const data = window.__REIMBURSEMENT_DATA__ || {};
   const allPackages = data.packages || data.recent || [];
   const inboxItems = data.inbox_items || [];
+  const materialItems = data.material_items || [];
   const Dragger = Upload.Dragger;
   const { Content, Sider } = Layout;
   const { Title, Text, Paragraph } = Typography;
@@ -148,7 +149,7 @@
 
   function Sidebar({ activeKey, onSelect }) {
     const pending = waitingPackages(allPackages).length;
-    const collecting = allPackages.filter(needsMaterials).length + inboxItems.length;
+    const collecting = allPackages.filter(needsMaterials).length + inboxItems.length + materialItems.length;
     const finished = reimbursedPackages(allPackages).length;
     const items = [
       { key: "home", icon: icon(HomeOutlined), label: "主页" },
@@ -164,8 +165,8 @@
       e(
         "a",
         { className: "brand-block", href: "/#home" },
-        e("strong", null, "上海大学"),
-        e("span", null, "自助报销 Agent")
+        e("img", { src: "/logo.png", alt: "上海大学财务助手" }),
+        e("span", null, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
       ),
       e(Menu, {
         theme: "dark",
@@ -203,7 +204,7 @@
 
     return e(
       Card,
-      { className: "work-card", title: "整理报销材料" },
+      { className: "work-card", title: "直接生成报销包" },
       e(
         Form,
         { form, layout: "vertical", onFinish: submit },
@@ -390,6 +391,57 @@
     );
   }
 
+  function MaterialStashForm() {
+    const [form] = Form.useForm();
+    const [fileList, setFileList] = React.useState([]);
+    const [submitting, setSubmitting] = React.useState(false);
+    async function submit(values) {
+      if (!fileList.length) {
+        message.warning("请先选择要暂存的材料");
+        return;
+      }
+      const body = new FormData();
+      body.append("title", values.title || "");
+      body.append("note", values.note || "");
+      fileList.forEach((file) => body.append("files", file.originFileObj || file));
+      setSubmitting(true);
+      try {
+        await fetch("/materials", { method: "POST", body, redirect: "follow" });
+        reloadCollection();
+      } catch (error) {
+        message.error("暂存材料失败");
+        setSubmitting(false);
+      }
+    }
+    return e(
+      Card,
+      { className: "work-card", title: "暂存未归类材料" },
+      e(
+        Form,
+        { form, layout: "vertical", onFinish: submit },
+        e(Form.Item, { label: "材料组名称", name: "title" }, e(Input, { placeholder: "例如：李老师差旅票据一组" })),
+        e(Form.Item, { label: "线索备注", name: "note" }, e(Input.TextArea, { rows: 3, placeholder: "例如：这些票据可能是 6 月北京会议，后面再补会议通知。" })),
+        e(
+          Form.Item,
+          { label: "原始材料" },
+          e(
+            Dragger,
+            {
+              multiple: true,
+              beforeUpload: () => false,
+              fileList,
+              onChange: ({ fileList: next }) => setFileList(next),
+            },
+            e("p", { className: "upload-symbol" }, "↑"),
+            e("p", { className: "ant-upload-text" }, "先放进资料归集，不立刻生成报销包"),
+            e("p", { className: "ant-upload-hint" }, "系统会保存原始文件、大小和 hash，后续再由你决定是否生成报销包。")
+          )
+        ),
+        e(Button, { type: "primary", htmlType: "submit", loading: submitting }, "暂存到资料归集")
+      )
+    );
+  }
+
   function RagPanel() {
     const [query, setQuery] = React.useState(data.q || "");
     const [sourceType, setSourceType] = React.useState(data.source_type || "");
@@ -540,6 +592,52 @@
     );
   }
 
+  function MaterialPoolList() {
+    return e(
+      Card,
+      { className: "work-card", title: "未归类材料池" },
+      materialItems.length
+        ? e(List, {
+            itemLayout: "vertical",
+            dataSource: materialItems,
+            renderItem: (item) =>
+              e(
+                List.Item,
+                {
+                  actions: [
+                    e(
+                      "form",
+                      { key: "package", action: `/materials/${encodeURIComponent(item.id)}/package`, method: "post" },
+                      e(Button, { htmlType: "submit", type: "primary" }, "生成报销包")
+                    ),
+                  ],
+                },
+                e(List.Item.Meta, {
+                  title: e(
+                    Space,
+                    { size: 8, wrap: true },
+                    e(Text, { strong: true }, item.title || "未命名材料组"),
+                    e(Tag, { color: "default" }, item.source === "upload" ? "网页上传" : item.source),
+                    e(Tag, { color: "red" }, "未归类"),
+                    e(Tag, { color: "blue" }, `${item.file_count || 0} 份材料`)
+                  ),
+                  description: item.created_at,
+                }),
+                item.note ? e(Paragraph, { ellipsis: { rows: 2, expandable: true, symbol: "展开" } }, item.note) : null,
+                e(
+                  Space,
+                  { wrap: true, size: [4, 6] },
+                  (item.files || []).slice(0, 4).map((file) =>
+                    e(Tag, { key: file.sha256 || file.file_name }, `${file.file_name} · ${Math.round((file.size || 0) / 1024)}KB`)
+                  ),
+                  (item.files || []).length > 4 ? e(Tag, null, `+${(item.files || []).length - 4}`) : null
+                )
+              ),
+          })
+        : e(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: "当前没有暂存的未归类材料。" })
+    );
+  }
+
   function HomeView() {
     return e(HomeAssistantChat);
   }
@@ -614,10 +712,12 @@
       e(
         Row,
         { gutter: [16, 16], align: "top" },
-        e(Col, { xs: 24, lg: 12 }, e(QuickNoteInbox)),
-        e(Col, { xs: 24, lg: 12 }, e(UploadWorkbench))
+        e(Col, { xs: 24, xl: 8 }, e(QuickNoteInbox)),
+        e(Col, { xs: 24, xl: 8 }, e(MaterialStashForm)),
+        e(Col, { xs: 24, xl: 8 }, e(UploadWorkbench))
       ),
       e(InboxList),
+      e(MaterialPoolList),
       e(PackageList, {
         title: "待补材料",
         packages: collecting,

@@ -70,7 +70,7 @@ def main() -> None:
             page.get_by_text(TITLE).wait_for(timeout=10000)
             page.get_by_text("未归类").first.wait_for(timeout=10000)
             page.locator(".ant-list-item").filter(has_text=TITLE).first.get_by_role("button", name="生成报销包").click()
-            page.get_by_text("报销状态").wait_for(timeout=15000)
+            page.get_by_text("报销状态", exact=True).wait_for(timeout=15000)
             page.get_by_text("待补材料").first.wait_for(timeout=10000)
             browser.close()
         if errors:

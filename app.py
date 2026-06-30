@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import shutil
+import hashlib
 import uuid
 from dataclasses import asdict
 import os
@@ -9,7 +9,7 @@ from pathlib import Path
 from collections import Counter
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -17,9 +17,13 @@ from fastapi.templating import Jinja2Templates
 from app_state import (
     attach_status,
     create_inbox_item,
+    create_material_item,
     get_inbox_item,
+    get_material_item,
     get_package_status,
+    list_material_items,
     list_inbox_items,
+    mark_material_item_packaged,
     mark_inbox_item_packaged,
     package_status_events,
     reset_package_status_from_materials,
@@ -44,6 +48,7 @@ from tools.supplement_package import rebuild_with_supplements
 
 ROOT = Path("/Users/hao/Documents/自助报销Agent")
 UPLOAD_ROOT = ROOT / "data/uploads"
+MATERIAL_ROOT = ROOT / "data/material_items"
 WEB_STATIC = ROOT / "web/static"
 WEB_TEMPLATES = ROOT / "web/templates"
 PLAYWRIGHT_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
@@ -84,6 +89,11 @@ def imap_env_status() -> dict[str, object]:
 @app.get("/favicon.ico")
 async def favicon() -> Response:
     return Response(status_code=204)
+
+
+@app.get("/logo.png")
+async def logo() -> FileResponse:
+    return FileResponse(ROOT / "logo.png")
 
 
 @app.get("/api/settings/status")
@@ -230,6 +240,39 @@ def is_validation_package(package: dict) -> bool:
     return any(marker in title for marker in ["验证", "测试", "demo", "Demo"])
 
 
+def save_uploaded_files(files: list[UploadFile], upload_dir: Path) -> tuple[list[dict], list[str]]:
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    saved_files = []
+    note_parts = []
+    for upload in files:
+        if not upload.filename:
+            continue
+        safe_name = Path(upload.filename).name
+        target_dir = upload_dir / "raw_emails" if safe_name.lower().endswith(".eml") else upload_dir
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target = target_dir / safe_name
+        hasher = hashlib.sha256()
+        size = 0
+        with target.open("wb") as f:
+            while chunk := upload.file.read(1024 * 1024):
+                size += len(chunk)
+                hasher.update(chunk)
+                f.write(chunk)
+        saved_files.append(
+            {
+                "file_name": safe_name,
+                "path": str(target.relative_to(ROOT)),
+                "size": size,
+                "sha256": hasher.hexdigest(),
+            }
+        )
+        if safe_name.lower().endswith(".eml"):
+            metadata = ingest_eml(target, upload_dir)
+            if metadata.body_text:
+                note_parts.append(f"邮件主题：{metadata.subject}\n邮件正文：{metadata.body_text}")
+    return saved_files, note_parts
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request, q: str = "", source_type: str = "") -> HTMLResponse:
     packages = []
@@ -248,6 +291,7 @@ async def index(request: Request, q: str = "", source_type: str = "") -> HTMLRes
             "packages": packages,
             "recent": recent,
             "inbox_items": list_inbox_items(),
+            "material_items": list_material_items(),
             "rag_result": rag_result,
             "q": q,
             "source_type": allowed_source_type,
@@ -280,6 +324,34 @@ async def package_inbox_item(item_id: str) -> RedirectResponse:
     return RedirectResponse(url=f"/packages/{package.id}/view", status_code=303)
 
 
+@app.post("/materials", response_class=HTMLResponse)
+async def create_material_pool_item(
+    title: str = Form(""),
+    note: str = Form(""),
+    files: list[UploadFile] = File(...),
+) -> RedirectResponse:
+    item_id = uuid.uuid4().hex[:12]
+    material_dir = MATERIAL_ROOT / item_id
+    saved_files, note_parts = save_uploaded_files(files, material_dir)
+    full_note = "\n".join(part for part in [note.strip(), *note_parts] if part)
+    create_material_item(item_id, "upload", title, full_note, str(material_dir), saved_files)
+    return RedirectResponse(url="/#collection", status_code=303)
+
+
+@app.post("/materials/{item_id}/package", response_class=HTMLResponse)
+async def package_material_item(item_id: str) -> RedirectResponse:
+    item = get_material_item(item_id)
+    if item is None:
+        return RedirectResponse(url="/#collection", status_code=303)
+    package_title = item["title"] or f"资料归集报销包-{item_id}"
+    package = build_package(Path(item["material_dir"]), item["note"], package_title)
+    out_dir = OUTPUT_ROOT / package.id
+    export_package(package, out_dir)
+    reset_package_status_from_materials(asdict(package), "由资料归集未归类材料生成报销包")
+    mark_material_item_packaged(item_id, package.id)
+    return RedirectResponse(url=f"/packages/{package.id}/view", status_code=303)
+
+
 @app.post("/packages", response_class=HTMLResponse)
 async def create_package(
     title: str = Form(""),
@@ -288,20 +360,9 @@ async def create_package(
 ) -> RedirectResponse:
     upload_id = uuid.uuid4().hex[:12]
     upload_dir = UPLOAD_ROOT / upload_id
-    upload_dir.mkdir(parents=True, exist_ok=True)
-    for upload in files:
-        if not upload.filename:
-            continue
-        safe_name = Path(upload.filename).name
-        target_dir = upload_dir / "raw_emails" if safe_name.lower().endswith(".eml") else upload_dir
-        target_dir.mkdir(parents=True, exist_ok=True)
-        target = target_dir / safe_name
-        with target.open("wb") as f:
-            shutil.copyfileobj(upload.file, f)
-        if safe_name.lower().endswith(".eml"):
-            metadata = ingest_eml(target, upload_dir)
-            if metadata.body_text:
-                note = f"{note}\n邮件主题：{metadata.subject}\n邮件正文：{metadata.body_text}".strip()
+    _, note_parts = save_uploaded_files(files, upload_dir)
+    if note_parts:
+        note = "\n".join(part for part in [note.strip(), *note_parts] if part)
     package = build_package(upload_dir, note, title or None)
     out_dir = OUTPUT_ROOT / package.id
     export_package(package, out_dir)

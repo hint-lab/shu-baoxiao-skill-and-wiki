@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -81,6 +82,23 @@ def init_db() -> None:
               title TEXT NOT NULL DEFAULT '',
               note TEXT NOT NULL,
               status TEXT NOT NULL,
+              linked_package_id TEXT,
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS material_items (
+              id TEXT PRIMARY KEY,
+              source TEXT NOT NULL,
+              title TEXT NOT NULL DEFAULT '',
+              note TEXT NOT NULL DEFAULT '',
+              status TEXT NOT NULL,
+              material_dir TEXT NOT NULL,
+              file_count INTEGER NOT NULL DEFAULT 0,
+              files_json TEXT NOT NULL DEFAULT '[]',
               linked_package_id TEXT,
               created_at TEXT NOT NULL,
               updated_at TEXT NOT NULL
@@ -265,3 +283,104 @@ def mark_inbox_item_packaged(item_id: str, package_id: str) -> dict[str, Any] | 
         )
         row = conn.execute("SELECT * FROM inbox_items WHERE id = ?", (item_id,)).fetchone()
     return dict(row) if row else None
+
+
+def create_material_item(
+    item_id: str,
+    source: str,
+    title: str,
+    note: str,
+    material_dir: str,
+    files: list[dict[str, Any]],
+) -> dict[str, Any]:
+    init_db()
+    timestamp = now_iso()
+    with connect() as conn:
+        conn.execute(
+            """
+            INSERT INTO material_items (
+              id, source, title, note, status, material_dir, file_count,
+              files_json, linked_package_id, created_at, updated_at
+            )
+            VALUES (?, ?, ?, ?, 'unprocessed', ?, ?, ?, NULL, ?, ?)
+            """,
+            (
+                item_id,
+                source.strip() or "upload",
+                title.strip(),
+                note.strip(),
+                material_dir,
+                len(files),
+                json.dumps(files, ensure_ascii=False),
+                timestamp,
+                timestamp,
+            ),
+        )
+        row = conn.execute("SELECT * FROM material_items WHERE id = ?", (item_id,)).fetchone()
+    return decode_material_row(row)
+
+
+def decode_material_row(row: sqlite3.Row | None) -> dict[str, Any] | None:
+    if row is None:
+        return None
+    item = dict(row)
+    try:
+        item["files"] = json.loads(item.pop("files_json") or "[]")
+    except json.JSONDecodeError:
+        item["files"] = []
+    return item
+
+
+def list_material_items(include_processed: bool = False) -> list[dict[str, Any]]:
+    init_db()
+    where = "" if include_processed else "WHERE status != 'packaged'"
+    with connect() as conn:
+        rows = conn.execute(
+            f"""
+            SELECT id, source, title, note, status, material_dir, file_count,
+                   files_json, linked_package_id, created_at, updated_at
+            FROM material_items
+            {where}
+            ORDER BY created_at DESC
+            """
+        ).fetchall()
+    return [item for row in rows if (item := decode_material_row(row)) is not None]
+
+
+def get_material_item(item_id: str) -> dict[str, Any] | None:
+    init_db()
+    with connect() as conn:
+        row = conn.execute(
+            """
+            SELECT id, source, title, note, status, material_dir, file_count,
+                   files_json, linked_package_id, created_at, updated_at
+            FROM material_items
+            WHERE id = ?
+            """,
+            (item_id,),
+        ).fetchone()
+    return decode_material_row(row)
+
+
+def mark_material_item_packaged(item_id: str, package_id: str) -> dict[str, Any] | None:
+    init_db()
+    timestamp = now_iso()
+    with connect() as conn:
+        conn.execute(
+            """
+            UPDATE material_items
+            SET status = 'packaged', linked_package_id = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (package_id, timestamp, item_id),
+        )
+        row = conn.execute(
+            """
+            SELECT id, source, title, note, status, material_dir, file_count,
+                   files_json, linked_package_id, created_at, updated_at
+            FROM material_items
+            WHERE id = ?
+            """,
+            (item_id,),
+        ).fetchone()
+    return decode_material_row(row)

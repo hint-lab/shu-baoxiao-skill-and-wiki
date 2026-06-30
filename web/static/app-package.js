@@ -65,8 +65,8 @@
       e(
         "a",
         { className: "brand-block", href: "/#home" },
-        e("strong", null, "上海大学"),
-        e("span", null, "自助报销 Agent")
+        e("img", { src: "/logo.png", alt: "上海大学财务助手" }),
+        e("span", null, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
       ),
       e(Menu, {
         theme: "dark",

@@ -10,6 +10,7 @@ __pycache__/
 # Local app state and user material caches
 data/app.db
 data/uploads/
+data/material_items/
 data/package_work/
 data/mail_inbox/
 data/mail_ingest/

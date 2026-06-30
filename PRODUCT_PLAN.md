@@ -212,7 +212,9 @@ Playwright 负责受控浏览器代填，不负责静默报销。
 
 - FastAPI 提供本地网页服务。
 - React + Ant Design 提供左侧工作区、主页单一 Chat 入口和报销包详情页。
+- 左侧工作区使用 `logo.png` 作为上海大学财务助手品牌图标。
 - 主页 Chat 使用图标化工具栏支持一句话备注、知识库查询和附件上传：有附件生成报销包，无附件进入资料归集随手记。
+- 资料归集提供未归类材料池：可暂存散乱文件、记录文件大小和 hash，后续再由用户生成报销包。
 - 等待报销按真实状态分组展示：缺材料、等待复核、可代填、已提交和退回待处理。
 - 报销包正文继续导出为 `package.json`、`package.md` 和 `playwright_plan.json`。
 - SQLite 记录报销包工作流状态和状态变更日志。
@@ -447,6 +449,7 @@ BrowserActionLog
 - 退回诊断验证脚本，当前 `python3 tools/verify_return_diagnosis.py` 可通过。
 - 已退回状态流验证脚本，当前 `python3 tools/verify_returned_status_flow.py` 可通过。
 - 补材料重建验证脚本，当前 `python3 tools/verify_supplement_flow.py` 可通过。
+- 未归类材料池验证脚本，当前 `python3 tools/verify_material_pool_flow.py` 可通过。
 - 邮件导入验证脚本，当前 `python3 tools/verify_email_ingest.py` 和 `python3 tools/verify_web_email_upload.py` 可通过。
 - IMAP fixture 验证脚本，当前 `python3 tools/verify_imap_fixture.py` 可通过。
 - 邮箱拉取设置页验证脚本，当前 `python3 tools/verify_mail_poll_settings.py` 可通过。
