@@ -14,6 +14,7 @@ from app_state import (
     attach_status,
     create_inbox_item,
     get_inbox_item,
+    get_package_status,
     list_inbox_items,
     mark_inbox_item_packaged,
     package_status_events,
@@ -24,6 +25,8 @@ from tools.build_reimbursement_package import OUTPUT_ROOT, build_package, export
 from tools.cwc_rag import query_policy
 from tools.diagnose_return import diagnose, export_diagnosis
 from tools.ingest_eml import ingest_eml
+from tools.playwright_fill_adapter import ARTIFACT_DIR as PLAYWRIGHT_ARTIFACT_DIR
+from tools.playwright_fill_adapter import run_fill
 from tools.supplement_package import rebuild_with_supplements
 
 
@@ -31,11 +34,13 @@ ROOT = Path("/Users/hao/Documents/自助报销Agent")
 UPLOAD_ROOT = ROOT / "data/uploads"
 WEB_STATIC = ROOT / "web/static"
 WEB_TEMPLATES = ROOT / "web/templates"
+PLAYWRIGHT_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(title="上海大学自助报销 Agent")
 templates = Jinja2Templates(directory=str(WEB_TEMPLATES))
 app.mount("/static", StaticFiles(directory=str(WEB_STATIC)), name="static")
 app.mount("/package-output", StaticFiles(directory=str(OUTPUT_ROOT)), name="package-output")
+app.mount("/playwright-output", StaticFiles(directory=str(PLAYWRIGHT_ARTIFACT_DIR)), name="playwright-output")
 
 
 @app.get("/favicon.ico")
@@ -64,6 +69,15 @@ def load_package(package_id: str) -> dict | None:
 
 def load_return_diagnosis(package_id: str) -> dict | None:
     path = OUTPUT_ROOT / package_id / "return_diagnosis.json"
+    if not path.exists():
+        return None
+    import json
+
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_fill_report(package_id: str) -> dict | None:
+    path = PLAYWRIGHT_ARTIFACT_DIR / f"{package_id}-fill_report.json"
     if not path.exists():
         return None
     import json
@@ -168,6 +182,10 @@ async def view_package(request: Request, package_id: str) -> HTMLResponse:
             "markdown_url": f"/package-output/{package_id}/package.md",
             "json_url": f"/package-output/{package_id}/package.json",
             "playwright_plan_url": f"/package-output/{package_id}/playwright_plan.json",
+            "fill_demo_url": f"/packages/{package_id}/fill-demo",
+            "fill_report": load_fill_report(package_id),
+            "fill_report_url": f"/playwright-output/{package_id}-fill_report.json",
+            "fill_screenshot_url": f"/playwright-output/{package_id}-fill_demo.png",
             "return_diagnosis": load_return_diagnosis(package_id),
             "return_diagnosis_url": f"/packages/{package_id}/return-diagnosis",
             "status_events": package_status_events(package_id),
@@ -180,6 +198,29 @@ async def view_package(request: Request, package_id: str) -> HTMLResponse:
 async def update_package_status(package_id: str, status: str = Form(...), note: str = Form("")) -> RedirectResponse:
     if load_package(package_id) is not None:
         set_package_status(package_id, status, note)
+    return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+
+
+@app.post("/packages/{package_id}/fill-demo", response_class=HTMLResponse)
+def run_package_fill_demo(package_id: str) -> RedirectResponse:
+    package = load_package(package_id)
+    if package is None:
+        return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+    status = get_package_status(package_id) or {}
+    missing = [item for item in package.get("checklist", []) if item.get("status") == "missing"]
+    if status.get("status") != "ready_for_school" or missing:
+        return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+    plan_path = OUTPUT_ROOT / package_id / "playwright_plan.json"
+    if not plan_path.exists():
+        return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+    run_fill(
+        plan_path=plan_path,
+        adapter_path=ROOT / "data/adapters/mock_school.json",
+        allow_auto_login=True,
+        headed=False,
+        out=PLAYWRIGHT_ARTIFACT_DIR / f"{package_id}-fill_report.json",
+        screenshot=PLAYWRIGHT_ARTIFACT_DIR / f"{package_id}-fill_demo.png",
+    )
     return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
 
 

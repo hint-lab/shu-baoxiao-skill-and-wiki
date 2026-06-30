@@ -162,6 +162,52 @@
     );
   }
 
+  function FillAgentPanel({ missing }) {
+    const current = pkg.workflow_status || (missing ? "needs_materials" : "ready_for_review");
+    const canRun = current === "ready_for_school" && missing === 0;
+    const report = data.fill_report;
+    return e(
+      Card,
+      { className: "work-card", title: "受控代填 Agent" },
+      e(
+        Space,
+        { direction: "vertical", size: 12, className: "full" },
+        e(Alert, {
+          type: canRun ? "info" : "warning",
+          showIcon: true,
+          message: canRun ? "可以启动本地代填演示" : "启动前需要本人确认",
+          description: canRun
+            ? "本地演示会打开模拟上海大学财务系统，按代填计划填写草稿，并验证提交按钮仍被拦截。"
+            : "必须先补齐必需材料，并在报销状态中点击“确认可代填”。真实系统登录、验证码、经费项目、账号和提交动作都必须人工处理。",
+        }),
+        e(
+          "form",
+          { action: data.fill_demo_url, method: "post" },
+          e(Button, { type: "primary", htmlType: "submit", disabled: !canRun }, "启动本地代填演示")
+        ),
+        report
+          ? e(
+              Alert,
+              {
+                type: report.verified_stop_before_submission ? "success" : "error",
+                showIcon: true,
+                message: report.verified_stop_before_submission ? "最近一次演示已停在提交前" : "最近一次演示未通过提交保护",
+                description: `已填字段 ${Object.keys(report.filled || {}).length} 项，附件 ${report.attachment_count || 0} 份，暂停点 ${report.pause_count || 0} 个。`,
+              }
+            )
+          : null,
+        report
+          ? e(
+              Space,
+              { wrap: true },
+              e(Button, { href: data.fill_report_url }, "查看报告 JSON"),
+              e(Button, { href: data.fill_screenshot_url }, "查看截图")
+            )
+          : null
+      )
+    );
+  }
+
   function fieldTags(fields) {
     const items = [];
     if (fields.buyer_name) items.push(["购买方", fields.buyer_name, "blue"]);
@@ -375,6 +421,7 @@
               ? e(Alert, { className: "page-alert", type: "warning", showIcon: true, message: "提交前仍需补材料", description: `当前还有 ${missing} 项必需材料未就绪。` })
               : e(Alert, { className: "page-alert", type: "success", showIcon: true, message: "材料已进入可复核状态", description: "仍需本人确认票据真实性、经费项目、收款账号和提交动作。" }),
             e(StatusPanel, { missing }),
+            e(FillAgentPanel, { missing }),
             e(MissingChecklist),
             e(DocumentsTable),
             e(
