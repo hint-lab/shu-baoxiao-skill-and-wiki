@@ -1,22 +1,28 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   Alert,
   App as AntdApp,
   Button,
   Card,
+  Checkbox,
   Col,
   ConfigProvider,
+  Dropdown,
   Empty,
   Form,
   Input,
   Layout,
   List,
   Menu,
+  Modal,
   Row,
   Select,
   Space,
   Statistic,
+  Switch,
   Tabs,
   Tag,
   Typography,
@@ -33,12 +39,19 @@ import {
   FolderOpenOutlined,
   HomeOutlined,
   InboxOutlined,
+  InfoCircleOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
   MessageOutlined,
   PaperClipOutlined,
+  ReloadOutlined,
   SearchOutlined,
   SendOutlined,
   SettingOutlined,
   SyncOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 
@@ -52,9 +65,133 @@ const App = AntdApp;
   const { Content, Sider } = Layout;
   const { Title, Text, Paragraph } = Typography;
   const NAV_KEYS = ["home", "knowledge", "collection", "waiting", "reimbursed", "settings"];
+  const AGREEMENT_VERSION = "2026-06-30";
+  const AGREEMENT_STORAGE_KEY = `shu-reimbursement-agent.agreement.${AGREEMENT_VERSION}`;
+  const agreementSections = [
+    {
+      title: "工具定位",
+      items: [
+        "本工具只用于上海大学报销材料整理、政策依据检索、草稿生成和本地代填辅助，不替代本人判断，也不代表学校财务处最终审核意见。",
+        "财务处公开网页、指南、RAG 检索和大模型生成内容均为辅助信息；如与学校系统、财务处通知或人工审核不一致，以学校正式口径为准。",
+      ],
+    },
+    {
+      title: "登录与自动化边界",
+      items: [
+        "学校统一身份认证、扫码、验证码、滑块、二次确认和最终提交必须由本人完成。",
+        "本工具不保存统一身份认证密码，不保存 OAuth code，不绕过验证码或二次认证。",
+        "为实现登录保持，本工具会在本机保存专用浏览器 profile，其中可能包含 cookies、localStorage、sessionStorage 等登录态数据。",
+      ],
+    },
+    {
+      title: "材料与隐私",
+      items: [
+        "上传的发票、邮件、附件、报销备注可能包含个人、项目、财务和单位信息；默认只在本机处理和保存。",
+        "如启用大模型或邮箱接入，用户应确认本机配置、服务商和数据发送范围符合自己的安全要求。",
+        "用户可在设置或本机目录中清理浏览器会话、报销材料、邮件缓存和生成文件。",
+      ],
+    },
+    {
+      title: "用户责任",
+      items: [
+        "用户应确认票据真实合法、业务真实发生、经费项目准确、收款账号无误、附件完整合规。",
+        "Agent 只能辅助填写草稿和整理材料，不会自动点击学校财务系统的最终提交按钮。",
+        "提交前必须由本人复核学校系统页面、附件、金额、项目、账号和审批流。",
+      ],
+    },
+  ];
+  const DEEPSEEK_MODEL_OPTIONS = [
+    { value: "deepseek-v4-pro", label: "deepseek-v4-pro" },
+    { value: "deepseek-v4-flash", label: "deepseek-v4-flash" },
+  ];
 
   function icon(IconComponent) {
     return IconComponent ? e(IconComponent) : null;
+  }
+
+  async function startShuAuthLogin() {
+    const response = await fetch("/api/shu-auth/login", { method: "POST" });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.ok) {
+      throw new Error(payload.error || "启动扫码登录窗口失败");
+    }
+    return payload;
+  }
+
+  function AgreementContent() {
+    return e(
+      "div",
+      { className: "agreement-content" },
+      e(Alert, {
+        type: "warning",
+        showIcon: true,
+        message: "请先确认使用边界",
+        description: "这个工具会处理报销材料，并可能保存本机浏览器登录态。学校登录、验证码、二次确认和最终提交必须由本人完成。",
+      }),
+      agreementSections.map((section) =>
+        e(
+          "section",
+          { key: section.title, className: "agreement-section" },
+          e(Title, { level: 5 }, section.title),
+          e(
+            "ul",
+            null,
+            section.items.map((item) => e("li", { key: item }, item))
+          )
+        )
+      ),
+      e(Paragraph, { type: "secondary" }, `协议版本：${AGREEMENT_VERSION}`)
+    );
+  }
+
+  function UserAgreementGate({ children }) {
+    const [accepted, setAccepted] = React.useState(() => localStorage.getItem(AGREEMENT_STORAGE_KEY) === "accepted");
+    const [viewerOpen, setViewerOpen] = React.useState(false);
+    const [checked, setChecked] = React.useState(false);
+    React.useEffect(() => {
+      function openAgreement() {
+        setViewerOpen(true);
+      }
+      window.addEventListener("open-user-agreement", openAgreement);
+      return () => window.removeEventListener("open-user-agreement", openAgreement);
+    }, []);
+    const open = !accepted || viewerOpen;
+    const canAccept = accepted || checked;
+    function confirmAgreement() {
+      if (!accepted) {
+        localStorage.setItem(AGREEMENT_STORAGE_KEY, "accepted");
+        setAccepted(true);
+        message.success("已确认用户协议和用户须知");
+      }
+      setViewerOpen(false);
+    }
+    return e(
+      React.Fragment,
+      null,
+      children,
+      e(
+        Modal,
+        {
+          title: "用户协议与用户须知",
+          open,
+          centered: true,
+          width: 760,
+          closable: accepted,
+          maskClosable: accepted,
+          keyboard: accepted,
+          onCancel: () => setViewerOpen(false),
+          footer: e(
+            Space,
+            { className: "agreement-footer" },
+            accepted
+              ? e(Button, { onClick: () => setViewerOpen(false) }, "关闭")
+              : e(Checkbox, { checked, onChange: (event) => setChecked(event.target.checked) }, "我已阅读并同意以上用户协议和用户须知"),
+            e(Button, { type: "primary", disabled: !canAccept, onClick: confirmAgreement }, accepted ? "我知道了" : "同意并进入")
+          ),
+        },
+        e(AgreementContent)
+      )
+    );
   }
 
   function normalizeKey(value) {
@@ -131,10 +268,6 @@ const App = AntdApp;
     return "ready_for_review";
   }
 
-  function menuLabel(label, count) {
-    return count === undefined ? label : `${label} ${count}`;
-  }
-
   function reloadCollection() {
     window.location.href = "/?refresh=" + Date.now() + "#collection";
   }
@@ -149,34 +282,165 @@ const App = AntdApp;
     return false;
   }
 
-  function Sidebar({ activeKey, onSelect }) {
-    const pending = waitingPackages(allPackages).length;
-    const collecting = allPackages.filter(needsMaterials).length + inboxItems.length + materialItems.length;
-    const finished = reimbursedPackages(allPackages).length;
+  function isMaterialCollectionNote(text) {
+    const value = String(text || "").trim();
+    if (!value) return false;
+    if (/^(记|记一下|帮我记|先存|保存|整理|归集|待报销|我要报销|这张|这些)/.test(value)) return true;
+    return /(发票|票据|报销|付款|支付|合同|会议|酒店|高铁|火车票|机票|差旅|住宿|版面费|出版费|材料费|测试化验|公务接待|信息服务|办公用品|耗材)/.test(value);
+  }
+
+  function authActionInfo(authStatus) {
+    switch (authStatus) {
+      case "ready":
+        return { label: "会话可用", tone: "ready", action: "续登", icon: ReloadOutlined };
+      case "needs_renew":
+        return { label: "需要续登", tone: "warn", action: "立即续登", icon: ReloadOutlined };
+      case "needs_scan":
+        return { label: "需要扫码", tone: "warn", action: "去扫码登录", icon: LoginOutlined };
+      case "error":
+        return { label: "登录态检查失败", tone: "error", action: "重新登录", icon: LoginOutlined };
+      case "not_checked":
+      default:
+        return { label: "本机模式", tone: "idle", action: "登录学校账号", icon: LoginOutlined };
+    }
+  }
+
+  function Sidebar({ activeKey, onSelect, collapsed, onToggleCollapsed, onOpenAbout, onLaunchAuth }) {
+    const user = data.user || {};
     const items = [
-      { key: "home", icon: icon(HomeOutlined), label: "主页" },
-      { key: "knowledge", icon: icon(DatabaseOutlined), label: "报销知识库" },
-      { key: "waiting", icon: icon(ClockCircleOutlined), label: menuLabel("等待报销", pending) },
-      { key: "collection", icon: icon(FolderOpenOutlined), label: menuLabel("资料归集", collecting) },
-      { key: "reimbursed", icon: icon(CheckCircleOutlined), label: menuLabel("已报销", finished) },
-      { key: "settings", icon: icon(SettingOutlined), label: "设置" },
+      { key: "home", icon: icon(HomeOutlined), label: "报销助手" },
+      { key: "knowledge", icon: icon(DatabaseOutlined), label: "报销知识" },
+      { key: "waiting", icon: icon(ClockCircleOutlined), label: "待办报销" },
+      { key: "collection", icon: icon(FolderOpenOutlined), label: "资料归集" },
+      { key: "reimbursed", icon: icon(CheckCircleOutlined), label: "报销记录" },
     ];
+    const authInfo = authActionInfo(user.auth_status);
+    const authActionIcon = authInfo.icon;
+    const avatarTone = authInfo.tone;
+    const userMenu = {
+      items: [
+        {
+          key: "user-header",
+          type: "group",
+          label: e(
+            "div",
+            { className: "user-menu-header" },
+            e("div", { className: "user-menu-name" }, user.display_name || "工号未识别"),
+            e(
+              "div",
+              { className: `user-menu-status user-menu-status--${avatarTone}` },
+              e("i", { className: "user-menu-status-dot" }),
+              user.subtitle || "本机模式"
+            )
+          ),
+          disabled: true,
+        },
+        { type: "divider" },
+        {
+          key: "auth-action",
+          icon: e(authActionIcon),
+          label: "扫码登录",
+        },
+        {
+          key: "settings",
+          icon: e(SettingOutlined),
+          label: "系统设置",
+        },
+        {
+          key: "about",
+          icon: e(InfoCircleOutlined),
+          label: "说明",
+        },
+      ],
+      onClick: ({ key }) => {
+        if (key === "settings") onSelect("settings");
+        else if (key === "auth-action") onLaunchAuth();
+        else if (key === "about") onOpenAbout();
+      },
+    };
     return e(
       Sider,
-      { width: 224, className: "app-sider", breakpoint: "lg", collapsedWidth: 0 },
+      { width: 224, collapsedWidth: 72, collapsed, collapsible: false, className: "app-sider" },
       e(
-        "a",
-        { className: "brand-block", href: "/#home" },
-        e("img", { src: "/logo.png", alt: "上海大学财务助手" }),
-        e("span", null, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
+        "div",
+        { className: "brand-block" },
+        e(
+          "button",
+          {
+            className: "brand-logo",
+            type: "button",
+            onClick: () => collapsed && onToggleCollapsed(),
+            title: collapsed ? "展开侧边栏" : undefined,
+            "aria-label": "上海大学财务助手",
+            tabIndex: collapsed ? 0 : -1,
+          },
+          e("img", { src: "/logo.png", alt: "上海大学财务助手" })
+        ),
+        e(
+          "div",
+          { className: "brand-text" },
+          e("strong", null, "上海大学"),
+          e(
+            "button",
+            {
+              className: "brand-collapse-btn",
+              type: "button",
+              onClick: onToggleCollapsed,
+              title: collapsed ? "展开侧边栏" : "收起侧边栏",
+              "aria-label": collapsed ? "展开侧边栏" : "收起侧边栏",
+            },
+            e(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined)
+          ),
+          e("small", null, "自助报销 Agent")
+        )
       ),
       e(Menu, {
+        className: "sidebar-main-menu",
         theme: "dark",
         mode: "inline",
-        selectedKeys: [activeKey],
+        inlineCollapsed: collapsed,
+        selectedKeys: activeKey === "settings" ? [] : [activeKey],
         items,
         onClick: ({ key }) => onSelect(key),
-      })
+      }),
+      e(
+        "div",
+        { className: "sidebar-bottom" },
+        e(
+          Dropdown,
+          {
+            trigger: ["click"],
+            placement: "topLeft",
+            overlayClassName: "sidebar-user-dropdown",
+            menu: userMenu,
+          },
+          e(
+            "button",
+            {
+              className: `sidebar-user sidebar-user--${avatarTone}`,
+              type: "button",
+              title: collapsed ? user.display_name || "工号未识别" : undefined,
+            },
+            e(
+              "span",
+              { className: "sidebar-user-avatar" },
+              String(user.display_name || "本").slice(0, 1).toUpperCase()
+            ),
+            !collapsed &&
+              e(
+                "span",
+                { className: "sidebar-user-meta" },
+                e("span", { className: "sidebar-user-name" }, user.display_name || "工号未识别"),
+                e(
+                  "span",
+                  { className: "sidebar-user-status" },
+                  e("i", { className: `sidebar-user-status-dot sidebar-user-status-dot--${avatarTone}` }),
+                  authInfo.label
+                )
+              )
+          )
+        )
+      )
     );
   }
 
@@ -240,12 +504,240 @@ const App = AntdApp;
     );
   }
 
+  const markdownComponents = {
+    a({ node, ...props }) {
+      return e("a", { ...props, target: "_blank", rel: "noreferrer" });
+    },
+  };
+
+  function MarkdownMessage({ text }) {
+    return e(
+      ReactMarkdown,
+      {
+        className: "chat-markdown",
+        remarkPlugins: [remarkGfm],
+        components: markdownComponents,
+      },
+      text || ""
+    );
+  }
+
+  function renderChatMessage(item, index, user) {
+    if (item && item.thinking) {
+      const roleLabel = "报销 Agent · " + (item.title || "正在思考");
+      return e(
+        "div",
+        { key: "thinking-" + (item.planId || index), className: "chat-message chat-message--assistant chat-message--thinking" },
+        e("img", { className: "chat-message-avatar", src: "/static/icons/chat.png", alt: "报销 Agent" }),
+        e(
+          "div",
+          { className: "chat-message-body" },
+          e("div", { className: "chat-message-role" }, roleLabel),
+          e(
+            "div",
+            { className: "chat-message-text chat-thinking" },
+            e("span", { className: "chat-thinking-dots", "aria-hidden": "true" }, e("i"), e("i"), e("i")),
+            e("span", { className: "chat-thinking-step", key: item.step || index }, item.step || "")
+          )
+        )
+      );
+    }
+    const isAssistant = item.role === "assistant";
+    const avatar = isAssistant
+      ? e("img", { className: "chat-message-avatar", src: "/static/icons/chat.png", alt: "报销 Agent" })
+      : e(
+          "span",
+          { className: "chat-message-avatar chat-message-avatar--user" },
+          String((user && user.display_name) || "本").slice(0, 1).toUpperCase()
+        );
+    const messageContent =
+      item.streaming && !item.text
+        ? e(
+            "div",
+            { className: "chat-thinking" },
+            e("span", { className: "chat-thinking-dots", "aria-hidden": "true" }, e("i"), e("i"), e("i")),
+            e("span", { className: "chat-thinking-step" }, item.streamStatus || "正在处理")
+          )
+        : isAssistant
+          ? e(MarkdownMessage, { text: item.text })
+          : item.text;
+    return e(
+      "div",
+      { key: item.role + "-" + index, className: "chat-message chat-message--" + item.role },
+      avatar,
+      e(
+        "div",
+        { className: "chat-message-body" },
+        e("div", { className: "chat-message-role" }, item.role === "user" ? "你" : "报销 Agent"),
+        e(
+          "div",
+          { className: `chat-message-text${item.streaming ? " chat-message-text--streaming" : ""}` },
+          messageContent,
+          item.sources && item.sources.length
+            ? e(
+                "div",
+                { className: "chat-source-list" },
+                item.sources.map((source) =>
+                  e(
+                    "a",
+                    { key: source.rank, href: source.url, target: "_blank", rel: "noreferrer" },
+                    source.rank + ". " + source.title
+                  )
+                )
+              )
+            : null,
+          item.link ? e(Button, { className: "chat-message-action", type: "primary", href: item.link.href }, item.link.label) : null
+        )
+      )
+    );
+  }
+
   function HomeAssistantChat() {
     const [form] = Form.useForm();
     const [fileList, setFileList] = React.useState([]);
     const [submitting, setSubmitting] = React.useState(false);
+    const [chatActive, setChatActive] = React.useState(false);
+    const [messages, setMessages] = React.useState([]);
+    const threadRef = React.useRef(null);
+    const thinkingTimerRef = React.useRef(null);
     const noteValue = Form.useWatch("note", form) || "";
-    const shouldAskPolicy = !fileList.length && isPolicyQuestion(noteValue);
+    const user = data.user || {};
+
+    function scrollThreadToBottom() {
+      const node = threadRef.current;
+      if (!node) return;
+      requestAnimationFrame(() => {
+        node.scrollTop = node.scrollHeight + 16;
+      });
+    }
+
+    React.useEffect(() => {
+      return () => {
+        if (thinkingTimerRef.current) {
+          clearInterval(thinkingTimerRef.current);
+          thinkingTimerRef.current = null;
+        }
+      };
+    }, []);
+
+    function activateChat() {
+      setChatActive(true);
+      setMessages((current) =>
+        current.length
+          ? current
+          : [
+              {
+                role: "assistant",
+                text: "把报销问题、事项描述、发票或附件直接发给我。我会先判断你是要查政策、记录待报销事项，还是整理成报销包。",
+              },
+            ]
+      );
+    }
+
+    function buildThinkingPlan(note, hasFiles) {
+      const isPolicy = isPolicyQuestion(note);
+      if (hasFiles) {
+        return {
+          title: "正在解析材料",
+          steps: [
+            "正在读取发票和附件内容…",
+            "正在识别金额、抬头、发票号和日期…",
+            "正在匹配报销类别和必需材料…",
+            "正在整理报销包草稿…",
+          ],
+        };
+      }
+      if (isPolicy) {
+        return {
+          title: "正在查阅资料",
+          steps: [
+            "正在理解你的报销问题…",
+            "正在检索上海大学财务处资料库…",
+            "正在比对政策文件和指南…",
+            "正在整理可追溯的回答和引用…",
+          ],
+        };
+      }
+      return {
+        title: "正在分析意图",
+        steps: [
+          "正在判断你是查政策、记一笔，还是整理报销包…",
+          "正在匹配最合适的处理方式…",
+          "正在准备回复…",
+        ],
+      };
+    }
+
+    function startThinkingAnimation(plan) {
+      let index = 0;
+      setMessages((current) => {
+        const next = current.slice();
+        next.push({
+          role: "assistant",
+          thinking: true,
+          step: plan.steps[0],
+          title: plan.title,
+          planId: Date.now(),
+        });
+        return next;
+      });
+      scrollThreadToBottom();
+      if (thinkingTimerRef.current) {
+        clearInterval(thinkingTimerRef.current);
+        thinkingTimerRef.current = null;
+      }
+      thinkingTimerRef.current = setInterval(() => {
+        index = (index + 1) % plan.steps.length;
+        setMessages((current) => {
+          let updated = false;
+          const next = current.map((msg) => {
+            if (msg.thinking) {
+              updated = true;
+              return { ...msg, step: plan.steps[index] };
+            }
+            return msg;
+          });
+          return updated ? next : current;
+        });
+      }, 1600);
+    }
+
+    function stopThinkingAnimation() {
+      if (thinkingTimerRef.current) {
+        clearInterval(thinkingTimerRef.current);
+        thinkingTimerRef.current = null;
+      }
+      setMessages((current) => current.filter((msg) => !msg.thinking));
+    }
+
+    function assistantMessageFrom(payload) {
+      if (payload.action === "answer_policy") {
+        const answer = payload.policy && payload.policy.answer ? payload.policy.answer : "没有检索到足够可靠的依据。";
+        return {
+          role: "assistant",
+          text: `${payload.message || "我先查了财务处资料库。"}\n\n${answer}`,
+          sources: (payload.policy && payload.policy.hits ? payload.policy.hits : []).slice(0, 5),
+        };
+      }
+      if (payload.action === "create_package" && payload.package) {
+        return {
+          role: "assistant",
+          text: `${payload.message || "已生成报销包。"}\n\n材料 ${payload.package.document_count || 0} 份；待补 ${payload.package.missing_count || 0} 项。`,
+          link: { href: payload.package.url, label: "打开报销包" },
+        };
+      }
+      if (payload.action === "create_inbox" && payload.item) {
+        return {
+          role: "assistant",
+          text: payload.message || "已放进资料归集，后面补材料后再生成报销包。",
+          link: { href: payload.item.url, label: "查看资料归集" },
+        };
+      }
+      return {
+        role: "assistant",
+        text: payload.message || "你是想查政策依据、记录一个待报销事项，还是整理已有发票？",
+      };
+    }
 
     async function submit(values) {
       const currentValues = form.getFieldsValue();
@@ -255,38 +747,49 @@ const App = AntdApp;
         message.warning("写一句报销事项，或者上传发票和附件");
         return;
       }
-      if (!fileList.length && isPolicyQuestion(note)) {
-        window.location.href = "/?q=" + encodeURIComponent(note) + "#knowledge";
-        return;
-      }
+      activateChat();
       const body = new FormData();
       body.append("title", title);
       body.append("note", note);
       fileList.forEach((file) => body.append("files", file.originFileObj || file));
+      const userMessage = note || `上传了 ${fileList.length} 份材料`;
+      setMessages((current) => [...current, { role: "user", text: userMessage }]);
       setSubmitting(true);
+      const plan = buildThinkingPlan(userMessage, fileList.length > 0);
+      startThinkingAnimation(plan);
       try {
-        const url = fileList.length ? "/packages" : "/inbox-items";
-        const response = await fetch(url, { method: "POST", body, redirect: "follow" });
-        if (fileList.length) {
-          window.location.href = response.url || "/";
-        } else {
-          reloadCollection();
+        const response = await fetch("/api/home/assistant", { method: "POST", body });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          message.error(payload.error || "处理失败");
+          setMessages((current) => [...current, { role: "assistant", text: payload.error || "处理失败，请稍后重试。" }]);
+          return;
         }
+        setMessages((current) => [...current, assistantMessageFrom(payload)]);
+        form.setFieldsValue({ title: "", note: "" });
+        setFileList([]);
       } catch (error) {
         message.error("处理失败，请检查材料后重试");
+        setMessages((current) => [...current, { role: "assistant", text: "处理失败，请检查本地服务、大模型配置或网络后重试。" }]);
+      } finally {
+        stopThinkingAnimation();
         setSubmitting(false);
+        requestAnimationFrame(() => scrollThreadToBottom());
       }
     }
 
     return e(
       "div",
-      { className: "home-chat-wrap" },
+      { className: `home-chat-wrap ${chatActive ? "home-chat-wrap--active" : "home-chat-wrap--welcome"}` },
       e(
         "div",
         { className: "home-chat-head" },
-        e("div", { className: "assistant-mark" }, icon(MessageOutlined)),
-        e(Title, { level: 1 }, "上海大学报销助手"),
-        e(Text, { type: "secondary" }, "把问题、发票、邮件和附件丢进来，我先整理好，最后由本人确认。")
+        e("img", { className: "assistant-mark", src: "/static/icons/chat.png", alt: "上海大学报销助手" }),
+        e(
+          "div",
+          { className: "home-chat-subtitle" },
+          e(Text, { type: "secondary" }, "一个入口处理政策查询、材料归集和报销包生成。")
+        )
       ),
       e(
         Card,
@@ -294,13 +797,29 @@ const App = AntdApp;
         e(
           Form,
           { form, layout: "vertical", onFinish: submit, className: "chat-form" },
-          e(Form.Item, { name: "title", className: "chat-title-item" }, e(Input, { className: "chat-title-input", placeholder: "事项名称，可不填" })),
+          chatActive
+            ? e(
+                "div",
+                { className: "chat-thread", ref: threadRef },
+                messages.map((item, index) => renderChatMessage(item, index, user))
+              )
+            : null,
           e(
             Form.Item,
             { name: "note", className: "chat-note-item" },
             e(Input.TextArea, {
-              autoSize: { minRows: 6, maxRows: 10 },
-              placeholder: "问：版面费报销需要哪些材料？\n记：6 月北京人工智能会议，报销高铁、酒店和会务费，走张老师科研项目。",
+              autoSize: chatActive ? { minRows: 2, maxRows: 7 } : { minRows: 5, maxRows: 9 },
+              placeholder: "直接输入：版面费报销需要哪些材料？ 或：6 月北京会议差旅，报销高铁酒店，会务费走张老师项目。",
+              onFocus: activateChat,
+              onPressEnter: (event) => {
+                if (event.shiftKey) {
+                  return;
+                }
+                event.preventDefault();
+                if (!submitting) {
+                  form.submit();
+                }
+              },
             })
           ),
           fileList.length
@@ -330,7 +849,10 @@ const App = AntdApp;
                   beforeUpload: () => false,
                   fileList,
                   showUploadList: false,
-                  onChange: ({ fileList: next }) => setFileList(next),
+                  onChange: ({ fileList: next }) => {
+                    activateChat();
+                    setFileList(next);
+                  },
                 },
                 e(Button, { icon: icon(PaperClipOutlined) || icon(FileAddOutlined) }, "附件")
               ),
@@ -345,12 +867,48 @@ const App = AntdApp;
                 type: "primary",
                 htmlType: "submit",
                 loading: submitting,
-                icon: icon(shouldAskPolicy ? SearchOutlined : fileList.length ? InboxOutlined : SendOutlined),
+                icon: icon(SendOutlined),
               },
-              shouldAskPolicy ? "查询依据" : fileList.length ? "生成报销包" : "发送"
+              "发送"
+            ),
+            e(
+              "span",
+              { className: "chat-hint" },
+              chatActive ? "Enter 发送 · Shift+Enter 换行" : "回车发送"
             )
           )
         )
+      )
+    );
+  }
+
+  function AboutSoftwareSection() {
+    return e(
+      "section",
+      { className: "about-software-section" },
+      e(Title, { level: 2 }, "关于本软件：我们为什么需要一个报销 Agent？"),
+      e(
+        Paragraph,
+        null,
+        "现有的高校财务系统，是为“合规、审计和支付”设计的，而不是为“方便前端填报”设计的。这导致老师和学生们每天面临着巨大的低价值劳动：反复查找政策依据、整理散落各处的票据、在难用的网页上重复搬运数据，以及面对被财务退回后从头再来的崩溃。"
+      ),
+      e(
+        Paragraph,
+        null,
+        "“自助报销 Agent”的初衷，不是去替代现有的财务系统，更不是去绕过学校的审批流程。它是在现有的合规边界内，为你建立一个本地的个人财务工作台。"
+      ),
+      e(Text, { strong: true }, "为了绝对的安全与合规，本软件坚守以下边界："),
+      e(
+        "ol",
+        null,
+        e("li", null, e("strong", null, "人机隔离："), "Agent 只负责整理材料、查阅政策、生成草稿和辅助代填；而账号登录、经费项目选择、资金确认与最终提交，必须由用户本人手动完成。"),
+        e("li", null, e("strong", null, "本地优先："), "票据和数据默认在本地处理，最大程度保护个人财务隐私。"),
+        e("li", null, e("strong", null, "把规则前置："), "改变“提交后等退回”的盲盒模式，在提交前系统就会自动对照财务处公开口径，生成“缺漏清单”和风险提示。")
+      ),
+      e(
+        Paragraph,
+        { className: "about-software-closing" },
+        "我们希望通过这个工具，把你从繁杂的材料整理和表单搬运中彻底解放出来。机器处理复杂流程，人类只需确认责任。"
       )
     );
   }
@@ -493,7 +1051,7 @@ const App = AntdApp;
           ? e(Alert, {
               type: result.hits && result.hits.length ? "success" : "warning",
               showIcon: true,
-              message: "检索式答复",
+              message: result.answer_mode === "llm_rag" ? "RAG 生成答复" : "检索式答复",
               description: result.answer,
             })
           : e(Alert, {
@@ -516,22 +1074,8 @@ const App = AntdApp;
                   },
                   e(List.Item.Meta, {
                     title: e("a", { href: hit.url, target: "_blank", rel: "noreferrer" }, `${hit.rank}. ${hit.title}`),
-                    description: [
-                      hit.published_date ? `日期 ${hit.published_date}` : "",
-                      `综合 ${hit.score}`,
-                      hit.bm25_score !== undefined ? `BM25 ${hit.bm25_score}` : "",
-                      hit.keyword_score !== undefined ? `关键词 ${hit.keyword_score}` : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" · "),
+                    description: hit.published_date ? `日期 ${hit.published_date}` : "来源片段",
                   }),
-                  hit.matched_keywords && hit.matched_keywords.length
-                    ? e(
-                        Space,
-                        { wrap: true, size: [4, 4], className: "hit-keywords" },
-                        hit.matched_keywords.slice(0, 8).map((keyword) => e(Tag, { key: keyword }, keyword))
-                      )
-                    : null,
                   e(Paragraph, { ellipsis: { rows: 4, expandable: true, symbol: "展开" } }, hit.snippet)
                 ),
             })
@@ -659,21 +1203,6 @@ const App = AntdApp;
   }
 
   function KnowledgeView() {
-    const [kbStatus, setKbStatus] = React.useState(null);
-    React.useEffect(() => {
-      let mounted = true;
-      fetch("/api/knowledge/status")
-        .then((response) => response.json())
-        .then((payload) => {
-          if (mounted) setKbStatus(payload);
-        })
-        .catch(() => {
-          if (mounted) setKbStatus({ index_exists: false, source_types: {}, manifest: {} });
-        });
-      return () => {
-        mounted = false;
-      };
-    }, []);
     const supported = [
       "差旅费",
       "版面费",
@@ -683,34 +1212,10 @@ const App = AntdApp;
       "公务接待费",
       "信息服务费",
     ];
-    const report = (kbStatus && kbStatus.corpus_report) || {};
-    const emptyBySource = report.empty_text_by_source_type || {};
     return e(
       React.Fragment,
       null,
-      e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "报销知识库"), e(Text, { type: "secondary" }, "基于财务处公开网页和本地指南检索，回答必须能追溯来源。"))),
-      kbStatus
-        ? e(
-            Row,
-            { gutter: [16, 16], className: "metric-row" },
-            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "索引片段", value: kbStatus.chunk_count || 0, suffix: "条" }))),
-            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "已索引文档", value: report.indexed_document_count || 0, suffix: "份" }))),
-            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "文档总量", value: report.document_count || 0, suffix: "份" }))),
-            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "空文本附件", value: emptyBySource.attachment || 0, suffix: "个" })))
-          )
-        : null,
-      report.warnings && report.warnings.length
-        ? e(
-            Alert,
-            {
-              className: "page-alert",
-              type: "warning",
-              showIcon: true,
-              message: "入库校验提示",
-              description: report.warnings.join("；"),
-            }
-          )
-        : null,
+      e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "报销知识库"), e(Text, { type: "secondary" }, "基于最新的财务处公开网页和本地指南检索。"))),
       e(RagPanel),
       e(
         Card,
@@ -718,24 +1223,7 @@ const App = AntdApp;
         e(
           Space,
           { direction: "vertical", className: "full", size: 10 },
-          e(Space, { wrap: true }, supported.map((item) => e(Tag, { key: item, color: "blue" }, item))),
-          kbStatus && kbStatus.manifest
-            ? e(
-                Text,
-                { type: "secondary" },
-                kbStatus.manifest.created_at
-                  ? `最近抓取：${kbStatus.manifest.created_at} · 页面 ${kbStatus.manifest.page_count || 0} · 附件 ${kbStatus.manifest.attachment_count || 0}`
-                  : "未找到抓取清单"
-              )
-            : null
-          ,
-          report.indexed_source_types
-            ? e(
-                Text,
-                { type: "secondary" },
-                `已索引来源：网页 ${(report.indexed_source_types || {}).page || 0} · 附件 ${(report.indexed_source_types || {}).attachment || 0} · 本地 PDF ${(report.indexed_source_types || {}).local_pdf || 0}`
-              )
-            : null
+          e(Space, { wrap: true }, supported.map((item) => e(Tag, { key: item, color: "blue" }, item)))
         )
       )
     );
@@ -845,9 +1333,23 @@ const App = AntdApp;
 
   function SettingsView() {
     const [status, setStatus] = React.useState(null);
+    const [knowledgeStatus, setKnowledgeStatus] = React.useState(null);
     const [error, setError] = React.useState("");
     const [mailPolling, setMailPolling] = React.useState(false);
     const [mailPollResult, setMailPollResult] = React.useState(null);
+    const [authLaunching, setAuthLaunching] = React.useState(false);
+    const [llmSaving, setLlmSaving] = React.useState(false);
+    const [llmProvider, setLlmProvider] = React.useState("deepseek");
+    const [llmBaseUrl, setLlmBaseUrl] = React.useState("https://api.deepseek.com");
+    const [llmModel, setLlmModel] = React.useState("deepseek-v4-pro");
+    const [llmEnabled, setLlmEnabled] = React.useState(false);
+    const [llmClearKey, setLlmClearKey] = React.useState(false);
+
+    const llmDefaults = {
+      deepseek: { base_url: "https://api.deepseek.com", model: "deepseek-v4-pro" },
+      doubao: { base_url: "https://ark.cn-beijing.volces.com/api/v3", model: "" },
+      custom: { base_url: "", model: "" },
+    };
 
     function refreshStatus(shouldUpdate = () => true) {
       fetch("/api/settings/status")
@@ -863,10 +1365,27 @@ const App = AntdApp;
     React.useEffect(() => {
       let mounted = true;
       refreshStatus(() => mounted);
+      fetch("/api/knowledge/status")
+        .then((response) => response.json())
+        .then((payload) => {
+          if (mounted) setKnowledgeStatus(payload);
+        })
+        .catch(() => {
+          if (mounted) setKnowledgeStatus(null);
+        });
       return () => {
         mounted = false;
       };
     }, []);
+
+    React.useEffect(() => {
+      if (!status || !status.rag_llm) return;
+      setLlmProvider(status.rag_llm.provider || "deepseek");
+      setLlmBaseUrl(status.rag_llm.base_url || llmDefaults[status.rag_llm.provider || "deepseek"].base_url);
+      setLlmModel(status.rag_llm.model || llmDefaults[status.rag_llm.provider || "deepseek"].model);
+      setLlmEnabled(Boolean(status.rag_llm.enabled));
+      setLlmClearKey(false);
+    }, [status && status.rag_llm && status.rag_llm.provider, status && status.rag_llm && status.rag_llm.model]);
 
     async function pollMailbox() {
       setMailPolling(true);
@@ -895,34 +1414,57 @@ const App = AntdApp;
       }
     }
 
-    function stateTag(ok, readyText, pendingText) {
-      return e(Tag, { color: ok ? "green" : "gold" }, ok ? readyText : pendingText);
+    async function launchShuAuth() {
+      setAuthLaunching(true);
+      try {
+        const payload = await startShuAuthLogin();
+        if (payload.started) {
+          message.success("已打开扫码登录窗口");
+        } else {
+          message.info(payload.message || "扫码登录窗口已在运行");
+        }
+        refreshStatus(() => true);
+        window.setTimeout(() => refreshStatus(() => true), 1500);
+        window.setTimeout(() => refreshStatus(() => true), 5000);
+      } catch (authError) {
+        message.error(authError.message || "启动扫码登录窗口失败");
+      } finally {
+        setAuthLaunching(false);
+      }
     }
 
-    function ConfigRow({ title, description, ok, readyText, pendingText, extra, action }) {
-      return e(
-        "div",
-        { className: "settings-row" },
-        e(
-          "div",
-          null,
-          e(Text, { strong: true }, title),
-          e(Paragraph, { type: "secondary", className: "settings-desc" }, description)
-        ),
-        e(
-          Space,
-          { wrap: true },
-          stateTag(ok, readyText, pendingText),
-          extra ? e(Text, { type: "secondary" }, extra) : null,
-          action || null
-        )
-      );
+    async function saveRagLlm() {
+      setLlmSaving(true);
+      try {
+        const body = new FormData();
+        body.append("provider", llmProvider);
+        body.append("base_url", llmBaseUrl);
+        body.append("model", llmModel);
+        body.append("api_key", document.getElementById("rag-llm-api-key")?.value || "");
+        body.append("enabled", llmEnabled ? "true" : "false");
+        body.append("clear_key", llmClearKey ? "true" : "false");
+        const response = await fetch("/api/settings/rag-llm", { method: "POST", body });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          message.error("保存大模型配置失败");
+          return;
+        }
+        message.success("已保存知识库大模型配置");
+        const input = document.getElementById("rag-llm-api-key");
+        if (input) input.value = "";
+        setLlmClearKey(false);
+        refreshStatus(() => true);
+      } catch {
+        message.error("保存大模型配置失败");
+      } finally {
+        setLlmSaving(false);
+      }
     }
 
-    const doubao = status && status.doubao;
-    const imap = status && status.imap;
-    const kb = status && status.knowledge_base;
-    const playwright = status && status.playwright;
+    const ragLlm = (status && status.rag_llm) || { ready: false, has_api_key: false, provider_label: "未配置", model: "" };
+    const imap = (status && status.imap) || { configured: false, mailbox: "INBOX", processed_count: 0 };
+    const kb = (status && status.knowledge_base) || { index_exists: false, documents_exists: false, index_size_bytes: 0 };
+    const kbReport = (knowledgeStatus && knowledgeStatus.corpus_report) || {};
     const shuAuth = status && status.shu_auth;
     function authStatusLabel(auth) {
       if (!auth || !auth.profile_exists) return ["gold", "未建立"];
@@ -935,124 +1477,194 @@ const App = AntdApp;
     return e(
       React.Fragment,
       null,
-      e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "设置"), e(Text, { type: "secondary" }, "本地服务只展示配置说明，不把邮箱或大模型密钥暴露到前端页面。"))),
+      e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "设置"), e(Text, { type: "secondary" }, "管理学校登录、知识库问答和邮箱收票。密钥不会显示在页面上。"))),
+      error ? e(Alert, { className: "settings-inline-alert", type: "error", showIcon: true, message: error }) : null,
+      !status ? e(Alert, { className: "settings-inline-alert", type: "info", showIcon: true, message: "正在读取本地配置状态" }) : null,
       e(
-        Card,
-        { className: "work-card", title: "接入状态" },
+        Row,
+        { gutter: [16, 16], align: "top" },
         e(
-          Space,
-          { direction: "vertical", size: 0, className: "full" },
-          error ? e(Alert, { type: "error", showIcon: true, message: error }) : null,
-          !status ? e(Alert, { type: "info", showIcon: true, message: "正在读取本地配置状态" }) : null,
-          status
-            ? e(
-                React.Fragment,
-                null,
-                e(ConfigRow, {
-                  title: "Doubao 票据识别",
-                  description: "用于补充本地规则没有识别出的金额、抬头、发票号、日期和支付信息。",
-                  ok: doubao.enabled && doubao.has_model,
-                  readyText: "已启用",
-                  pendingText: doubao.has_api_key ? "缺模型或未启用" : "未配置",
-                  extra: doubao.model ? `模型 ${doubao.model}` : "密钥不会显示在前端",
-                }),
-                e(ConfigRow, {
-                  title: "邮箱归集",
-                  description: "通过 IMAP 拉取发票邮件和附件，去重后生成本地报销包。",
-                  ok: imap.configured,
-                  readyText: "已配置",
-                  pendingText: "未配置完整",
-                  extra: `邮箱目录 ${imap.mailbox} · 已处理 ${imap.processed_count || 0} 封`,
-                  action: e(
-                    Button,
-                    {
-                      icon: icon(SyncOutlined),
-                      loading: mailPolling,
-                      disabled: !imap.configured,
-                      onClick: pollMailbox,
+          Col,
+          { xs: 24, lg: 12 },
+          e(
+            Card,
+            { className: "work-card", title: "学校账号" },
+            e(
+              Space,
+              { direction: "vertical", size: 12, className: "full" },
+              e(
+                Space,
+                { wrap: true },
+                (() => {
+                  const label = authStatusLabel(shuAuth);
+                  return e(Tag, { color: label[0] }, label[1]);
+                })(),
+                shuAuth && shuAuth.checked_at ? e(Text, { type: "secondary" }, `上次检测 ${shuAuth.checked_at}`) : null
+              ),
+              e(Text, { type: "secondary" }, "用于进入上海大学财务系统。扫码、验证码和最终提交仍由本人完成。"),
+              e(
+                Space,
+                { wrap: true },
+                e(
+                  Button,
+                  {
+                    type: shuAuth && shuAuth.status === "ready" ? "default" : "primary",
+                    icon: icon(LoginOutlined),
+                    loading: authLaunching || Boolean(shuAuth && shuAuth.login_running),
+                    onClick: launchShuAuth,
+                  },
+                  shuAuth && shuAuth.login_running ? "登录窗口已打开" : "打开扫码登录"
+                ),
+                e(Button, { onClick: () => window.dispatchEvent(new Event("open-user-agreement")) }, "用户须知")
+              ),
+              shuAuth && shuAuth.message
+                ? e(Alert, {
+                    type: shuAuth.status === "ready" ? "success" : "info",
+                    showIcon: true,
+                    message: shuAuth.message,
+                  })
+                : null
+            )
+          )
+        ),
+        e(
+          Col,
+          { xs: 24, lg: 12 },
+          e(
+            Card,
+            { className: "work-card", title: "邮箱收票" },
+            e(
+              Space,
+              { direction: "vertical", size: 12, className: "full" },
+              e(
+                Space,
+                { wrap: true },
+                e(Tag, { color: imap.configured ? "green" : "gold" }, imap.configured ? "已配置" : "未配置"),
+                e(Text, { type: "secondary" }, `已处理 ${imap.processed_count || 0} 封`)
+              ),
+              e(Text, { type: "secondary" }, imap.configured ? `从 ${imap.mailbox || "INBOX"} 拉取发票邮件和附件。` : "配置邮箱后，可以一键整理发票邮件。"),
+              e(
+                Space,
+                { wrap: true },
+                e(
+                  Button,
+                  {
+                    icon: icon(SyncOutlined),
+                    loading: mailPolling,
+                    disabled: !imap.configured,
+                    onClick: pollMailbox,
+                  },
+                  "立即拉取邮箱"
+                )
+              ),
+              mailPollResult
+                ? e(Alert, {
+                    type: mailPollResult.ok ? "success" : "warning",
+                    showIcon: true,
+                    message: mailPollResult.ok ? `完成：${mailPollResult.count || 0} 封新邮件` : "邮箱拉取未完成",
+                    description: mailPollResult.ok
+                      ? (mailPollResult.count || 0) > 0
+                        ? e(Button, { href: "/?refresh=" + Date.now() + "#waiting", type: "primary" }, "查看等待报销")
+                        : "没有新的未读发票邮件。"
+                      : mailPollResult.error || "请检查本机邮箱配置。",
+                  })
+                : null
+            )
+          )
+        ),
+        e(
+          Col,
+          { xs: 24, lg: 12 },
+          e(
+            Card,
+            { className: "work-card", title: "知识库问答" },
+            e(
+              Space,
+              { direction: "vertical", size: 12, className: "full" },
+              e(
+                Space,
+                { wrap: true },
+                e(Tag, { color: ragLlm && ragLlm.ready ? "green" : "gold" }, ragLlm && ragLlm.ready ? "已启用" : "未启用"),
+                e(Text, { type: "secondary" }, ragLlm.model ? `${ragLlm.provider_label} · ${ragLlm.model}` : ragLlm.provider_label)
+              ),
+              e(Alert, {
+                type: ragLlm && ragLlm.ready ? "success" : "info",
+                showIcon: true,
+                message: ragLlm && ragLlm.ready ? "可以生成带引用的回答" : "未启用时只返回检索片段",
+              }),
+              e(
+                Row,
+                { gutter: [12, 12] },
+                e(
+                  Col,
+                  { xs: 24, md: 12 },
+                  e(Text, { strong: true }, "服务商"),
+                  e(Select, {
+                    value: llmProvider,
+                    className: "full",
+                    onChange: (value) => {
+                      setLlmProvider(value);
+                      setLlmBaseUrl(llmDefaults[value].base_url);
+                      setLlmModel(llmDefaults[value].model);
                     },
-                    "立即拉取邮箱"
-                  ),
-                }),
-                mailPollResult
-                  ? e(Alert, {
-                      className: "settings-inline-alert",
-                      type: mailPollResult.ok ? "success" : "warning",
-                      showIcon: true,
-                      message: mailPollResult.ok ? `邮箱拉取完成：${mailPollResult.count || 0} 封新邮件` : "邮箱拉取未完成",
-                      description: mailPollResult.ok
-                        ? (mailPollResult.count || 0) > 0
-                          ? e(
-                              Space,
-                              { direction: "vertical", className: "full", size: 6 },
-                              e(Text, null, "新邮件已整理为本地报销包。"),
-                              e(Button, { href: "/?refresh=" + Date.now() + "#waiting", type: "primary" }, "查看等待报销")
-                            )
-                          : "没有新的未读发票邮件，历史邮件不会重复生成报销包。"
-                        : mailPollResult.error || "请检查本机 IMAP 配置。",
-                    })
-                  : null,
-                e(ConfigRow, {
-                  title: "报销知识库",
-                  description: "基于财务处公开网页和本地 PDF 的 BM25 检索索引。",
-                  ok: kb.index_exists && kb.documents_exists,
-                  readyText: "索引可用",
-                  pendingText: "索引缺失",
-                  extra: kb.index_exists ? `${Math.round(kb.index_size_bytes / 1024 / 1024)} MB` : "",
-                }),
-                e(ConfigRow, {
-                  title: "上海大学财务系统适配器",
-                  description: "真实系统适配器必须由老师本人登录后补充页面选择器，不能绕过验证码或二次认证。",
-                  ok: playwright.shu_adapter_configured,
-                  readyText: "真实适配已配置",
-                  pendingText: playwright.shu_adapter_exists ? "模板待配置" : "模板缺失",
-                  extra: playwright.mock_adapter_exists ? "本地 mock 可用" : "本地 mock 缺失",
-                }),
-                shuAuth
+                    options: [
+                      { value: "deepseek", label: "DeepSeek" },
+                      { value: "doubao", label: "豆包/火山方舟" },
+                      { value: "custom", label: "自定义接口" },
+                    ],
+                  })
+                ),
+                e(
+                  Col,
+                  { xs: 24, md: 12 },
+                  e(Text, { strong: true }, "模型"),
+                  llmProvider === "deepseek"
+                    ? e(Select, { value: llmModel || "deepseek-v4-pro", className: "full", onChange: setLlmModel, options: DEEPSEEK_MODEL_OPTIONS })
+                    : e(Input, { value: llmModel, onChange: (event) => setLlmModel(event.target.value), placeholder: llmProvider === "doubao" ? "ep-xxxxxxxx" : "输入模型名" })
+                ),
+                llmProvider === "custom"
                   ? e(
-                      "div",
-                      { className: "settings-row" },
-                      e(
-                        "div",
-                        null,
-                        e(Text, { strong: true }, "上海大学扫码登录保持"),
-                        e(
-                          Paragraph,
-                          { type: "secondary", className: "settings-desc" },
-                          "使用本机专用浏览器 profile 保存 newsso 和财务系统登录态。过期后通过 ShuAuth 续登，统一认证也过期时再由本人扫码。"
-                        ),
-                        e(
-                          Paragraph,
-                          { className: "settings-desc" },
-                          e("code", null, "python3 tools/shu_auth_session.py login")
-                        )
-                      ),
-                      e(
-                        Space,
-                        { wrap: true },
-                        (() => {
-                          const label = authStatusLabel(shuAuth);
-                          return e(Tag, { color: label[0] }, label[1]);
-                        })(),
-                        e(Text, { type: "secondary" }, shuAuth.checked_at ? `上次检测 ${shuAuth.checked_at}` : "尚未检测"),
-                        e(Text, { type: "secondary" }, shuAuth.profile_exists ? "本机 profile 已存在" : "本机 profile 未建立")
-                      )
+                      Col,
+                      { xs: 24 },
+                      e(Text, { strong: true }, "接口地址"),
+                      e(Input, { value: llmBaseUrl, onChange: (event) => setLlmBaseUrl(event.target.value), placeholder: "https://api.example.com/v1" })
                     )
-                  : null,
-                shuAuth && shuAuth.message
-                  ? e(Alert, {
-                      className: "settings-inline-alert",
-                      type: shuAuth.status === "ready" ? "success" : "info",
-                      showIcon: true,
-                      message: "扫码登录保持状态",
-                      description: shuAuth.message,
-                    })
-                  : null,
-                shuAuth && shuAuth.url
-                  ? e(Paragraph, { type: "secondary", className: "settings-desc" }, `最近页面：${shuAuth.url}`)
                   : null
+              ),
+              e(Input.Password, { id: "rag-llm-api-key", placeholder: ragLlm && ragLlm.has_api_key ? "已保存密钥；留空则不变" : "输入 API Key" }),
+              e(
+                Space,
+                { wrap: true },
+                e(Space, null, e(Text, null, "启用"), e(Switch, { checked: llmEnabled, onChange: setLlmEnabled })),
+                ragLlm && ragLlm.has_api_key
+                  ? e(Space, null, e(Text, null, "清除密钥"), e(Switch, { checked: llmClearKey, onChange: setLlmClearKey }))
+                  : null,
+                e(Button, { type: "primary", loading: llmSaving, onClick: saveRagLlm }, "保存")
               )
-            : null
+            )
+          )
+        ),
+        e(
+          Col,
+          { xs: 24, lg: 12 },
+          e(
+            Card,
+            { className: "work-card", title: "本地资料库" },
+            e(
+              Space,
+              { direction: "vertical", size: 12, className: "full" },
+              e(
+                Space,
+                { wrap: true },
+                e(Tag, { color: kb.index_exists && kb.documents_exists ? "green" : "gold" }, kb.index_exists && kb.documents_exists ? "可用" : "缺失"),
+                kb.index_exists ? e(Text, { type: "secondary" }, `${Math.round(kb.index_size_bytes / 1024 / 1024)} MB`) : null
+              ),
+              e(Text, { type: "secondary" }, "用于回答报销政策问题，来源是财务处网页和本地整理文档。"),
+              knowledgeStatus
+                ? e(Text, null, `已整理 ${kbReport.document_count || 0} 份文档，${knowledgeStatus.chunk_count || 0} 条片段。`)
+                : e(Text, { type: "secondary" }, "正在读取资料库状态")
+            )
+          )
         )
       )
     );
@@ -1060,6 +1672,11 @@ const App = AntdApp;
 
   function Workspace() {
     const [activeKey, setActiveKey] = React.useState(normalizeKey(window.location.hash));
+    const [sidebarCollapsed, setSidebarCollapsed] = React.useState(() => localStorage.getItem("reimbursement.sidebar.collapsed") === "true");
+    const [aboutOpen, setAboutOpen] = React.useState(() => {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("about") === "1";
+    });
     React.useEffect(() => {
       function onHashChange() {
         setActiveKey(normalizeKey(window.location.hash));
@@ -1068,11 +1685,34 @@ const App = AntdApp;
       return () => window.removeEventListener("hashchange", onHashChange);
     }, []);
 
+    function toggleSidebar() {
+      setSidebarCollapsed((value) => {
+        const next = !value;
+        localStorage.setItem("reimbursement.sidebar.collapsed", String(next));
+        return next;
+      });
+    }
+
     function selectKey(key) {
       const next = normalizeKey(key);
       setActiveKey(next);
       if (window.location.hash !== "#" + next) {
         window.location.hash = next;
+      }
+    }
+
+    async function launchAuthLogin() {
+      try {
+        const payload = await startShuAuthLogin();
+        if (payload.started) {
+          message.success("已打开扫码登录窗口");
+        } else {
+          message.info(payload.message || "扫码登录窗口已在运行");
+        }
+        selectKey("settings");
+      } catch (authError) {
+        message.error(authError.message || "启动扫码登录窗口失败");
+        selectKey("settings");
       }
     }
 
@@ -1104,10 +1744,38 @@ const App = AntdApp;
         App,
         null,
         e(
-          Layout,
-          { className: "antd-shell app-frame" },
-          e(Sidebar, { activeKey, onSelect: selectKey }),
-          e(Layout, { className: "main-layout" }, e(Content, { className: "antd-content" }, views[activeKey] || views.home))
+          UserAgreementGate,
+          null,
+          e(
+            Layout,
+            { className: "antd-shell app-frame" },
+            e(Sidebar, {
+              activeKey,
+              onSelect: selectKey,
+              collapsed: sidebarCollapsed,
+              onToggleCollapsed: toggleSidebar,
+              onOpenAbout: () => setAboutOpen(true),
+              onLaunchAuth: launchAuthLogin,
+            }),
+            e(
+              Layout,
+              { className: "main-layout" },
+              e(Content, { className: "antd-content" }, views[activeKey] || views.home),
+              e(
+                Modal,
+                {
+                  title: null,
+                  open: aboutOpen,
+                  className: "about-modal",
+                  width: 760,
+                  centered: true,
+                  footer: e(Button, { type: "primary", onClick: () => setAboutOpen(false) }, "关闭"),
+                  onCancel: () => setAboutOpen(false),
+                },
+                e(AboutSoftwareSection)
+              )
+            )
+          )
         )
       )
     );

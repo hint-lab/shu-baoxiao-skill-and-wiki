@@ -5,13 +5,16 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "icon.png"
+SOURCE_APP = ROOT / "ChatGPT Image 2026年6月30日 15_22_13.png"
+SOURCE_LIGHT = ROOT / "ChatGPT Image 2026年6月30日 15_22_24.png"
 WEB_ICON_DIR = ROOT / "web/static/icons"
 TAURI_ICON_DIR = ROOT / "src-tauri/icons"
+ROOT_ICON = ROOT / "icon.png"
+ROOT_LOGO = ROOT / "logo.png"
 
 WEB_SIZES = {
     "favicon-16.png": 16,
@@ -22,6 +25,8 @@ WEB_SIZES = {
     "icon-192.png": 192,
     "icon-256.png": 256,
     "icon-512.png": 512,
+    "maskable-192.png": 192,
+    "maskable-512.png": 512,
 }
 
 TAURI_SIZES = {
@@ -33,8 +38,18 @@ TAURI_SIZES = {
 ICNS_SIZES = [16, 32, 64, 128, 256, 512, 1024]
 
 
-def crop_to_square(source: Path) -> Image.Image:
+def open_square(source: Path) -> Image.Image:
     image = Image.open(source).convert("RGBA")
+    if image.width == image.height:
+        return image
+    side = min(image.width, image.height)
+    left = (image.width - side) // 2
+    top = (image.height - side) // 2
+    return image.crop((left, top, left + side, top + side))
+
+
+def crop_to_square(source: Path) -> Image.Image:
+    image = open_square(source)
     alpha = image.getchannel("A")
     bbox = alpha.getbbox()
     if bbox is None:
@@ -53,6 +68,33 @@ def crop_to_square(source: Path) -> Image.Image:
     side = max(cropped.width, cropped.height)
     canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
     canvas.alpha_composite(cropped, ((side - cropped.width) // 2, (side - cropped.height) // 2))
+    return canvas
+
+
+def inset_on_canvas(base: Image.Image, padding_ratio: float = 0.0, fill=(0, 0, 0, 0)) -> Image.Image:
+    if padding_ratio <= 0:
+        return base
+    side = max(base.width, base.height)
+    canvas = Image.new("RGBA", (side, side), fill)
+    target = max(1, int(side * (1 - padding_ratio * 2)))
+    resized = base.resize((target, target), Image.Resampling.LANCZOS)
+    canvas.alpha_composite(resized, ((side - target) // 2, (side - target) // 2))
+    return canvas
+
+
+def round_corners(base: Image.Image, radius_ratio: float = 0.22) -> Image.Image:
+    image = base.convert("RGBA")
+    side = max(image.width, image.height)
+    canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    canvas.alpha_composite(image, ((side - image.width) // 2, (side - image.height) // 2))
+
+    scale = 4
+    mask = Image.new("L", (side * scale, side * scale), 0)
+    radius = int(side * radius_ratio * scale)
+    draw = ImageDraw.Draw(mask)
+    draw.rounded_rectangle((0, 0, side * scale, side * scale), radius=radius, fill=255)
+    mask = mask.resize((side, side), Image.Resampling.LANCZOS)
+    canvas.putalpha(Image.composite(canvas.getchannel("A"), Image.new("L", (side, side), 0), mask))
     return canvas
 
 
@@ -86,20 +128,30 @@ def save_icns(base: Image.Image, target: Path) -> bool:
 
 
 def main() -> None:
-    if not SOURCE.exists():
-        raise FileNotFoundError(f"Missing source icon: {SOURCE}")
+    missing = [path for path in [SOURCE_APP, SOURCE_LIGHT] if not path.exists()]
+    if missing:
+        raise FileNotFoundError("Missing source image(s): " + ", ".join(str(path) for path in missing))
 
-    base = crop_to_square(SOURCE)
+    app_base = round_corners(open_square(SOURCE_APP))
+    light_base = round_corners(open_square(SOURCE_LIGHT))
+    maskable_base = round_corners(inset_on_canvas(open_square(SOURCE_APP), padding_ratio=0.08, fill=(0, 102, 255, 255)))
+
+    save_png(app_base, ROOT_ICON, 500)
+    save_png(light_base, ROOT_LOGO, 500)
+    save_png(app_base, WEB_ICON_DIR / "logo-blue.png", 512)
+    save_png(light_base, WEB_ICON_DIR / "logo-light.png", 512)
 
     for filename, size in WEB_SIZES.items():
-        save_png(base, WEB_ICON_DIR / filename, size)
-    save_ico(base, WEB_ICON_DIR / "favicon.ico")
+        source = maskable_base if filename.startswith("maskable-") else app_base
+        save_png(source, WEB_ICON_DIR / filename, size)
+    save_ico(app_base, WEB_ICON_DIR / "favicon.ico")
 
     for filename, size in TAURI_SIZES.items():
-        save_png(base, TAURI_ICON_DIR / filename, size)
-    save_ico(base, TAURI_ICON_DIR / "icon.ico")
-    save_icns(base, TAURI_ICON_DIR / "icon.icns")
+        save_png(app_base, TAURI_ICON_DIR / filename, size)
+    save_ico(app_base, TAURI_ICON_DIR / "icon.ico")
+    save_icns(app_base, TAURI_ICON_DIR / "icon.icns")
 
+    print(f"updated root assets: {ROOT_ICON.relative_to(ROOT)}, {ROOT_LOGO.relative_to(ROOT)}")
     print(f"generated web icons in {WEB_ICON_DIR.relative_to(ROOT)}")
     print(f"generated tauri icons in {TAURI_ICON_DIR.relative_to(ROOT)}")
 

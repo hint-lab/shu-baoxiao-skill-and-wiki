@@ -8,10 +8,12 @@ import {
   Checkbox,
   Col,
   ConfigProvider,
+  Dropdown,
   Form,
   Input,
   Layout,
   Menu,
+  Modal,
   Row,
   Space,
   Statistic,
@@ -31,6 +33,8 @@ const App = AntdApp;
   const Dragger = Upload.Dragger;
   const { Content, Sider } = Layout;
   const { Title, Text, Paragraph } = Typography;
+  const AGREEMENT_VERSION = "2026-06-30";
+  const AGREEMENT_STORAGE_KEY = `shu-reimbursement-agent.agreement.${AGREEMENT_VERSION}`;
   const statusLabels = {
     collecting: ["default", "资料归集中"],
     needs_materials: ["red", "待补材料"],
@@ -47,6 +51,39 @@ const App = AntdApp;
     ["no_auto_submit", "我知道 Agent 不会自动提交学校系统"],
     ["review_before_submit", "进入学校系统后提交前仍由本人最终复核"],
   ];
+  const agreementSections = [
+    {
+      title: "工具定位",
+      items: [
+        "本工具只用于上海大学报销材料整理、政策依据检索、草稿生成和本地代填辅助，不替代本人判断，也不代表学校财务处最终审核意见。",
+        "财务处公开网页、指南、RAG 检索和大模型生成内容均为辅助信息；如与学校系统、财务处通知或人工审核不一致，以学校正式口径为准。",
+      ],
+    },
+    {
+      title: "登录与自动化边界",
+      items: [
+        "学校统一身份认证、扫码、验证码、滑块、二次确认和最终提交必须由本人完成。",
+        "本工具不保存统一身份认证密码，不保存 OAuth code，不绕过验证码或二次认证。",
+        "为实现登录保持，本工具会在本机保存专用浏览器 profile，其中可能包含 cookies、localStorage、sessionStorage 等登录态数据。",
+      ],
+    },
+    {
+      title: "材料与隐私",
+      items: [
+        "上传的发票、邮件、附件、报销备注可能包含个人、项目、财务和单位信息；默认只在本机处理和保存。",
+        "如启用大模型或邮箱接入，用户应确认本机配置、服务商和数据发送范围符合自己的安全要求。",
+        "用户可在设置或本机目录中清理浏览器会话、报销材料、邮件缓存和生成文件。",
+      ],
+    },
+    {
+      title: "用户责任",
+      items: [
+        "用户应确认票据真实合法、业务真实发生、经费项目准确、收款账号无误、附件完整合规。",
+        "Agent 只能辅助填写草稿和整理材料，不会自动点击学校财务系统的最终提交按钮。",
+        "提交前必须由本人复核学校系统页面、附件、金额、项目、账号和审批流。",
+      ],
+    },
+  ];
 
   function packageMissingCount(packageData) {
     return (packageData.checklist || []).filter((item) => item.status === "missing").length;
@@ -54,14 +91,38 @@ const App = AntdApp;
 
   function Sidebar() {
     const selectedKey = packageMissingCount(pkg) > 0 ? "collection" : "waiting";
+    const user = data.user || {};
     const items = [
-      { key: "home", label: "主页" },
-      { key: "knowledge", label: "报销知识库" },
-      { key: "waiting", label: "等待报销" },
+      { key: "home", label: "报销助手" },
+      { key: "knowledge", label: "报销知识" },
+      { key: "waiting", label: "待办报销" },
       { key: "collection", label: "资料归集" },
-      { key: "reimbursed", label: "已报销" },
-      { key: "settings", label: "设置" },
+      { key: "reimbursed", label: "报销记录" },
     ];
+    const userMenuItems = [
+      {
+        key: "user-header",
+        type: "group",
+        label: e(
+          "div",
+          { className: "user-menu-header" },
+          e("div", { className: "user-menu-name" }, user.display_name || "本机用户"),
+          e("div", { className: "user-menu-status" }, user.subtitle || "本机模式")
+        ),
+        disabled: true,
+      },
+      { type: "divider" },
+      { key: "auth", label: "扫码登录" },
+      { key: "settings", label: "系统设置" },
+      { key: "about", label: "关于我们" },
+    ];
+    const menuProps = {
+      items: userMenuItems,
+      onClick: ({ key }) => {
+        if (key === "about") window.location.href = "/?about=1#home";
+        else window.location.href = "/#" + key;
+      },
+    };
     return e(
       Sider,
       { width: 224, className: "app-sider", breakpoint: "lg", collapsedWidth: 0 },
@@ -72,6 +133,7 @@ const App = AntdApp;
         e("span", null, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
       ),
       e(Menu, {
+        className: "sidebar-main-menu",
         theme: "dark",
         mode: "inline",
         selectedKeys: [selectedKey],
@@ -79,7 +141,31 @@ const App = AntdApp;
         onClick: ({ key }) => {
           window.location.href = "/#" + key;
         },
-      })
+      }),
+      e(
+        "div",
+        { className: "sidebar-bottom" },
+        e(
+          Dropdown,
+          {
+            trigger: ["click"],
+            placement: "topLeft",
+            overlayClassName: "sidebar-user-dropdown",
+            menu: menuProps,
+          },
+          e(
+            "button",
+            { className: "sidebar-user", type: "button" },
+            e("div", { className: "sidebar-user-avatar" }, String(user.display_name || "本").slice(0, 1).toUpperCase()),
+            e(
+              "div",
+              { className: "sidebar-user-meta" },
+              e("strong", null, user.display_name || "本机用户"),
+              e("span", null, user.subtitle || "本机模式")
+            )
+          )
+        )
+      )
     );
   }
 
@@ -96,6 +182,66 @@ const App = AntdApp;
   function workflowTag(status) {
     const [color, label] = statusLabels[status] || ["default", status || "未知状态"];
     return e(Tag, { color }, label);
+  }
+
+  function AgreementContent() {
+    return e(
+      "div",
+      { className: "agreement-content" },
+      e(Alert, {
+        type: "warning",
+        showIcon: true,
+        message: "请先确认使用边界",
+        description: "这个工具会处理报销材料，并可能保存本机浏览器登录态。学校登录、验证码、二次确认和最终提交必须由本人完成。",
+      }),
+      agreementSections.map((section) =>
+        e(
+          "section",
+          { key: section.title, className: "agreement-section" },
+          e(Title, { level: 5 }, section.title),
+          e(
+            "ul",
+            null,
+            section.items.map((item) => e("li", { key: item }, item))
+          )
+        )
+      ),
+      e(Paragraph, { type: "secondary" }, `协议版本：${AGREEMENT_VERSION}`)
+    );
+  }
+
+  function UserAgreementGate({ children }) {
+    const [accepted, setAccepted] = React.useState(() => localStorage.getItem(AGREEMENT_STORAGE_KEY) === "accepted");
+    const [checked, setChecked] = React.useState(false);
+    function confirmAgreement() {
+      localStorage.setItem(AGREEMENT_STORAGE_KEY, "accepted");
+      setAccepted(true);
+      message.success("已确认用户协议和用户须知");
+    }
+    return e(
+      React.Fragment,
+      null,
+      children,
+      e(
+        Modal,
+        {
+          title: "用户协议与用户须知",
+          open: !accepted,
+          centered: true,
+          width: 760,
+          closable: false,
+          maskClosable: false,
+          keyboard: false,
+          footer: e(
+            Space,
+            { className: "agreement-footer" },
+            e(Checkbox, { checked, onChange: (event) => setChecked(event.target.checked) }, "我已阅读并同意以上用户协议和用户须知"),
+            e(Button, { type: "primary", disabled: !checked, onClick: confirmAgreement }, "同意并进入")
+          ),
+        },
+        e(AgreementContent)
+      )
+    );
   }
 
   function StatusPanel({ missing }) {
@@ -494,15 +640,18 @@ const App = AntdApp;
         App,
         null,
         e(
-          Layout,
-          { className: "antd-shell app-frame" },
-          e(Sidebar),
+          UserAgreementGate,
+          null,
           e(
             Layout,
-            { className: "main-layout" },
+            { className: "antd-shell app-frame" },
+            e(Sidebar),
             e(
-              Content,
-              { className: "antd-content" },
+              Layout,
+              { className: "main-layout" },
+              e(
+                Content,
+                { className: "antd-content" },
             e(
               "div",
               { className: "page-head" },
@@ -560,6 +709,7 @@ const App = AntdApp;
               )
             ),
             e(Row, { gutter: [16, 16] }, e(Col, { xs: 24, lg: 12 }, e(ReturnDiagnosisForm)), e(Col, { xs: 24, lg: 12 }, e(SupplementForm)))
+              )
             )
           )
         )

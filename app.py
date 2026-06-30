@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
+import subprocess
+import sys
 import uuid
 from dataclasses import asdict
 import os
@@ -12,6 +15,7 @@ from collections import Counter
 from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markupsafe import Markup
@@ -23,6 +27,7 @@ from app_state import (
     get_inbox_item,
     get_material_item,
     get_package_status,
+    init_db,
     list_material_items,
     list_inbox_items,
     mark_material_item_packaged,
@@ -41,6 +46,16 @@ from tools.diagnose_return import diagnose, export_diagnosis
 from tools.ingest_eml import ingest_eml
 from tools.playwright_fill_adapter import ARTIFACT_DIR as PLAYWRIGHT_ARTIFACT_DIR
 from tools.playwright_fill_adapter import run_fill
+from tools.knowledge_seed import (
+    PROCESSED_CHUNKS_PATH,
+    PROCESSED_DOCS_PATH,
+    PROCESSED_MANIFEST_PATH,
+    initialize_knowledge_base,
+    knowledge_db_status,
+)
+from tools.llm_settings import save_config as save_rag_llm_config
+from tools.llm_settings import status as rag_llm_status
+from tools.rag_llm import analyze_home_intent
 from tools.poll_imap import STATE_PATH as MAIL_STATE_PATH
 from tools.poll_imap import load_state as load_mail_state
 from tools.poll_imap import poll_imap
@@ -56,6 +71,8 @@ WEB_STATIC = ROOT / "web/static"
 WEB_TEMPLATES = ROOT / "web/templates"
 VITE_MANIFEST = WEB_STATIC / "dist/.vite/manifest.json"
 PLAYWRIGHT_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
+SHU_AUTH_LOGIN_LOG = ROOT / "data/auth_sessions/shu_auth_login.log"
+SHU_AUTH_LOGIN_PROCESS: subprocess.Popen | None = None
 
 RESPONSIBILITY_CONFIRMATIONS = {
     "funding_project",
@@ -70,6 +87,15 @@ templates = Jinja2Templates(directory=str(WEB_TEMPLATES))
 app.mount("/static", StaticFiles(directory=str(WEB_STATIC)), name="static")
 app.mount("/package-output", StaticFiles(directory=str(OUTPUT_ROOT)), name="package-output")
 app.mount("/playwright-output", StaticFiles(directory=str(PLAYWRIGHT_ARTIFACT_DIR)), name="playwright-output")
+
+
+@app.on_event("startup")
+async def startup() -> None:
+    init_db()
+    try:
+        initialize_knowledge_base()
+    except Exception as exc:
+        print(f"Knowledge seed import skipped: {type(exc).__name__}: {exc}")
 
 
 def vite_assets(entry: str) -> Markup:
@@ -115,6 +141,84 @@ def vite_assets(entry: str) -> Markup:
 templates.env.globals["vite_assets"] = vite_assets
 
 
+def static_version(path: str) -> str:
+    target = WEB_STATIC / path.lstrip("/")
+    if not target.exists():
+        return "0"
+    return str(int(target.stat().st_mtime))
+
+
+templates.env.globals["static_version"] = static_version
+
+
+def shu_auth_login_pids() -> list[int]:
+    try:
+        result = subprocess.run(
+            ["pgrep", "-f", "tools/shu_auth_session.py login"],
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+    except Exception:
+        return []
+    pids: list[int] = []
+    for line in result.stdout.splitlines():
+        try:
+            pid = int(line.strip())
+        except ValueError:
+            continue
+        if pid != os.getpid():
+            pids.append(pid)
+    return pids
+
+
+def shu_auth_login_running() -> bool:
+    global SHU_AUTH_LOGIN_PROCESS
+    if SHU_AUTH_LOGIN_PROCESS is None:
+        return bool(shu_auth_login_pids())
+    if SHU_AUTH_LOGIN_PROCESS.poll() is None:
+        return True
+    SHU_AUTH_LOGIN_PROCESS = None
+    return bool(shu_auth_login_pids())
+
+
+def app_user_profile() -> dict[str, str]:
+    auth = shu_auth_saved_status()
+    auth_status = auth.get("status", "not_checked")
+    work_id = next(
+        (
+            value.strip()
+            for value in [
+                os.getenv("SHU_REIMBURSEMENT_WORK_ID", ""),
+                os.getenv("SHU_REIMBURSEMENT_STAFF_ID", ""),
+                os.getenv("SHU_REIMBURSEMENT_USER_ID", ""),
+                str(auth.get("work_id", "") or ""),
+                str(auth.get("staff_id", "") or ""),
+                str(auth.get("employee_id", "") or ""),
+                str(auth.get("student_id", "") or ""),
+                str(auth.get("account_id", "") or ""),
+            ]
+            if value and value.strip()
+        ),
+        "",
+    )
+    display_name = f"工号 {work_id}" if work_id else "工号未识别"
+    subtitles = {
+        "ready": "财务系统会话可用",
+        "needs_scan": "需要本人扫码",
+        "needs_renew": "需要续登",
+        "error": "登录态检查失败",
+        "not_checked": "本机模式",
+    }
+    return {
+        "display_name": display_name,
+        "work_id": work_id,
+        "subtitle": subtitles.get(auth_status, "本机模式"),
+        "auth_status": auth_status,
+    }
+
+
 def imap_env_status() -> dict[str, object]:
     required = {
         "host": os.getenv("REIMBURSEMENT_IMAP_HOST", ""),
@@ -158,6 +262,9 @@ async def settings_status() -> JSONResponse:
     adapter_text = adapter_path.read_text(encoding="utf-8") if adapter_path.exists() else ""
     index_path = ROOT / "data/cwc/index.json"
     documents_path = ROOT / "data/cwc/documents.jsonl"
+    shu_auth = shu_auth_saved_status()
+    shu_auth["login_running"] = shu_auth_login_running()
+    shu_auth["login_pids"] = shu_auth_login_pids()
     payload = {
         "doubao": {
             "enabled": doubao_enabled(),
@@ -166,6 +273,7 @@ async def settings_status() -> JSONResponse:
             "model": doubao_model_name(),
             "base_url": doubao_base_url(),
         },
+        "rag_llm": rag_llm_status(),
         "imap": imap_env_status(),
         "knowledge_base": {
             "index_exists": index_path.exists(),
@@ -178,9 +286,71 @@ async def settings_status() -> JSONResponse:
             "shu_adapter_exists": adapter_path.exists(),
             "shu_adapter_configured": adapter_path.exists() and "填入" not in adapter_text,
         },
-        "shu_auth": shu_auth_saved_status(),
+        "shu_auth": shu_auth,
     }
     return JSONResponse(payload)
+
+
+@app.post("/api/shu-auth/login")
+async def start_shu_auth_login(dry_run: bool = False) -> JSONResponse:
+    global SHU_AUTH_LOGIN_PROCESS
+    running = shu_auth_login_running()
+    if dry_run:
+        return JSONResponse({"ok": True, "started": False, "running": running, "dry_run": True})
+    if running:
+        return JSONResponse({"ok": True, "started": False, "running": True, "message": "扫码登录窗口已在运行。"})
+
+    SHU_AUTH_LOGIN_LOG.parent.mkdir(parents=True, exist_ok=True)
+    log_file = SHU_AUTH_LOGIN_LOG.open("a", encoding="utf-8")
+    try:
+        SHU_AUTH_LOGIN_PROCESS = subprocess.Popen(
+            [sys.executable, "tools/shu_auth_session.py", "login"],
+            cwd=str(ROOT),
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+    except Exception as exc:
+        log_file.close()
+        return JSONResponse(
+            {"ok": False, "error": f"启动扫码登录窗口失败：{exc.__class__.__name__}"},
+            status_code=500,
+        )
+    finally:
+        try:
+            log_file.close()
+        except Exception:
+            pass
+
+    return JSONResponse(
+        {
+            "ok": True,
+            "started": True,
+            "running": True,
+            "pid": SHU_AUTH_LOGIN_PROCESS.pid,
+            "message": "已打开上海大学扫码登录窗口。",
+        }
+    )
+
+
+@app.post("/api/settings/rag-llm")
+async def save_rag_llm_settings(
+    provider: str = Form("deepseek"),
+    base_url: str = Form(""),
+    model: str = Form(""),
+    api_key: str = Form(""),
+    enabled: bool = Form(False),
+    clear_key: bool = Form(False),
+) -> JSONResponse:
+    payload = save_rag_llm_config(
+        provider=provider,
+        base_url=base_url,
+        model=model,
+        api_key=api_key,
+        enabled=enabled,
+        clear_key=clear_key,
+    )
+    return JSONResponse({"ok": True, "rag_llm": payload})
 
 
 @app.post("/api/mail/poll")
@@ -237,6 +407,12 @@ async def knowledge_status() -> JSONResponse:
                 "chunk_count": 0,
                 "source_types": {},
                 "corpus_report": {},
+                "processed_seed": {
+                    "documents_exists": PROCESSED_DOCS_PATH.exists(),
+                    "chunks_exists": PROCESSED_CHUNKS_PATH.exists(),
+                    "manifest_exists": PROCESSED_MANIFEST_PATH.exists(),
+                },
+                "knowledge_db": knowledge_db_status(),
                 "manifest": {},
             }
         )
@@ -244,6 +420,7 @@ async def knowledge_status() -> JSONResponse:
     source_types = Counter(chunk.get("source_type") or "page" for chunk in index.get("chunks", []))
     manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
     corpus_report = index.get("corpus_report") or {}
+    processed_manifest = json.loads(PROCESSED_MANIFEST_PATH.read_text(encoding="utf-8")) if PROCESSED_MANIFEST_PATH.exists() else {}
     return JSONResponse(
         {
             "index_exists": True,
@@ -254,6 +431,15 @@ async def knowledge_status() -> JSONResponse:
             "chunk_count": index.get("chunk_count", len(index.get("chunks", []))),
             "source_types": dict(source_types),
             "corpus_report": corpus_report,
+            "processed_seed": {
+                "documents_exists": PROCESSED_DOCS_PATH.exists(),
+                "chunks_exists": PROCESSED_CHUNKS_PATH.exists(),
+                "manifest_exists": PROCESSED_MANIFEST_PATH.exists(),
+                "document_count": processed_manifest.get("document_count", 0),
+                "chunk_count": processed_manifest.get("chunk_count", 0),
+                "ingestion_status_counts": processed_manifest.get("ingestion_status_counts", {}),
+            },
+            "knowledge_db": knowledge_db_status(),
             "manifest": {
                 "base_url": manifest.get("base_url", ""),
                 "created_at": manifest.get("created_at", ""),
@@ -340,6 +526,144 @@ def save_uploaded_files(files: list[UploadFile], upload_dir: Path) -> tuple[list
     return saved_files, note_parts
 
 
+@app.post("/api/home/assistant")
+async def home_assistant(
+    title: str = Form(""),
+    note: str = Form(""),
+    files: list[UploadFile] | None = File(None),
+) -> JSONResponse:
+    payload, status_code = create_home_assistant_payload(title, note, files)
+    return JSONResponse(payload, status_code=status_code)
+
+
+def create_home_assistant_payload(
+    title: str,
+    note: str,
+    files: list[UploadFile] | None,
+) -> tuple[dict[str, object], int]:
+    uploads = [upload for upload in (files or []) if upload.filename]
+    clean_title = title.strip()
+    clean_note = note.strip()
+    if not clean_note and not uploads:
+        return {"ok": False, "error": "请先输入问题、报销事项，或者上传发票和附件。"}, 400
+
+    file_names = [Path(upload.filename or "").name for upload in uploads]
+    intent = analyze_home_intent(clean_note, clean_title, file_names)
+    action = intent.get("action") or "ask_clarification"
+    if uploads and action in {"create_inbox", "ask_clarification"}:
+        action = "create_package"
+    if action == "create_package" and not uploads:
+        action = "create_inbox" if clean_note else "ask_clarification"
+
+    if action == "answer_policy":
+        query = intent.get("search_query") or clean_note
+        policy = query_policy(query, top_k=5)
+        return {
+            "ok": True,
+            "action": "answer_policy",
+            "intent": intent,
+            "message": intent.get("reply") or "我查了财务处资料库，下面是可追溯回答。",
+            "policy": policy,
+        }, 200
+
+    if action == "create_package":
+        upload_id = uuid.uuid4().hex[:12]
+        upload_dir = UPLOAD_ROOT / upload_id
+        _, note_parts = save_uploaded_files(uploads, upload_dir)
+        package_note = "\n".join(part for part in [clean_note, *note_parts] if part)
+        package = build_package(upload_dir, package_note, clean_title or intent.get("title") or None)
+        out_dir = OUTPUT_ROOT / package.id
+        export_package(package, out_dir)
+        package_payload = asdict(package)
+        reset_package_status_from_materials(package_payload)
+        return {
+            "ok": True,
+            "action": "create_package",
+            "intent": intent,
+            "message": intent.get("reply") or "我已按报销材料生成报销包，下一步由你复核。",
+            "package": {
+                "id": package.id,
+                "title": package.title,
+                "url": f"/packages/{package.id}/view",
+                "document_count": len(package_payload.get("documents", [])),
+                "missing_count": len([item for item in package_payload.get("checklist", []) if item.get("status") == "missing"]),
+            },
+        }, 200
+
+    if action == "create_inbox":
+        item_id = uuid.uuid4().hex[:12]
+        create_inbox_item(item_id, "chat", clean_title or intent.get("title") or "", clean_note)
+        return {
+            "ok": True,
+            "action": "create_inbox",
+            "intent": intent,
+            "message": intent.get("reply") or "我已放进资料归集，后面补材料后再生成报销包。",
+            "item": {"id": item_id, "url": "/#collection"},
+        }, 200
+
+    return {
+        "ok": True,
+        "action": "ask_clarification",
+        "intent": intent,
+        "message": intent.get("reply") or "你是想查政策依据、记录一个待报销事项，还是整理已有发票？",
+    }, 200
+
+
+def assistant_text_from_payload(payload: dict[str, object]) -> str:
+    action = payload.get("action")
+    if action == "answer_policy":
+        policy = payload.get("policy") if isinstance(payload.get("policy"), dict) else {}
+        answer = policy.get("answer") if isinstance(policy, dict) else ""
+        return f"{payload.get('message') or '我先查了财务处资料库。'}\n\n{answer or '没有检索到足够可靠的依据。'}"
+    if action == "create_package":
+        package = payload.get("package") if isinstance(payload.get("package"), dict) else {}
+        return (
+            f"{payload.get('message') or '已生成报销包。'}\n\n"
+            f"材料 {package.get('document_count') or 0} 份；待补 {package.get('missing_count') or 0} 项。"
+        )
+    return str(payload.get("message") or "你是想查政策依据、记录一个待报销事项，还是整理已有发票？")
+
+
+def sse_event(event: str, data: dict[str, object]) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+def stream_text_chunks(text: str, size: int = 12) -> list[str]:
+    chunks: list[str] = []
+    buffer = ""
+    for char in text:
+        buffer += char
+        if len(buffer) >= size or char in "\n。！？；":
+            chunks.append(buffer)
+            buffer = ""
+    if buffer:
+        chunks.append(buffer)
+    return chunks
+
+
+@app.post("/api/home/assistant/stream")
+async def home_assistant_stream(
+    title: str = Form(""),
+    note: str = Form(""),
+    files: list[UploadFile] | None = File(None),
+) -> StreamingResponse:
+    async def generate():
+        yield sse_event("status", {"message": "正在判断报销意图"})
+        await asyncio.sleep(0.05)
+        payload, status_code = create_home_assistant_payload(title, note, files)
+        if status_code >= 400 or not payload.get("ok"):
+            yield sse_event("error", {"error": payload.get("error") or "处理失败"})
+            return
+        yield sse_event("meta", {"action": payload.get("action") or ""})
+        text = assistant_text_from_payload(payload)
+        for chunk in stream_text_chunks(text):
+            yield sse_event("delta", {"text": chunk})
+            await asyncio.sleep(0.018)
+        yield sse_event("done", {"payload": payload})
+
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request, q: str = "", source_type: str = "") -> HTMLResponse:
     packages = []
@@ -362,6 +686,7 @@ async def index(request: Request, q: str = "", source_type: str = "") -> HTMLRes
             "rag_result": rag_result,
             "q": q,
             "source_type": allowed_source_type,
+            "user": app_user_profile(),
         },
     )
 
@@ -461,6 +786,7 @@ async def view_package(request: Request, package_id: str) -> HTMLResponse:
             "return_diagnosis_url": f"/packages/{package_id}/return-diagnosis",
             "status_events": package_status_events(package_id),
             "file_count": len(list((package_path / "files").glob("*"))) if (package_path / "files").exists() else 0,
+            "user": app_user_profile(),
         },
     )
 

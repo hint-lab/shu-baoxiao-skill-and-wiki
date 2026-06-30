@@ -7,11 +7,12 @@
     "beforeDevCommand": "python3 tools/run_local_server.py",
     "beforeBuildCommand": "npm run build:frontend",
     "devUrl": "http://127.0.0.1:8765",
-    "frontendDist": "../web/static/dist"
+    "frontendDist": "http://127.0.0.1:8765"
   },
   "app": {
     "windows": [
       {
+        "url": "http://127.0.0.1:8765",
         "title": "上海大学自助报销Agent",
         "width": 1280,
         "height": 860,

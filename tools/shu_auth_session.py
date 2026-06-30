@@ -192,8 +192,12 @@ def ensure_ready(headed: bool = True, wait_scan: bool = True, timeout_ms: int = 
             _best_effort_goto(page, BUSINESS_HOME_URL, 30000)
             _best_effort_wait(page, 8000)
             status = classify_page(page)
+            save_meta(status)
             if status.status != STATUS_READY:
                 _best_effort_goto(page, SHU_AUTH_URL, 30000)
+                _best_effort_wait(page, 8000)
+                status = classify_page(page)
+                save_meta(status)
                 if wait_scan:
                     try:
                         page.wait_for_url(
@@ -205,6 +209,7 @@ def ensure_ready(headed: bool = True, wait_scan: bool = True, timeout_ms: int = 
                 else:
                     _wait_for_auth_transition(page, min(timeout_ms, 30000))
                 status = classify_page(page)
+                save_meta(status)
         except Exception as exc:
             status = SessionStatus(
                 status=STATUS_ERROR,
@@ -212,6 +217,7 @@ def ensure_ready(headed: bool = True, wait_scan: bool = True, timeout_ms: int = 
                 profile_exists=PROFILE_DIR.exists(),
                 checked_at=now_iso(),
             )
+            save_meta(status)
         finally:
             context.close()
     save_meta(status)

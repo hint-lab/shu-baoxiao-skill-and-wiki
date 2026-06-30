@@ -16,6 +16,7 @@ from playwright.sync_api import sync_playwright
 ROOT = Path("/Users/hao/Documents/自助报销Agent")
 BASE_URL = "http://127.0.0.1:8765"
 VISIBLE_TITLE = "前端渲染办公用品包"
+AGREEMENT_STORAGE_KEY = "shu-reimbursement-agent.agreement.2026-06-30"
 
 
 def server_ready() -> bool:
@@ -82,22 +83,28 @@ def main() -> None:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page(viewport={"width": 1360, "height": 920})
+            page.add_init_script(
+                f"window.localStorage.setItem({AGREEMENT_STORAGE_KEY!r}, 'accepted');"
+                "window.localStorage.setItem('reimbursement.sidebar.collapsed', 'false');"
+            )
             page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
             page.goto(f"{BASE_URL}/", wait_until="networkidle")
-            page.get_by_text("上海大学报销助手").wait_for(timeout=10000)
-            page.get_by_placeholder("事项名称，可不填").wait_for(timeout=10000)
+            page.locator(".assistant-mark[src='/static/icons/chat.png']").wait_for(timeout=10000)
+            page.get_by_role("heading", name="报销助手").wait_for(timeout=10000)
+            page.get_by_placeholder(re.compile("直接输入：版面费报销需要哪些材料")).wait_for(timeout=10000)
             page.get_by_role("button", name=re.compile("附件")).wait_for(timeout=10000)
             page.get_by_role("link", name=re.compile("知识库")).wait_for(timeout=10000)
             page.get_by_role("button", name=re.compile("发送")).wait_for(timeout=10000)
             page.locator(".anticon").first.wait_for(timeout=10000)
             page.goto(f"{BASE_URL}/?q=版面费%20报销%20需要什么材料#knowledge", wait_until="networkidle")
-            page.get_by_text("检索式答复").wait_for(timeout=10000)
-            page.locator(".app-sider").get_by_text("主页").first.wait_for(timeout=10000)
-            page.locator(".app-sider").get_by_text("报销知识库").first.wait_for(timeout=10000)
+            page.get_by_text(re.compile("RAG 生成答复|检索式答复")).wait_for(timeout=10000)
+            page.locator(".app-sider").get_by_text("报销助手").first.wait_for(timeout=10000)
+            page.locator(".app-sider").get_by_text("报销知识").first.wait_for(timeout=10000)
             page.locator(".app-sider").get_by_text("资料归集").first.wait_for(timeout=10000)
-            page.locator(".app-sider").get_by_text("等待报销").first.wait_for(timeout=10000)
-            page.locator(".app-sider").get_by_text("已报销").first.wait_for(timeout=10000)
-            page.locator(".app-sider").get_by_text("等待报销").first.click()
+            page.locator(".app-sider").get_by_text("待办报销").first.wait_for(timeout=10000)
+            page.locator(".app-sider").get_by_text("报销记录").first.wait_for(timeout=10000)
+            page.locator(".sidebar-user").wait_for(timeout=10000)
+            page.locator(".app-sider").get_by_text("待办报销").first.click()
             page.locator("h2:has-text('等待报销')").wait_for(timeout=10000)
             page.get_by_role("tab", name=re.compile("缺材料")).wait_for(timeout=10000)
             page.get_by_role("tab", name=re.compile("等待复核")).wait_for(timeout=10000)

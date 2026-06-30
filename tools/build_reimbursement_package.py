@@ -493,59 +493,294 @@ def slugify(value: str) -> str:
     return slug[:80] or "reimbursement-package"
 
 
+DOC_TYPE_LABELS = {
+    "invoice": "发票",
+    "payment_record": "支付记录",
+    "detail_list": "明细清单",
+    "approval": "审批/申请",
+    "settlement": "结算单",
+    "itinerary": "行程/票据",
+    "notice": "通知/证明",
+    "contract": "合同",
+    "other": "其他材料",
+}
+
+CHECK_STATUS_LABELS = {
+    "ready": "已就绪",
+    "missing": "缺失",
+    "optional": "可选/按需",
+}
+
+
+def md_escape(value: Any) -> str:
+    text = str(value if value is not None else "")
+    text = text.replace("|", "\\|")
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def format_amount(fields: dict[str, Any]) -> str:
+    amount = fields.get("amount_total") or fields.get("max_amount")
+    if amount in ("", None):
+        return "-"
+    currency = fields.get("currency") or "CNY"
+    try:
+        amount_value = float(amount)
+        amount_text = f"{amount_value:,.2f}".rstrip("0").rstrip(".")
+    except (TypeError, ValueError):
+        amount_text = str(amount)
+    return f"{currency} {amount_text}"
+
+
+def title_check_text(fields: dict[str, Any]) -> str:
+    if fields.get("title_valid") is True:
+        return "抬头有效"
+    if fields.get("title_valid") is False:
+        return "抬头待处理"
+    if fields.get("invoice_kind") == "foreign_invoice":
+        return "外文票据"
+    return "需人工核对"
+
+
+def document_review_points(doc: ImportedDocument) -> str:
+    fields = doc.extracted_fields
+    points: list[str] = []
+    if doc.document_type == "invoice":
+        points.append(title_check_text(fields))
+        if not fields.get("invoice_no"):
+            points.append("核对发票号")
+        if not fields.get("invoice_date"):
+            points.append("核对开票日期")
+        if not fields.get("amount_total"):
+            points.append("核对金额")
+    if doc.document_type == "payment_record":
+        points.append("核对付款人与金额")
+    if doc.document_type in {"detail_list", "contract"}:
+        points.append("核对品名、数量、单价")
+    if not points:
+        points.append("核对原件内容")
+    return "；".join(dict.fromkeys(points))
+
+
+def source_label(evidence: SourceEvidence) -> str:
+    title = clean_source_title(evidence.title)
+    if evidence.url.startswith(("http://", "https://")):
+        return f"[{md_escape(title)}]({evidence.url})"
+    return f"{md_escape(title)}（本地资料）"
+
+
+def evidence_key(evidence: SourceEvidence | None) -> tuple[str, str]:
+    if evidence is None:
+        return ("", "")
+    return (evidence.title, evidence.url)
+
+
+def evidence_numbers(package: ReimbursementPackage) -> dict[tuple[str, str], int]:
+    ordered: list[SourceEvidence] = []
+    seen: set[tuple[str, str]] = set()
+    for item in package.checklist:
+        key = evidence_key(item.evidence)
+        if item.evidence and key not in seen:
+            seen.add(key)
+            ordered.append(item.evidence)
+    for evidence in package.policy_evidence:
+        key = evidence_key(evidence)
+        if key not in seen:
+            seen.add(key)
+            ordered.append(evidence)
+    return {evidence_key(evidence): idx for idx, evidence in enumerate(ordered, 1)}
+
+
+def evidence_ref(evidence: SourceEvidence | None, refs: dict[tuple[str, str], int]) -> str:
+    if evidence is None:
+        return "-"
+    number = refs.get(evidence_key(evidence))
+    return f"依据 {number}" if number else "-"
+
+
+def estimated_total_amount(docs: list[ImportedDocument]) -> float:
+    preferred = [doc for doc in docs if doc.document_type == "invoice"]
+    if not preferred:
+        preferred = [doc for doc in docs if doc.document_type == "payment_record"]
+    if not preferred:
+        preferred = docs
+    total = 0.0
+    for doc in preferred:
+        amount = doc.extracted_fields.get("amount_total")
+        if isinstance(amount, (int, float)):
+            total += float(amount)
+    return total
+
+
+def clean_source_title(title: str) -> str:
+    return re.sub(r"^[0-9a-f]{8,16}-", "", title).strip() or title
+
+
 def markdown_report(package: ReimbursementPackage) -> str:
+    missing_required = [item for item in package.checklist if item.required and item.status == "missing"]
+    ready_items = [item for item in package.checklist if item.status == "ready"]
+    optional_items = [item for item in package.checklist if item.status == "optional"]
+    total_amount = estimated_total_amount(package.documents)
+    refs = evidence_numbers(package)
+    created_at = package.created_at.replace("T", " ").split(".")[0]
+
     lines = [
         f"# {package.title}",
         "",
-        f"- 类型：{package.reimbursement_type_name}",
-        f"- 推荐上海大学财务系统入口：{package.school_form_hint}",
+        "## 一页结论",
+        "",
+        f"- 报销类型：{package.reimbursement_type_name}",
+        f"- 推荐入口：{package.school_form_hint}",
+        f"- 当前状态：{'待补材料' if missing_required else '材料可进入本人复核'}",
+        f"- 已识别材料：{len(package.documents)} 份",
+        f"- 必需材料缺失：{len(missing_required)} 项",
+        f"- 识别金额合计：{'CNY ' + format(total_amount, ',.2f') if total_amount else '未汇总'}",
         f"- 分类置信度：{package.confidence}",
+        f"- 生成时间：{created_at}",
         f"- 用户备注：{package.user_note or '无'}",
         "",
         "## 报销事由草稿",
         "",
         package.reason_draft,
         "",
-        "## 材料清单",
+        "## 下一步处理",
         "",
-        "| 文件 | 识别类型 | 置信度 | 关键字段 |",
-        "| --- | --- | ---: | --- |",
     ]
+
+    if missing_required:
+        lines.append("先补齐以下必需材料，再进入学校财务系统提交：")
+        lines.append("")
+        for item in missing_required:
+            lines.append(f"- {item.name}：{item.why}（{evidence_ref(item.evidence, refs)}）")
+    else:
+        lines.extend(
+            [
+                "- 材料已满足当前规则检查，可以进入本人复核。",
+                "- 提交前仍需核对经费项目、收款账号、发票真伪、附件完整性和学校系统预审提示。",
+            ]
+        )
+    if optional_items:
+        lines.append("")
+        lines.append("按业务情况确认的材料：")
+        for item in optional_items:
+            lines.append(f"- {item.name}：{item.why}")
+
+    lines.extend(
+        [
+            "",
+            "## 材料识别",
+            "",
+            "| 文件 | 类型 | 金额 | 日期/号码 | 复核点 |",
+            "| --- | --- | ---: | --- | --- |",
+        ]
+    )
     for doc in package.documents:
-        fields = []
-        if doc.extracted_fields.get("buyer_name"):
-            fields.append(f"购买方 {doc.extracted_fields['buyer_name']}")
-        if doc.extracted_fields.get("seller_name"):
-            fields.append(f"销售方 {doc.extracted_fields['seller_name']}")
-        if doc.extracted_fields.get("item_name"):
-            fields.append(f"项目 {doc.extracted_fields['item_name']}")
-        if doc.extracted_fields.get("invoice_no"):
-            fields.append(f"发票号 {doc.extracted_fields['invoice_no']}")
-        if doc.extracted_fields.get("amount_total"):
-            currency = doc.extracted_fields.get("currency") or "CNY"
-            fields.append(f"金额 {currency} {doc.extracted_fields['amount_total']}")
-        if doc.extracted_fields.get("invoice_date"):
-            fields.append(f"日期 {doc.extracted_fields['invoice_date']}")
-        if doc.extracted_fields.get("title_valid") is True:
-            fields.append("抬头有效")
-        elif doc.extracted_fields.get("title_valid") is False:
-            fields.append("抬头待处理")
-        lines.append(f"| {doc.file_name} | {doc.document_type} | {doc.confidence} | {'；'.join(fields) or '-'} |")
-    lines.extend(["", "## 缺漏检查", "", "| 项目 | 状态 | 匹配材料 | 依据 |", "| --- | --- | --- | --- |"])
+        fields = doc.extracted_fields
+        date_no = []
+        if fields.get("invoice_date"):
+            date_no.append(f"日期 {fields['invoice_date']}")
+        elif fields.get("transaction_date"):
+            date_no.append(f"日期 {fields['transaction_date']}")
+        if fields.get("invoice_no"):
+            date_no.append(f"发票号 {fields['invoice_no']}")
+        if fields.get("buyer_name"):
+            date_no.append(f"购买方 {fields['buyer_name']}")
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    md_escape(doc.file_name),
+                    md_escape(DOC_TYPE_LABELS.get(doc.document_type, doc.document_type)),
+                    md_escape(format_amount(fields)),
+                    md_escape("；".join(date_no) or "-"),
+                    md_escape(document_review_points(doc)),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(["", "## 完整性检查", "", "| 检查项 | 状态 | 匹配材料 | 说明 | 依据 |", "| --- | --- | --- | --- | --- |"])
     for item in package.checklist:
-        evidence = f"{item.evidence.title} {item.evidence.url}" if item.evidence else "-"
-        matched = ", ".join(item.matched_documents) if item.matched_documents else "-"
-        lines.append(f"| {item.name} | {item.status} | {matched} | {evidence} |")
-    lines.extend(["", "## 风险提示", ""])
+        matched = "、".join(item.matched_documents) if item.matched_documents else "-"
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    md_escape(item.name),
+                    md_escape(CHECK_STATUS_LABELS.get(item.status, item.status)),
+                    md_escape(matched),
+                    md_escape(item.why),
+                    md_escape(evidence_ref(item.evidence, refs)),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(["", "## 发票与金额核对", ""])
+    invoice_docs = [doc for doc in package.documents if doc.document_type == "invoice"]
+    if invoice_docs:
+        for doc in invoice_docs:
+            fields = doc.extracted_fields
+            checks = [
+                f"文件：{doc.file_name}",
+                f"抬头：{fields.get('buyer_name') or '待核对'}",
+                f"销售方：{fields.get('seller_name') or '待核对'}",
+                f"金额：{format_amount(fields)}",
+                f"日期：{fields.get('invoice_date') or '待核对'}",
+                f"发票号：{fields.get('invoice_no') or '待核对'}",
+                f"结论：{title_check_text(fields)}",
+            ]
+            lines.append("- " + "；".join(checks))
+    else:
+        lines.append("- 未识别到发票材料，请人工确认是否需要补充发票或财政票据。")
+
+    lines.extend(["", "## 风险与人工确认", ""])
     if package.risk_flags:
         lines.extend(f"- {flag}" for flag in package.risk_flags)
     else:
-        lines.append("- 暂未发现高优先级风险，仍需提交前人工核对。")
-    lines.extend(["", "## 主要政策来源", ""])
-    for evidence in package.policy_evidence:
-        lines.append(f"- {evidence.title}：{evidence.url}")
-        lines.append(f"  - 片段：{evidence.snippet}")
-    lines.extend(["", "## 提交边界", "", "- 登录、验证码、经费项目、收款账号、提交预审和提交审批均需本人确认。"])
+        lines.append("- 暂未发现高优先级风险。")
+    lines.extend(
+        [
+            "- 提交前必须由本人确认票据真实合法、业务真实发生、附件与报销事项一致。",
+            "- 经费项目、预算额度、支付账号、冲借款信息和审批流必须在学校系统中人工核对。",
+            "",
+            "## 政策依据",
+            "",
+        ]
+    )
+
+    if refs:
+        evidence_by_ref: dict[int, SourceEvidence] = {}
+        for item in package.checklist:
+            if item.evidence:
+                number = refs.get(evidence_key(item.evidence))
+                if number:
+                    evidence_by_ref[number] = item.evidence
+        for evidence in package.policy_evidence:
+            number = refs.get(evidence_key(evidence))
+            if number:
+                evidence_by_ref[number] = evidence
+        for number in sorted(evidence_by_ref):
+            evidence = evidence_by_ref[number]
+            clean_snippet = re.sub(r"\s+", " ", evidence.snippet).strip()
+            lines.append(f"### 依据 {number}")
+            lines.append("")
+            lines.append(f"- 来源：{source_label(evidence)}")
+            lines.append(f"- 类型：{evidence.source_type}")
+            lines.append(f"- 相关片段：{clean_snippet[:420]}{'...' if len(clean_snippet) > 420 else ''}")
+            lines.append("")
+    else:
+        lines.append("- 暂无可追溯政策依据。")
+
+    lines.extend(
+        [
+            "## 提交边界",
+            "",
+            "- 本文件是本地整理结果，不代表财务处最终审核意见。",
+            "- 登录、验证码、经费项目、收款账号、提交预审和提交审批均需本人确认。",
+            "- Agent 只能辅助整理材料和填写草稿，不能代替本人作真实性承诺或最终提交。",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 

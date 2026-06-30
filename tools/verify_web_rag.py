@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 import time
@@ -41,20 +42,20 @@ def main() -> None:
             raise RuntimeError("Local server did not become ready on 127.0.0.1:8765")
 
     try:
-        query = urllib.parse.urlencode({"q": "版面费 报销 需要什么材料"})
+        query = urllib.parse.urlencode({"q": "版面报销需要哪些材料"})
         errors: list[str] = []
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page(viewport={"width": 1360, "height": 900})
             page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
             page.goto(f"{BASE_URL}/?{query}#knowledge", wait_until="networkidle")
-            page.get_by_text("检索式答复").wait_for(timeout=10000)
+            page.get_by_text(re.compile("RAG 生成答复|检索式答复")).wait_for(timeout=10000)
             page.get_by_text("版面费、出版费报销指南").first.wait_for(timeout=10000)
             page.get_by_text("财务处").first.wait_for(timeout=10000)
             browser.close()
         if errors:
             raise AssertionError(f"Web RAG console errors: {errors}")
-        print(json.dumps({"ok": True, "query": "版面费 报销 需要什么材料"}, ensure_ascii=False, indent=2))
+        print(json.dumps({"ok": True, "query": "版面报销需要哪些材料"}, ensure_ascii=False, indent=2))
     finally:
         if server is not None:
             server.terminate()

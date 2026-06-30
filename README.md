@@ -6,6 +6,20 @@
 
 阶段路线图见：[PRODUCT_PLAN.md](PRODUCT_PLAN.md)。
 
+## 关于本软件：我们为什么需要一个报销 Agent？
+
+现有的高校财务系统，是为“合规、审计和支付”设计的，而不是为“方便前端填报”设计的。这导致老师和学生们每天面临着巨大的低价值劳动：反复查找政策依据、整理散落各处的票据、在难用的网页上重复搬运数据，以及面对被财务退回后从头再来的崩溃。
+
+“自助报销 Agent”的初衷，不是去替代现有的财务系统，更不是去绕过学校的审批流程。它是在现有的合规边界内，为你建立一个本地的个人财务工作台。
+
+为了绝对的安全与合规，本软件坚守以下边界：
+
+1. 人机隔离：Agent 只负责整理材料、查阅政策、生成草稿和辅助代填；而账号登录、经费项目选择、资金确认与最终提交，必须由用户本人手动完成。
+2. 本地优先：票据和数据默认在本地处理，最大程度保护个人财务隐私。
+3. 把规则前置：改变“提交后等退回”的盲盒模式，在提交前系统就会自动对照财务处公开口径，生成“缺漏清单”和风险提示。
+
+我们希望通过这个工具，把你从繁杂的材料整理和表单搬运中彻底解放出来。机器处理复杂流程，人类只需确认责任。
+
 ## 当前能力
 
 - 抓取 `https://cwc.shu.edu.cn/` 公开页面正文。
@@ -53,6 +67,20 @@ python3 tools/ingest_local_pdfs.py
 ```bash
 python3 tools/build_cwc_index.py
 ```
+
+生成带标签的安装种子语料，并导入本机 SQLite：
+
+```bash
+python3 tools/knowledge_seed.py --build --import-db
+```
+
+这一步会生成：
+
+- `data/cwc/processed_documents.jsonl`：按文档打好标签的语料种子，包含来源、入库状态、关键词、报销类别标签和元数据。
+- `data/cwc/processed_chunks.jsonl`：按检索片段打好标签的正文种子，包含片段文本、关键词和 BM25 长度。
+- `data/cwc/processed_manifest.json`：种子语料清单和 hash。
+
+应用启动时会自动检查这些处理后 JSONL，并幂等导入 `data/app.db` 的 `knowledge_documents`、`knowledge_chunks` 表。用户安装版应随包携带处理后的 JSONL；首次启动只做本机数据库初始化，不重新爬取财务处、不重新解析 PDF。正常检索优先使用随包携带的 `index.json`，如果索引文件缺失，也会从 SQLite 的 `knowledge_chunks` 临时构建 BM25 索引继续查询。
 
 查询：
 
@@ -181,9 +209,20 @@ npm run dev:web
 npm run tauri:dev
 ```
 
-如果 8765 端口已经有本地服务，Tauri 会直接复用；否则会先启动 FastAPI。当前桌面版已可本机运行，正式分发版还需要把 FastAPI/SQLite 服务做成 Tauri sidecar 或安装时托管的本机后台进程。
+Tauri 主进程会先检查 `http://127.0.0.1:8765/api/settings/status`。如果 8765 端口已经有可用的本地服务，桌面端会直接复用；否则会从项目根目录启动 `python3 -m uvicorn app:app --host 127.0.0.1 --port 8765`。退出桌面窗口时，只会关闭由 Tauri 自己拉起的 FastAPI 子进程，不会杀掉你手动启动的服务。
+
+设置页在桌面端会显示“桌面本地服务”状态，包括是否由 Tauri 托管、PID 和健康状态。当前桌面版已可本机运行；正式分发版还需要把 Python 运行时和 FastAPI/SQLite 服务打成 sidecar 或安装时托管的本机后台进程。
 
 首页也可以直接问财务处资料库，例如“版面费报销需要哪些材料”。当前返回的是检索式答复、来源链接和原文片段，不替代财务处最终口径。
+
+知识库支持完整 RAG 生成：先用 BM25 + 关键词从本地知识库召回来源片段，再调用设置页配置的 DeepSeek、豆包/火山方舟或自定义 OpenAI 兼容接口生成带引用编号的回答。未配置大模型时会自动退回到可追溯检索片段。
+
+大模型配置入口：
+
+- 网页设置页：`/#settings` 中的“知识库大模型配置”
+- 本机配置文件：`data/settings/rag_llm.json`
+
+配置文件会被 `.gitignore` 忽略；状态接口只返回 `has_api_key`，不会把密钥返回给前端。
 
 网页上传支持 `.eml` 邮件文件。系统会自动抽取邮件正文作为备注，并把邮件附件作为报销材料。
 
@@ -305,6 +344,7 @@ python3 tools/shu_auth_session.py clear
 
 - 语料：`data/cwc/documents.jsonl`
 - 索引：`data/cwc/index.json`
+- 处理后安装语料：`data/cwc/processed_documents.jsonl`、`data/cwc/processed_chunks.jsonl`、`data/cwc/processed_manifest.json`
 - 原始 HTML：`data/cwc/raw/`
 - 附件：`data/cwc/attachments/`
 - 报销规则：`data/rules/reimbursement_rules.json`

@@ -17,8 +17,18 @@ data/mail_inbox/
 data/mail_ingest/
 data/browser_profiles/
 data/auth_sessions/
+data/settings/
 data/cwc/raw/
 data/cwc/attachments/
+data/cwc/attachments_retry/
+data/cwc/browser_downloads/
+data/cwc/mineru/
+data/cwc/attachments_retry_manifest.json
+data/cwc/browser_downloads_manifest.json
+data/cwc/blocked_attachments.json
+data/cwc/*.bak-*
+data/xssf_portal/
+data/school_knowledge/
 
 # Generated artifacts
 output/

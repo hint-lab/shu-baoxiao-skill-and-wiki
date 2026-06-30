@@ -51,14 +51,15 @@
 
   function Sidebar() {
     const selectedKey = packageMissingCount(pkg) > 0 ? "collection" : "waiting";
+    const user = data.user || {};
     const items = [
-      { key: "home", label: "主页" },
-      { key: "knowledge", label: "报销知识库" },
-      { key: "waiting", label: "等待报销" },
+      { key: "home", label: "报销首页" },
+      { key: "knowledge", label: "报销知识" },
+      { key: "waiting", label: "待办报销" },
       { key: "collection", label: "资料归集" },
-      { key: "reimbursed", label: "已报销" },
-      { key: "settings", label: "设置" },
+      { key: "reimbursed", label: "报销记录" },
     ];
+    const settingsItems = [{ key: "settings", label: "系统设置" }];
     return e(
       Sider,
       { width: 224, className: "app-sider", breakpoint: "lg", collapsedWidth: 0 },
@@ -69,6 +70,7 @@
         e("span", null, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
       ),
       e(Menu, {
+        className: "sidebar-main-menu",
         theme: "dark",
         mode: "inline",
         selectedKeys: [selectedKey],
@@ -76,7 +78,32 @@
         onClick: ({ key }) => {
           window.location.href = "/#" + key;
         },
-      })
+      }),
+      e(
+        "div",
+        { className: "sidebar-bottom" },
+        e(
+          "div",
+          { className: "sidebar-user" },
+          e("div", { className: "sidebar-user-avatar" }, String(user.display_name || "本").slice(0, 1).toUpperCase()),
+          e(
+            "div",
+            { className: "sidebar-user-meta" },
+            e("strong", null, user.display_name || "本机用户"),
+            e("span", null, user.subtitle || "本机模式")
+          )
+        ),
+        e(Menu, {
+          className: "sidebar-settings-menu",
+          theme: "dark",
+          mode: "inline",
+          selectedKeys: [],
+          items: settingsItems,
+          onClick: ({ key }) => {
+            window.location.href = "/#" + key;
+          },
+        })
+      )
     );
   }
 
