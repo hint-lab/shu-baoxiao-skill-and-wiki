@@ -19,6 +19,7 @@
 - 本地网页工作台已改为 Ant Design 风格的 React 前端。
 - 本地 SQLite 记录报销包工作流状态，支持在详情页手动标记待复核、可代填、已提交和已报销。
 - 资料归集支持聊天随手记：先保存一句备注，后续再转成待补材料报销包。
+- 主页 Chat 会自动分流：报销规则问题进入知识库检索，事项描述进入资料归集，带附件则生成报销包。
 - 导入本地报销材料，生成报销包、缺漏清单、政策依据和事由草稿。
 - 文本型发票可提取购买方、销售方、项目、发票号、日期、金额和币种；图片材料在本机装有 tesseract 时会尝试 OCR。
 - 可选接入豆包/火山方舟模型做票据和表单字段增强识别。
@@ -99,6 +100,12 @@ python3 tools/verify_status_flow.py
 
 ```bash
 python3 tools/verify_inbox_note_flow.py
+```
+
+验证主页 Chat 报销问题分流：
+
+```bash
+python3 tools/verify_home_chat_policy_query.py
 ```
 
 验证退回诊断：

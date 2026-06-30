@@ -119,6 +119,16 @@
     window.location.href = "/?refresh=" + Date.now() + "#collection";
   }
 
+  function isPolicyQuestion(text) {
+    const value = String(text || "").trim();
+    if (!value) return false;
+    if (/[?？]/.test(value)) return true;
+    if (/^(怎么|如何|为什么|哪些|什么|能否|能不能|可不可以|是否)/.test(value)) return true;
+    if (/需要.*(什么|哪些|材料|附件|手续)/.test(value)) return true;
+    if (/(报销|发票).*(要求|规定|标准|流程|材料|附件|依据)/.test(value)) return true;
+    return false;
+  }
+
   function Sidebar({ activeKey, onSelect }) {
     const pending = waitingPackages(allPackages).length;
     const collecting = allPackages.filter(needsMaterials).length + inboxItems.length;
@@ -214,12 +224,19 @@
     const [form] = Form.useForm();
     const [fileList, setFileList] = React.useState([]);
     const [submitting, setSubmitting] = React.useState(false);
+    const noteValue = Form.useWatch("note", form) || "";
+    const shouldAskPolicy = !fileList.length && isPolicyQuestion(noteValue);
 
     async function submit(values) {
-      const note = (values.note || "").trim();
-      const title = (values.title || "").trim();
+      const currentValues = form.getFieldsValue();
+      const note = (values.note || currentValues.note || noteValue || "").trim();
+      const title = (values.title || currentValues.title || "").trim();
       if (!note && !fileList.length) {
         message.warning("写一句报销事项，或者上传发票和附件");
+        return;
+      }
+      if (!fileList.length && isPolicyQuestion(note)) {
+        window.location.href = "/?q=" + encodeURIComponent(note) + "#knowledge";
         return;
       }
       const body = new FormData();
@@ -249,7 +266,7 @@
         { className: "home-chat-head" },
         e("div", { className: "assistant-mark" }, icon(MessageOutlined)),
         e(Title, { level: 1 }, "上海大学报销助手"),
-        e(Text, { type: "secondary" }, "说一句要报什么，拖入发票、邮件或附件；没有附件也可以先存到资料归集。")
+        e(Text, { type: "secondary" }, "直接问报销规则，或说一句要报什么并拖入发票、邮件、附件。")
       ),
       e(
         Card,
@@ -263,7 +280,7 @@
             { label: "报销助手", name: "note" },
             e(Input.TextArea, {
               rows: 7,
-              placeholder: "例如：6 月去北京参加高校人工智能会议，报销高铁、酒店和会务相关费用，走张老师科研项目。",
+              placeholder: "例如：版面费报销需要哪些材料？\n或者：6 月去北京参加高校人工智能会议，报销高铁、酒店和会务相关费用，走张老师科研项目。",
             })
           ),
           e(
@@ -285,8 +302,8 @@
             e(Button, { href: "/#knowledge", icon: icon(SearchOutlined) }, "查报销依据"),
             e(
               Button,
-              { type: "primary", htmlType: "submit", loading: submitting, icon: icon(fileList.length ? InboxOutlined : SendOutlined) },
-              fileList.length ? "生成报销包" : "存入资料归集"
+              { type: "primary", htmlType: "submit", loading: submitting, icon: icon(shouldAskPolicy ? SearchOutlined : fileList.length ? InboxOutlined : SendOutlined) },
+              shouldAskPolicy ? "查询依据" : fileList.length ? "生成报销包" : "存入资料归集"
             )
           )
         )
