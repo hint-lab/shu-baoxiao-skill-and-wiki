@@ -292,13 +292,13 @@ const App = AntdApp;
   function authActionInfo(authStatus) {
     switch (authStatus) {
       case "ready":
-        return { label: "会话可用", tone: "ready", action: "续登", icon: ReloadOutlined };
+        return { label: "已连接", tone: "ready", action: "续登", icon: ReloadOutlined };
       case "needs_renew":
-        return { label: "需要续登", tone: "warn", action: "立即续登", icon: ReloadOutlined };
+        return { label: "待续登", tone: "warn", action: "立即续登", icon: ReloadOutlined };
       case "needs_scan":
-        return { label: "需要扫码", tone: "warn", action: "去扫码登录", icon: LoginOutlined };
+        return { label: "待登录", tone: "warn", action: "去扫码登录", icon: LoginOutlined };
       case "error":
-        return { label: "登录态检查失败", tone: "error", action: "重新登录", icon: LoginOutlined };
+        return { label: "需检查", tone: "error", action: "重新登录", icon: LoginOutlined };
       case "not_checked":
       default:
         return { label: "本机模式", tone: "idle", action: "登录学校账号", icon: LoginOutlined };
@@ -317,6 +317,8 @@ const App = AntdApp;
     const authInfo = authActionInfo(user.auth_status);
     const authActionIcon = authInfo.icon;
     const avatarTone = authInfo.tone;
+    const rawAccountName = String(user.display_name || "").trim();
+    const accountName = rawAccountName && rawAccountName !== "工号未识别" ? rawAccountName : "未绑定工号";
     const userMenu = {
       items: [
         {
@@ -325,7 +327,7 @@ const App = AntdApp;
           label: e(
             "div",
             { className: "user-menu-header" },
-            e("div", { className: "user-menu-name" }, user.display_name || "工号未识别"),
+            e("div", { className: "user-menu-name" }, accountName),
             e(
               "div",
               { className: `user-menu-status user-menu-status--${avatarTone}` },
@@ -419,25 +421,26 @@ const App = AntdApp;
             {
               className: `sidebar-user sidebar-user--${avatarTone}`,
               type: "button",
-              title: collapsed ? user.display_name || "工号未识别" : undefined,
+              title: collapsed ? accountName : undefined,
             },
             e(
               "span",
               { className: "sidebar-user-avatar" },
-              String(user.display_name || "本").slice(0, 1).toUpperCase()
+              e(UserOutlined)
             ),
             !collapsed &&
               e(
                 "span",
                 { className: "sidebar-user-meta" },
-                e("span", { className: "sidebar-user-name" }, user.display_name || "工号未识别"),
+                e("span", { className: "sidebar-user-name" }, accountName),
                 e(
                   "span",
                   { className: "sidebar-user-status" },
                   e("i", { className: `sidebar-user-status-dot sidebar-user-status-dot--${avatarTone}` }),
                   authInfo.label
                 )
-              )
+              ),
+            !collapsed && e("span", { className: "sidebar-user-chevron" }, "⌃")
           )
         )
       )
@@ -512,13 +515,16 @@ const App = AntdApp;
 
   function MarkdownMessage({ text }) {
     return e(
-      ReactMarkdown,
-      {
-        className: "chat-markdown",
-        remarkPlugins: [remarkGfm],
-        components: markdownComponents,
-      },
-      text || ""
+      "div",
+      { className: "chat-markdown" },
+      e(
+        ReactMarkdown,
+        {
+          remarkPlugins: [remarkGfm],
+          components: markdownComponents,
+        },
+        text || ""
+      )
     );
   }
 
@@ -528,7 +534,7 @@ const App = AntdApp;
       return e(
         "div",
         { key: "thinking-" + (item.planId || index), className: "chat-message chat-message--assistant chat-message--thinking" },
-        e("img", { className: "chat-message-avatar", src: "/static/icons/chat.png", alt: "报销 Agent" }),
+        e("img", { className: "chat-message-avatar chat-message-avatar--assistant", src: "/static/icons/agent-transparent.png", alt: "报销 Agent" }),
         e(
           "div",
           { className: "chat-message-body" },
@@ -544,7 +550,7 @@ const App = AntdApp;
     }
     const isAssistant = item.role === "assistant";
     const avatar = isAssistant
-      ? e("img", { className: "chat-message-avatar", src: "/static/icons/chat.png", alt: "报销 Agent" })
+      ? e("img", { className: "chat-message-avatar chat-message-avatar--assistant", src: "/static/icons/agent-transparent.png", alt: "报销 Agent" })
       : e(
           "span",
           { className: "chat-message-avatar chat-message-avatar--user" },
@@ -739,6 +745,33 @@ const App = AntdApp;
       };
     }
 
+    function updateStreamMessage(streamId, patch) {
+      setMessages((current) =>
+        current.map((item) => (item.streamId === streamId ? { ...item, ...patch } : item))
+      );
+      requestAnimationFrame(() => scrollThreadToBottom());
+    }
+
+    function readSseBlock(block) {
+      const event = { type: "message", data: {} };
+      const dataLines = [];
+      block.split(/\r?\n/).forEach((line) => {
+        if (line.startsWith("event:")) {
+          event.type = line.slice(6).trim();
+        } else if (line.startsWith("data:")) {
+          dataLines.push(line.slice(5).trimStart());
+        }
+      });
+      if (dataLines.length) {
+        try {
+          event.data = JSON.parse(dataLines.join("\n"));
+        } catch (error) {
+          event.data = {};
+        }
+      }
+      return event;
+    }
+
     async function submit(values) {
       const currentValues = form.getFieldsValue();
       const note = (values.note || currentValues.note || noteValue || "").trim();
@@ -753,26 +786,70 @@ const App = AntdApp;
       body.append("note", note);
       fileList.forEach((file) => body.append("files", file.originFileObj || file));
       const userMessage = note || `上传了 ${fileList.length} 份材料`;
-      setMessages((current) => [...current, { role: "user", text: userMessage }]);
+      const streamId = `assistant-stream-${Date.now()}`;
+      setMessages((current) => [
+        ...current,
+        { role: "user", text: userMessage },
+        { role: "assistant", text: "", streaming: true, streamId, streamStatus: "正在连接报销助手" },
+      ]);
       setSubmitting(true);
-      const plan = buildThinkingPlan(userMessage, fileList.length > 0);
-      startThinkingAnimation(plan);
+      let streamedText = "";
+      let completedPayload = null;
       try {
-        const response = await fetch("/api/home/assistant", { method: "POST", body });
-        const payload = await response.json();
-        if (!response.ok || !payload.ok) {
-          message.error(payload.error || "处理失败");
-          setMessages((current) => [...current, { role: "assistant", text: payload.error || "处理失败，请稍后重试。" }]);
+        const response = await fetch("/api/home/assistant/stream", { method: "POST", body });
+        if (!response.ok || !response.body) {
+          throw new Error("流式接口不可用");
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const blocks = buffer.split(/\n\n/);
+          buffer = blocks.pop() || "";
+          for (const block of blocks) {
+            if (!block.trim()) continue;
+            const event = readSseBlock(block);
+            if (event.type === "status") {
+              updateStreamMessage(streamId, { streamStatus: event.data.message || "正在处理" });
+            } else if (event.type === "delta") {
+              streamedText += event.data.text || "";
+              updateStreamMessage(streamId, { text: streamedText, streamStatus: "" });
+            } else if (event.type === "done") {
+              completedPayload = event.data.payload || null;
+            } else if (event.type === "error") {
+              throw new Error(event.data.error || "处理失败");
+            }
+          }
+        }
+        if (!completedPayload) {
+          throw new Error("流式响应未完成");
+        }
+        const finalMessage = assistantMessageFrom(completedPayload);
+        updateStreamMessage(streamId, {
+          ...finalMessage,
+          text: streamedText || finalMessage.text,
+          streaming: false,
+          streamStatus: "",
+          streamId,
+        });
+        if (!completedPayload.ok) {
+          message.error(completedPayload.error || "处理失败");
           return;
         }
-        setMessages((current) => [...current, assistantMessageFrom(payload)]);
         form.setFieldsValue({ title: "", note: "" });
         setFileList([]);
       } catch (error) {
-        message.error("处理失败，请检查材料后重试");
-        setMessages((current) => [...current, { role: "assistant", text: "处理失败，请检查本地服务、大模型配置或网络后重试。" }]);
+        const errorText = error && error.message ? error.message : "处理失败，请检查材料后重试";
+        message.error(errorText);
+        updateStreamMessage(streamId, {
+          text: errorText || "处理失败，请检查本地服务、大模型配置或网络后重试。",
+          streaming: false,
+          streamStatus: "",
+        });
       } finally {
-        stopThinkingAnimation();
         setSubmitting(false);
         requestAnimationFrame(() => scrollThreadToBottom());
       }
@@ -812,12 +889,11 @@ const App = AntdApp;
               placeholder: "直接输入：版面费报销需要哪些材料？ 或：6 月北京会议差旅，报销高铁酒店，会务费走张老师项目。",
               onFocus: activateChat,
               onPressEnter: (event) => {
-                if (event.shiftKey) {
-                  return;
-                }
-                event.preventDefault();
-                if (!submitting) {
-                  form.submit();
+                if (!event.shiftKey) {
+                  event.preventDefault();
+                  if (!submitting) {
+                    form.submit();
+                  }
                 }
               },
             })
@@ -874,7 +950,7 @@ const App = AntdApp;
             e(
               "span",
               { className: "chat-hint" },
-              chatActive ? "Enter 发送 · Shift+Enter 换行" : "回车发送"
+              "Enter 换行 · Shift+Enter 发送"
             )
           )
         )
@@ -909,6 +985,36 @@ const App = AntdApp;
         Paragraph,
         { className: "about-software-closing" },
         "我们希望通过这个工具，把你从繁杂的材料整理和表单搬运中彻底解放出来。机器处理复杂流程，人类只需确认责任。"
+      ),
+      e(Title, { level: 3, className: "about-software-subtitle" }, "关于我们"),
+      e(
+        Paragraph,
+        null,
+        "本项目来自 ",
+        e("a", { href: "http://www.hintlab.cn", target: "_blank", rel: "noreferrer" }, "HINT Lab"),
+        "。在我们实验室，我们始终在追问和关注一个命题：到底应该是技术服务于人，还是让人沦为系统的附庸？"
+      ),
+      e(
+        Paragraph,
+        null,
+        "现有的许多流程（比如繁琐的报销），本质上是在无形中剥削人的认知。它把原本应该专注于创造的人，异化成了在死板规则和难用网页之间机械搬运数据的“生物接口”。"
+      ),
+      e(
+        Paragraph,
+        null,
+        "我们不愿看到人被系统这样消耗。但打破这种现状，不能仅靠在云端的高谈阔论，而是必须有人愿意把双手插进泥土里，去写下那几万行抵抗枯燥的代码，去一点点修补现实的粗糙。"
+      ),
+      e(
+        Paragraph,
+        null,
+        "这个 Agent，就是我们用泥土的双手给出的答案：把脏活累活交还给机器，让人回归为真正的人。"
+      ),
+      e(
+        Paragraph,
+        { className: "about-software-closing" },
+        "如果你也认同这样的技术观，期待你能访问 HINT 实验室主页 ",
+        e("a", { href: "http://www.hintlab.cn", target: "_blank", rel: "noreferrer" }, "http://www.hintlab.cn"),
+        " 认识我们，和我们一起去重塑人与系统的边界。"
       )
     );
   }
@@ -1337,7 +1443,17 @@ const App = AntdApp;
     const [error, setError] = React.useState("");
     const [mailPolling, setMailPolling] = React.useState(false);
     const [mailPollResult, setMailPollResult] = React.useState(null);
+    const [mailSaving, setMailSaving] = React.useState(false);
+    const [imapEnabled, setImapEnabled] = React.useState(false);
+    const [imapHost, setImapHost] = React.useState("");
+    const [imapPort, setImapPort] = React.useState("993");
+    const [imapUsername, setImapUsername] = React.useState("");
+    const [imapMailbox, setImapMailbox] = React.useState("INBOX");
+    const [imapMarkSeen, setImapMarkSeen] = React.useState(false);
+    const [imapClearPassword, setImapClearPassword] = React.useState(false);
     const [authLaunching, setAuthLaunching] = React.useState(false);
+    const [userWorkId, setUserWorkId] = React.useState("");
+    const [userSaving, setUserSaving] = React.useState(false);
     const [llmSaving, setLlmSaving] = React.useState(false);
     const [llmProvider, setLlmProvider] = React.useState("deepseek");
     const [llmBaseUrl, setLlmBaseUrl] = React.useState("https://api.deepseek.com");
@@ -1387,6 +1503,22 @@ const App = AntdApp;
       setLlmClearKey(false);
     }, [status && status.rag_llm && status.rag_llm.provider, status && status.rag_llm && status.rag_llm.model]);
 
+    React.useEffect(() => {
+      if (!status || !status.imap) return;
+      setImapEnabled(Boolean(status.imap.enabled));
+      setImapHost(status.imap.host || "");
+      setImapPort(String(status.imap.port || "993"));
+      setImapUsername(status.imap.username || "");
+      setImapMailbox(status.imap.mailbox || "INBOX");
+      setImapMarkSeen(Boolean(status.imap.mark_seen));
+      setImapClearPassword(false);
+    }, [status && status.imap && status.imap.host, status && status.imap && status.imap.username, status && status.imap && status.imap.mailbox]);
+
+    React.useEffect(() => {
+      if (!status || !status.user) return;
+      setUserWorkId(status.user.work_id || "");
+    }, [status && status.user && status.user.work_id]);
+
     async function pollMailbox() {
       setMailPolling(true);
       setMailPollResult(null);
@@ -1433,6 +1565,26 @@ const App = AntdApp;
       }
     }
 
+    async function saveUserProfile() {
+      setUserSaving(true);
+      try {
+        const body = new FormData();
+        body.append("work_id", userWorkId);
+        const response = await fetch("/api/settings/user-profile", { method: "POST", body });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          message.error("保存工号失败");
+          return;
+        }
+        message.success("已保存工号");
+        window.location.href = "/?refresh=" + Date.now() + "#settings";
+      } catch {
+        message.error("保存工号失败");
+      } finally {
+        setUserSaving(false);
+      }
+    }
+
     async function saveRagLlm() {
       setLlmSaving(true);
       try {
@@ -1461,7 +1613,38 @@ const App = AntdApp;
       }
     }
 
+    async function saveImap() {
+      setMailSaving(true);
+      try {
+        const body = new FormData();
+        body.append("host", imapHost);
+        body.append("port", imapPort);
+        body.append("username", imapUsername);
+        body.append("password", document.getElementById("imap-password")?.value || "");
+        body.append("mailbox", imapMailbox);
+        body.append("enabled", imapEnabled ? "true" : "false");
+        body.append("mark_seen", imapMarkSeen ? "true" : "false");
+        body.append("clear_password", imapClearPassword ? "true" : "false");
+        const response = await fetch("/api/settings/imap", { method: "POST", body });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          message.error("保存邮箱配置失败");
+          return;
+        }
+        message.success("已保存邮箱收票配置");
+        const input = document.getElementById("imap-password");
+        if (input) input.value = "";
+        setImapClearPassword(false);
+        refreshStatus(() => true);
+      } catch {
+        message.error("保存邮箱配置失败");
+      } finally {
+        setMailSaving(false);
+      }
+    }
+
     const ragLlm = (status && status.rag_llm) || { ready: false, has_api_key: false, provider_label: "未配置", model: "" };
+    const settingsUser = (status && status.user) || { display_name: "未绑定工号", work_id: "" };
     const imap = (status && status.imap) || { configured: false, mailbox: "INBOX", processed_count: 0 };
     const kb = (status && status.knowledge_base) || { index_exists: false, documents_exists: false, index_size_bytes: 0 };
     const kbReport = (knowledgeStatus && knowledgeStatus.corpus_report) || {};
@@ -1503,6 +1686,26 @@ const App = AntdApp;
               ),
               e(Text, { type: "secondary" }, "用于进入上海大学财务系统。扫码、验证码和最终提交仍由本人完成。"),
               e(
+                Row,
+                { gutter: [12, 12] },
+                e(
+                  Col,
+                  { xs: 24, md: 14 },
+                  e(Text, { strong: true }, "工号"),
+                  e(Input, {
+                    value: userWorkId,
+                    onChange: (event) => setUserWorkId(event.target.value),
+                    placeholder: "输入本人学校工号",
+                  })
+                ),
+                e(
+                  Col,
+                  { xs: 24, md: 10 },
+                  e(Text, { strong: true }, "当前显示"),
+                  e("div", { className: "settings-account-preview" }, settingsUser.display_name || "未绑定工号")
+                )
+              ),
+              e(
                 Space,
                 { wrap: true },
                 e(
@@ -1515,6 +1718,7 @@ const App = AntdApp;
                   },
                   shuAuth && shuAuth.login_running ? "登录窗口已打开" : "打开扫码登录"
                 ),
+                e(Button, { type: "primary", loading: userSaving, onClick: saveUserProfile }, "保存工号"),
                 e(Button, { onClick: () => window.dispatchEvent(new Event("open-user-agreement")) }, "用户须知")
               ),
               shuAuth && shuAuth.message
@@ -1543,6 +1747,50 @@ const App = AntdApp;
                 e(Text, { type: "secondary" }, `已处理 ${imap.processed_count || 0} 封`)
               ),
               e(Text, { type: "secondary" }, imap.configured ? `从 ${imap.mailbox || "INBOX"} 拉取发票邮件和附件。` : "配置邮箱后，可以一键整理发票邮件。"),
+              e(
+                Row,
+                { gutter: [12, 12] },
+                e(
+                  Col,
+                  { xs: 24, md: 14 },
+                  e(Text, { strong: true }, "IMAP 服务器"),
+                  e(Input, { value: imapHost, onChange: (event) => setImapHost(event.target.value), placeholder: "例如 imap.exmail.qq.com" })
+                ),
+                e(
+                  Col,
+                  { xs: 24, md: 10 },
+                  e(Text, { strong: true }, "端口"),
+                  e(Input, { value: imapPort, onChange: (event) => setImapPort(event.target.value), placeholder: "993" })
+                ),
+                e(
+                  Col,
+                  { xs: 24 },
+                  e(Text, { strong: true }, "邮箱账号"),
+                  e(Input, { value: imapUsername, onChange: (event) => setImapUsername(event.target.value), placeholder: "name@example.com" })
+                ),
+                e(
+                  Col,
+                  { xs: 24 },
+                  e(Text, { strong: true }, "授权码 / 密码"),
+                  e(Input.Password, { id: "imap-password", placeholder: imap.has_password ? "已保存授权码；留空则不变" : "输入邮箱 IMAP 授权码或密码" })
+                ),
+                e(
+                  Col,
+                  { xs: 24, md: 12 },
+                  e(Text, { strong: true }, "邮箱文件夹"),
+                  e(Input, { value: imapMailbox, onChange: (event) => setImapMailbox(event.target.value), placeholder: "INBOX" })
+                )
+              ),
+              e(
+                Space,
+                { wrap: true },
+                e(Space, null, e(Text, null, "启用"), e(Switch, { checked: imapEnabled, onChange: setImapEnabled })),
+                e(Space, null, e(Text, null, "拉取后标记已读"), e(Switch, { checked: imapMarkSeen, onChange: setImapMarkSeen })),
+                imap.has_password
+                  ? e(Space, null, e(Text, null, "清除授权码"), e(Switch, { checked: imapClearPassword, onChange: setImapClearPassword }))
+                  : null,
+                e(Button, { type: "primary", loading: mailSaving, onClick: saveImap }, "保存配置")
+              ),
               e(
                 Space,
                 { wrap: true },

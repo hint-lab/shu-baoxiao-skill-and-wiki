@@ -201,12 +201,12 @@
         { className: "sidebar-bottom" },
         e(
           "div",
-          { className: "sidebar-user", title: collapsed ? user.display_name || "工号未识别" : undefined },
-          e("div", { className: "sidebar-user-avatar" }, String(user.display_name || "本").slice(0, 1).toUpperCase()),
+          { className: "sidebar-user", title: collapsed ? user.display_name || "未绑定工号" : undefined },
+          e("div", { className: "sidebar-user-avatar" }, String(user.display_name || "未").slice(0, 1).toUpperCase()),
           e(
             "div",
             { className: "sidebar-user-meta" },
-            e("strong", null, user.display_name || "工号未识别"),
+            e("strong", null, user.display_name || "未绑定工号"),
             e("span", null, user.subtitle || "本机模式")
           )
         ),
@@ -399,7 +399,7 @@
                     "div",
                     { key: `${item.role}-${index}`, className: `chat-message chat-message--${item.role}` },
                     item.role === "assistant"
-                      ? e("img", { className: "chat-message-avatar", src: "/static/icons/chat.png", alt: "报销 Agent" })
+                      ? e("img", { className: "chat-message-avatar chat-message-avatar--assistant", src: "/static/icons/agent-transparent.png", alt: "报销 Agent" })
                       : e("span", { className: "chat-message-avatar chat-message-avatar--user" }, String(user.display_name || "本").slice(0, 1).toUpperCase()),
                     e(
                       "div",
@@ -433,7 +433,10 @@
               placeholder: "直接输入：版面费报销需要哪些材料？ 或：6 月北京会议差旅，报销高铁酒店，会务费走张老师项目。",
               onFocus: activateChat,
               onPressEnter: (event) => {
-                if ((event.metaKey || event.ctrlKey) && !submitting) {
+                if (!event.shiftKey) {
+                  event.preventDefault();
+                }
+                if (!event.shiftKey && !submitting) {
                   form.submit();
                 }
               },
@@ -521,6 +524,36 @@
         Paragraph,
         { className: "about-software-closing" },
         "我们希望通过这个工具，把你从繁杂的材料整理和表单搬运中彻底解放出来。机器处理复杂流程，人类只需确认责任。"
+      ),
+      e(Title, { level: 3, className: "about-software-subtitle" }, "关于我们"),
+      e(
+        Paragraph,
+        null,
+        "本项目来自 ",
+        e("a", { href: "http://www.hintlab.cn", target: "_blank", rel: "noreferrer" }, "HINT Lab"),
+        "。在我们实验室，我们始终在追问和关注一个命题：到底应该是技术服务于人，还是让人沦为系统的附庸？"
+      ),
+      e(
+        Paragraph,
+        null,
+        "现有的许多流程（比如繁琐的报销），本质上是在无形中剥削人的认知。它把原本应该专注于创造的人，异化成了在死板规则和难用网页之间机械搬运数据的“生物接口”。"
+      ),
+      e(
+        Paragraph,
+        null,
+        "我们不愿看到人被系统这样消耗。但打破这种现状，不能仅靠在云端的高谈阔论，而是必须有人愿意把双手插进泥土里，去写下那几万行抵抗枯燥的代码，去一点点修补现实的粗糙。"
+      ),
+      e(
+        Paragraph,
+        null,
+        "这个 Agent，就是我们用泥土的双手给出的答案：把脏活累活交还给机器，让人回归为真正的人。"
+      ),
+      e(
+        Paragraph,
+        { className: "about-software-closing" },
+        "如果你也认同这样的技术观，期待你能访问 HINT 实验室主页 ",
+        e("a", { href: "http://www.hintlab.cn", target: "_blank", rel: "noreferrer" }, "http://www.hintlab.cn"),
+        " 认识我们，和我们一起去重塑人与系统的边界。"
       )
     );
   }

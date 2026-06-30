@@ -55,6 +55,8 @@ from tools.knowledge_seed import (
 )
 from tools.llm_settings import save_config as save_rag_llm_config
 from tools.llm_settings import status as rag_llm_status
+from tools.mail_settings import save_config as save_imap_config
+from tools.mail_settings import status as imap_settings_status
 from tools.rag_llm import analyze_home_intent
 from tools.poll_imap import STATE_PATH as MAIL_STATE_PATH
 from tools.poll_imap import load_state as load_mail_state
@@ -73,6 +75,7 @@ VITE_MANIFEST = WEB_STATIC / "dist/.vite/manifest.json"
 PLAYWRIGHT_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 SHU_AUTH_LOGIN_LOG = ROOT / "data/auth_sessions/shu_auth_login.log"
 SHU_AUTH_LOGIN_PROCESS: subprocess.Popen | None = None
+USER_PROFILE_PATH = ROOT / "data/settings/user_profile.json"
 
 RESPONSIBILITY_CONFIRMATIONS = {
     "funding_project",
@@ -154,7 +157,7 @@ templates.env.globals["static_version"] = static_version
 def shu_auth_login_pids() -> list[int]:
     try:
         result = subprocess.run(
-            ["pgrep", "-f", "tools/shu_auth_session.py login"],
+            ["ps", "-axo", "pid=,command="],
             capture_output=True,
             text=True,
             timeout=2,
@@ -164,9 +167,17 @@ def shu_auth_login_pids() -> list[int]:
         return []
     pids: list[int] = []
     for line in result.stdout.splitlines():
+        parts = line.strip().split()
+        if len(parts) < 4:
+            continue
         try:
-            pid = int(line.strip())
+            pid = int(parts[0])
         except ValueError:
+            continue
+        command_parts = parts[1:]
+        if not command_parts or "python" not in Path(command_parts[0]).name:
+            continue
+        if "tools/shu_auth_session.py" not in command_parts or "login" not in command_parts:
             continue
         if pid != os.getpid():
             pids.append(pid)
@@ -183,9 +194,34 @@ def shu_auth_login_running() -> bool:
     return bool(shu_auth_login_pids())
 
 
+def read_user_profile_config() -> dict[str, str]:
+    if not USER_PROFILE_PATH.exists():
+        return {}
+    try:
+        payload = json.loads(USER_PROFILE_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    return {str(key): str(value) for key, value in payload.items()}
+
+
+def save_user_profile_config(work_id: str = "") -> dict[str, str]:
+    payload = read_user_profile_config()
+    clean_work_id = "".join(ch for ch in work_id.strip() if ch.isalnum() or ch in {"-", "_"})
+    if clean_work_id:
+        payload["work_id"] = clean_work_id
+    else:
+        payload.pop("work_id", None)
+    USER_PROFILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    USER_PROFILE_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return payload
+
+
 def app_user_profile() -> dict[str, str]:
     auth = shu_auth_saved_status()
     auth_status = auth.get("status", "not_checked")
+    profile = read_user_profile_config()
     work_id = next(
         (
             value.strip()
@@ -193,6 +229,7 @@ def app_user_profile() -> dict[str, str]:
                 os.getenv("SHU_REIMBURSEMENT_WORK_ID", ""),
                 os.getenv("SHU_REIMBURSEMENT_STAFF_ID", ""),
                 os.getenv("SHU_REIMBURSEMENT_USER_ID", ""),
+                str(profile.get("work_id", "") or ""),
                 str(auth.get("work_id", "") or ""),
                 str(auth.get("staff_id", "") or ""),
                 str(auth.get("employee_id", "") or ""),
@@ -203,7 +240,7 @@ def app_user_profile() -> dict[str, str]:
         ),
         "",
     )
-    display_name = f"工号 {work_id}" if work_id else "工号未识别"
+    display_name = f"工号 {work_id}" if work_id else "未绑定工号"
     subtitles = {
         "ready": "财务系统会话可用",
         "needs_scan": "需要本人扫码",
@@ -220,19 +257,13 @@ def app_user_profile() -> dict[str, str]:
 
 
 def imap_env_status() -> dict[str, object]:
-    required = {
-        "host": os.getenv("REIMBURSEMENT_IMAP_HOST", ""),
-        "username": os.getenv("REIMBURSEMENT_IMAP_USERNAME", ""),
-        "password": os.getenv("REIMBURSEMENT_IMAP_PASSWORD", ""),
-    }
+    settings = imap_settings_status()
     state = load_mail_state(MAIL_STATE_PATH)
     return {
-        "configured": all(required.values()),
-        "host_configured": bool(required["host"]),
-        "username_configured": bool(required["username"]),
-        "password_configured": bool(required["password"]),
-        "mailbox": os.getenv("REIMBURSEMENT_IMAP_MAILBOX", "INBOX"),
-        "mark_seen": os.getenv("REIMBURSEMENT_IMAP_MARK_SEEN", "false").lower() == "true",
+        **settings,
+        "host_configured": bool(settings.get("host")),
+        "username_configured": bool(settings.get("username")),
+        "password_configured": bool(settings.get("has_password")),
         "processed_count": len(state.get("processed", [])),
     }
 
@@ -287,6 +318,7 @@ async def settings_status() -> JSONResponse:
             "shu_adapter_configured": adapter_path.exists() and "填入" not in adapter_text,
         },
         "shu_auth": shu_auth,
+        "user": app_user_profile(),
     }
     return JSONResponse(payload)
 
@@ -304,7 +336,7 @@ async def start_shu_auth_login(dry_run: bool = False) -> JSONResponse:
     log_file = SHU_AUTH_LOGIN_LOG.open("a", encoding="utf-8")
     try:
         SHU_AUTH_LOGIN_PROCESS = subprocess.Popen(
-            [sys.executable, "tools/shu_auth_session.py", "login"],
+            [sys.executable, "tools/shu_auth_session.py", "login", "--keep-open"],
             cwd=str(ROOT),
             stdout=log_file,
             stderr=subprocess.STDOUT,
@@ -351,6 +383,36 @@ async def save_rag_llm_settings(
         clear_key=clear_key,
     )
     return JSONResponse({"ok": True, "rag_llm": payload})
+
+
+@app.post("/api/settings/user-profile")
+async def save_user_profile_settings(work_id: str = Form("")) -> JSONResponse:
+    save_user_profile_config(work_id=work_id)
+    return JSONResponse({"ok": True, "user": app_user_profile()})
+
+
+@app.post("/api/settings/imap")
+async def save_imap_settings(
+    host: str = Form(""),
+    port: str = Form("993"),
+    username: str = Form(""),
+    password: str = Form(""),
+    mailbox: str = Form("INBOX"),
+    enabled: bool = Form(False),
+    mark_seen: bool = Form(False),
+    clear_password: bool = Form(False),
+) -> JSONResponse:
+    payload = save_imap_config(
+        host=host,
+        port=port,
+        username=username,
+        password=password,
+        mailbox=mailbox,
+        enabled=enabled,
+        mark_seen=mark_seen,
+        clear_password=clear_password,
+    )
+    return JSONResponse({"ok": True, "imap": {**payload, "processed_count": imap_env_status().get("processed_count", 0)}})
 
 
 @app.post("/api/mail/poll")

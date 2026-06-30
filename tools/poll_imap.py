@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import imaplib
 import json
-import os
 import ssl
 import sys
 from dataclasses import dataclass, asdict
@@ -18,6 +17,7 @@ if str(ROOT) not in sys.path:
 
 from tools.build_reimbursement_package import OUTPUT_ROOT, build_package, export_package  # noqa: E402
 from tools.ingest_eml import ingest_eml  # noqa: E402
+from tools.mail_settings import poll_config  # noqa: E402
 
 INBOX_ROOT = ROOT / "data/mail_inbox"
 STATE_PATH = INBOX_ROOT / "state.json"
@@ -93,25 +93,8 @@ def safe_message_id(value: str) -> str:
     return "".join(ch if ch.isalnum() or ch in "._-" else "-" for ch in value)[:120]
 
 
-def imap_config_from_env() -> dict:
-    required = {
-        "host": os.environ.get("REIMBURSEMENT_IMAP_HOST", ""),
-        "username": os.environ.get("REIMBURSEMENT_IMAP_USERNAME", ""),
-        "password": os.environ.get("REIMBURSEMENT_IMAP_PASSWORD", ""),
-    }
-    missing = [key for key, value in required.items() if not value]
-    if missing:
-        raise RuntimeError("Missing IMAP env vars: " + ", ".join(missing))
-    return {
-        **required,
-        "port": int(os.environ.get("REIMBURSEMENT_IMAP_PORT", "993")),
-        "mailbox": os.environ.get("REIMBURSEMENT_IMAP_MAILBOX", "INBOX"),
-        "mark_seen": os.environ.get("REIMBURSEMENT_IMAP_MARK_SEEN", "false").lower() == "true",
-    }
-
-
 def poll_imap(state: dict, limit: int, force: bool = False) -> list[MailPollResult]:
-    config = imap_config_from_env()
+    config = poll_config()
     results = []
     seen = processed_set(state)
     context = ssl.create_default_context()

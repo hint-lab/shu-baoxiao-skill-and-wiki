@@ -184,7 +184,7 @@ def check_business_session(headed: bool = False, timeout_ms: int = 15000) -> Ses
     return status
 
 
-def ensure_ready(headed: bool = True, wait_scan: bool = True, timeout_ms: int = 180000) -> SessionStatus:
+def ensure_ready(headed: bool = True, wait_scan: bool = True, timeout_ms: int = 180000, keep_open: bool = False) -> SessionStatus:
     with sync_playwright() as p:
         context = _launch_context(p, headed=headed)
         page = context.pages[0] if context.pages else context.new_page()
@@ -210,6 +210,11 @@ def ensure_ready(headed: bool = True, wait_scan: bool = True, timeout_ms: int = 
                     _wait_for_auth_transition(page, min(timeout_ms, 30000))
                 status = classify_page(page)
                 save_meta(status)
+            if headed and keep_open:
+                try:
+                    page.wait_for_event("close", timeout=timeout_ms)
+                except PlaywrightTimeoutError:
+                    pass
         except Exception as exc:
             status = SessionStatus(
                 status=STATUS_ERROR,
@@ -245,6 +250,7 @@ def main() -> None:
     login_parser = subparsers.add_parser("login", help="打开专用浏览器并等待本人扫码/续登到财务系统")
     login_parser.add_argument("--headless", action="store_true", help="不显示浏览器窗口；仅适合已有 SSO 会话时自动续登")
     login_parser.add_argument("--no-wait-scan", action="store_true", help="打开登录入口后不等待扫码完成")
+    login_parser.add_argument("--keep-open", action="store_true", help="显示浏览器窗口并保持打开，直到用户关闭或超时")
     login_parser.add_argument("--timeout-ms", type=int, default=180000)
 
     subparsers.add_parser("clear", help="清除本机保存的专用浏览器 profile 和会话状态")
@@ -255,7 +261,14 @@ def main() -> None:
     elif args.command == "check":
         result = asdict(check_business_session(headed=args.headed, timeout_ms=args.timeout_ms))
     elif args.command == "login":
-        result = asdict(ensure_ready(headed=not args.headless, wait_scan=not args.no_wait_scan, timeout_ms=args.timeout_ms))
+        result = asdict(
+            ensure_ready(
+                headed=not args.headless,
+                wait_scan=not args.no_wait_scan,
+                timeout_ms=args.timeout_ms,
+                keep_open=args.keep_open,
+            )
+        )
     elif args.command == "clear":
         result = clear_session()
     else:

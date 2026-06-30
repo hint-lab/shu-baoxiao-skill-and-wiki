@@ -127,10 +127,14 @@ const App = AntdApp;
       Sider,
       { width: 224, className: "app-sider", breakpoint: "lg", collapsedWidth: 0 },
       e(
-        "a",
-        { className: "brand-block", href: "/#home" },
-        e("img", { src: "/logo.png", alt: "上海大学财务助手" }),
-        e("span", null, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
+        "div",
+        { className: "brand-block" },
+        e(
+          "a",
+          { className: "brand-logo", href: "/#home", "aria-label": "上海大学财务助手" },
+          e("img", { src: "/logo.png", alt: "上海大学财务助手" })
+        ),
+        e("div", { className: "brand-text" }, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
       ),
       e(Menu, {
         className: "sidebar-main-menu",

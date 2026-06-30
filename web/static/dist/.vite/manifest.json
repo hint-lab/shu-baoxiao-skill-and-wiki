@@ -3,29 +3,29 @@
     "file": "assets/reset-BdOndhxL.css",
     "src": "_reset-BdOndhxL.css"
   },
-  "_reset-D5QtqhTK.js": {
-    "file": "assets/reset-D5QtqhTK.js",
+  "_reset-DWe2tKIB.js": {
+    "file": "assets/reset-DWe2tKIB.js",
     "name": "reset",
     "css": [
       "assets/reset-BdOndhxL.css"
     ]
   },
   "src/index.jsx": {
-    "file": "assets/index-DwAb_-VG.js",
+    "file": "assets/index-BIt1TYIl.js",
     "name": "index",
     "src": "src/index.jsx",
     "isEntry": true,
     "imports": [
-      "_reset-D5QtqhTK.js"
+      "_reset-DWe2tKIB.js"
     ]
   },
   "src/package.jsx": {
-    "file": "assets/package-CQEy12vY.js",
+    "file": "assets/package-B7Zke9rR.js",
     "name": "package",
     "src": "src/package.jsx",
     "isEntry": true,
     "imports": [
-      "_reset-D5QtqhTK.js"
+      "_reset-DWe2tKIB.js"
     ]
   }
 }
