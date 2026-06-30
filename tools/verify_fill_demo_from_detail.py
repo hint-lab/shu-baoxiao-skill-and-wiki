@@ -87,6 +87,17 @@ def main() -> None:
             page.get_by_text("等待代填").first.wait_for(timeout=10000)
             page.get_by_role("button", name="启动本地代填演示").click()
             page.get_by_text("最近一次演示已停在提交前").wait_for(timeout=30000)
+            page.get_by_text("字段快照").wait_for(timeout=10000)
+            page.get_by_text("操作日志").wait_for(timeout=10000)
+            page.get_by_text("截图证据").wait_for(timeout=10000)
+            snapshot = page.locator(".field-snapshot")
+            snapshot.get_by_text("entry", exact=True).wait_for(timeout=10000)
+            snapshot.get_by_text("日常报销", exact=True).wait_for(timeout=10000)
+            screenshot = page.locator(".fill-evidence-image img")
+            screenshot.wait_for(timeout=10000)
+            box = screenshot.bounding_box()
+            if not box or box["width"] < 100 or box["height"] < 80:
+                raise AssertionError(f"Expected visible fill screenshot evidence, got {box}")
             browser.close()
         if errors:
             raise AssertionError(f"Frontend console errors: {errors}")

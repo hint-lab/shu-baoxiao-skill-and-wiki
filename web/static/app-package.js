@@ -194,6 +194,7 @@
     const current = pkg.workflow_status || (missing ? "needs_materials" : "ready_for_review");
     const canRun = current === "ready_for_school" && missing === 0;
     const report = data.fill_report;
+    const filledEntries = report ? Object.entries(report.filled || {}) : [];
     return e(
       Card,
       { className: "work-card", title: "受控代填 Agent" },
@@ -230,6 +231,51 @@
               { wrap: true },
               e(Button, { href: data.fill_report_url }, "查看报告 JSON"),
               e(Button, { href: data.fill_screenshot_url }, "查看截图")
+            )
+          : null,
+        report
+          ? e(
+              "div",
+              { className: "fill-evidence" },
+              e(
+                "div",
+                { className: "fill-evidence-block" },
+                e(Text, { strong: true }, "字段快照"),
+                filledEntries.length
+                  ? e(
+                      "dl",
+                      { className: "field-snapshot" },
+                      filledEntries.map(([key, value]) =>
+                        e(
+                          React.Fragment,
+                          { key },
+                          e("dt", null, key),
+                          e("dd", null, String(value || ""))
+                        )
+                      )
+                    )
+                  : e(Text, { type: "secondary" }, "没有记录到已填字段")
+              ),
+              e(
+                "div",
+                { className: "fill-evidence-block" },
+                e(Text, { strong: true }, "操作日志"),
+                e(
+                  Space,
+                  { direction: "vertical", size: 6, className: "full" },
+                  e(Text, null, `适配器 ${report.adapter_id || "unknown"}`),
+                  e(Text, null, `附件 ${report.attachment_count || 0} 份`),
+                  e(Text, null, `暂停确认点 ${report.pause_count || 0} 个`),
+                  e(Text, null, report.verified_stop_before_submission ? "已验证停在提交前" : "未验证提交保护"),
+                  e(Text, { type: "secondary" }, report.agent_boundary || "提交动作必须本人确认")
+                )
+              ),
+              e(
+                "div",
+                { className: "fill-evidence-block fill-evidence-image" },
+                e(Text, { strong: true }, "截图证据"),
+                e("a", { href: data.fill_screenshot_url, target: "_blank", rel: "noreferrer" }, e("img", { src: data.fill_screenshot_url, alt: "代填演示截图" }))
+              )
             )
           : null
       )
