@@ -1,0 +1,23 @@
+.DS_Store
+.env
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local browser/test runtime caches
+.playwright-cli/
+
+# Local app state and user material caches
+data/app.db
+data/uploads/
+data/package_work/
+data/mail_inbox/
+data/mail_ingest/
+data/cwc/raw/
+data/cwc/attachments/
+
+# Generated artifacts
+output/
+tmp/
+
+# Keep reproducible sample inputs, rules, adapters, and compact RAG index in Git.

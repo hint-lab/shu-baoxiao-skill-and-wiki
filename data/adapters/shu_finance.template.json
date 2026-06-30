@@ -1,0 +1,38 @@
+{
+  "id": "shu_finance_template",
+  "name": "上海大学智能报销系统模板",
+  "start_url": "填入学校财务门户或智能报销入口 URL",
+  "manual_login": {
+    "required": true,
+    "complete_click_test_id": "",
+    "note": "真实系统必须由老师本人完成统一身份认证、验证码和二次认证。登录完成后再让 Agent 继续。"
+  },
+  "form_ready": {
+    "selector": "填入登录后报销表单的稳定 CSS 选择器",
+    "timeout_ms": 120000
+  },
+  "fields": {
+    "entry": {
+      "selector": "填入报销入口/业务类型控件选择器",
+      "kind": "select",
+      "value_path": "school_system.recommended_entry"
+    },
+    "reason": {
+      "selector": "填入报销事由输入框选择器",
+      "kind": "textarea",
+      "value_path": "draft_fields.reason"
+    }
+  },
+  "lists": {
+    "attachments": {
+      "selector": "填入附件队列或上传控件区域选择器"
+    },
+    "pause_points": {
+      "selector": ""
+    }
+  },
+  "submission_guard": {
+    "selector": "填入提交预审按钮选择器",
+    "must_pause_before_click": true
+  }
+}

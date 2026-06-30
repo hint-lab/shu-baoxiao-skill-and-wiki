@@ -1,0 +1,405 @@
+(function () {
+  const e = React.createElement;
+  const {
+    Alert,
+    App,
+    Button,
+    Card,
+    Col,
+    ConfigProvider,
+    Form,
+    Input,
+    Layout,
+    Menu,
+    Row,
+    Space,
+    Statistic,
+    Table,
+    Tag,
+    Typography,
+    Upload,
+    message,
+    theme,
+  } = antd;
+
+  const data = window.__PACKAGE_DATA__ || {};
+  const pkg = data.package || {};
+  const Dragger = Upload.Dragger;
+  const { Content, Sider } = Layout;
+  const { Title, Text, Paragraph } = Typography;
+  const statusLabels = {
+    collecting: ["default", "资料归集中"],
+    needs_materials: ["red", "待补材料"],
+    ready_for_review: ["blue", "待本人复核"],
+    ready_for_school: ["geekblue", "等待代填"],
+    submitted_by_user: ["gold", "已提交"],
+    reimbursed: ["green", "已报销"],
+  };
+
+  function packageMissingCount(packageData) {
+    return (packageData.checklist || []).filter((item) => item.status === "missing").length;
+  }
+
+  function Sidebar() {
+    const selectedKey = packageMissingCount(pkg) > 0 ? "collection" : "waiting";
+    const items = [
+      { key: "home", label: "主页" },
+      { key: "knowledge", label: "报销知识库" },
+      { key: "waiting", label: "等待报销" },
+      { key: "collection", label: "资料归集" },
+      { key: "reimbursed", label: "已报销" },
+      { key: "settings", label: "设置" },
+    ];
+    return e(
+      Sider,
+      { width: 224, className: "app-sider", breakpoint: "lg", collapsedWidth: 0 },
+      e(
+        "a",
+        { className: "brand-block", href: "/#home" },
+        e("strong", null, "上海大学"),
+        e("span", null, "自助报销 Agent")
+      ),
+      e(Menu, {
+        theme: "dark",
+        mode: "inline",
+        selectedKeys: [selectedKey],
+        items,
+        onClick: ({ key }) => {
+          window.location.href = "/#" + key;
+        },
+      })
+    );
+  }
+
+  function statusTag(status) {
+    const map = {
+      ready: ["green", "已就绪"],
+      missing: ["red", "缺材料"],
+      optional: ["gold", "可选"],
+    };
+    const [color, label] = map[status] || ["default", status || "未知"];
+    return e(Tag, { color }, label);
+  }
+
+  function workflowTag(status) {
+    const [color, label] = statusLabels[status] || ["default", status || "未知状态"];
+    return e(Tag, { color }, label);
+  }
+
+  function StatusPanel({ missing }) {
+    const [submitting, setSubmitting] = React.useState("");
+    const current = pkg.workflow_status || (missing ? "needs_materials" : "ready_for_review");
+    const events = data.status_events || [];
+    async function updateStatus(status, note) {
+      const body = new FormData();
+      body.append("status", status);
+      body.append("note", note || "");
+      setSubmitting(status);
+      try {
+        const response = await fetch(`/packages/${encodeURIComponent(data.package_id)}/status`, { method: "POST", body, redirect: "follow" });
+        window.location.href = response.url || window.location.href;
+      } catch (error) {
+        message.error("更新状态失败");
+        setSubmitting("");
+      }
+    }
+    const actions = [
+      ["ready_for_review", "标记待复核", "本人需要继续核对材料"],
+      ["ready_for_school", "确认可代填", "本人已确认材料完整，准备进入上海大学财务系统"],
+      ["submitted_by_user", "标记已提交", "本人已在上海大学财务系统提交"],
+      ["reimbursed", "标记已报销", "本人确认学校系统已报销或已支付"],
+    ];
+    return e(
+      Card,
+      { className: "work-card", title: "报销状态" },
+      e(
+        Space,
+        { direction: "vertical", size: 12, className: "full" },
+        e(
+          Space,
+          { wrap: true },
+          e(Text, { strong: true }, "当前状态"),
+          workflowTag(current),
+          pkg.workflow_updated_at ? e(Text, { type: "secondary" }, `更新于 ${pkg.workflow_updated_at}`) : null
+        ),
+        pkg.workflow_note ? e(Alert, { type: "info", showIcon: true, message: pkg.workflow_note }) : null,
+        e(
+          Space,
+          { wrap: true },
+          actions.map(([status, label, note]) =>
+            e(
+              Button,
+              {
+                key: status,
+                type: status === "ready_for_school" ? "primary" : "default",
+                loading: submitting === status,
+                disabled: current === status || (status === "ready_for_school" && missing > 0),
+                onClick: () => updateStatus(status, note),
+              },
+              label
+            )
+          )
+        ),
+        missing > 0
+          ? e(Alert, { type: "warning", showIcon: true, message: "材料未齐时不能确认可代填", description: "先补齐必需材料，再进入学校财务系统辅助录入。" })
+          : null,
+        events.length
+          ? e(
+              "div",
+              { className: "status-history" },
+              events.slice(0, 5).map((event, index) =>
+                e(
+                  "div",
+                  { key: index, className: "status-history-row" },
+                  workflowTag(event.new_status),
+                  e(Text, { type: "secondary" }, event.note || "状态更新"),
+                  e(Text, { type: "secondary" }, event.created_at)
+                )
+              )
+            )
+          : null
+      )
+    );
+  }
+
+  function fieldTags(fields) {
+    const items = [];
+    if (fields.buyer_name) items.push(["购买方", fields.buyer_name, "blue"]);
+    if (fields.seller_name) items.push(["销售方", fields.seller_name, "cyan"]);
+    if (fields.item_name) items.push(["项目", fields.item_name, "geekblue"]);
+    if (fields.invoice_no) items.push(["发票号", fields.invoice_no, "purple"]);
+    if (fields.amount_total) items.push(["金额", `${fields.currency || "CNY"} ${fields.amount_total}`, "green"]);
+    if (fields.invoice_date) items.push(["日期", fields.invoice_date, "default"]);
+    if (fields.title_valid === true) items.push(["抬头", "有效", "green"]);
+    if (fields.title_valid === false) items.push(["抬头", "待处理", "red"]);
+    return e(
+      Space,
+      { size: [4, 6], wrap: true },
+      items.length
+        ? items.map(([label, value, color]) => e(Tag, { color, key: label + value }, `${label} ${value}`))
+        : e(Text, { type: "secondary" }, "未识别关键字段")
+    );
+  }
+
+  function MissingChecklist() {
+    const columns = [
+      {
+        title: "检查项",
+        dataIndex: "name",
+        render: (value, record) =>
+          e(Space, { direction: "vertical", size: 2 }, e(Text, { strong: true }, value), e(Text, { type: "secondary" }, record.why || "")),
+      },
+      { title: "状态", dataIndex: "status", width: 110, render: statusTag },
+      {
+        title: "匹配材料",
+        dataIndex: "matched_documents",
+        width: 180,
+        render: (items) => (items && items.length ? items.map((item) => e(Tag, { key: item }, item)) : e(Text, { type: "secondary" }, "-")),
+      },
+      {
+        title: "依据",
+        dataIndex: "evidence",
+        width: 260,
+        render: (evidence) =>
+          evidence ? e("a", { href: evidence.url, target: "_blank", rel: "noreferrer" }, evidence.title) : e(Text, { type: "secondary" }, "-"),
+      },
+    ];
+    return e(Card, { title: "缺漏检查", className: "work-card" }, e(Table, { rowKey: "id", columns, dataSource: pkg.checklist || [], pagination: false }));
+  }
+
+  function DocumentsTable() {
+    const columns = [
+      { title: "文件", dataIndex: "file_name", width: 240 },
+      {
+        title: "识别类型",
+        dataIndex: "document_type",
+        width: 140,
+        render: (value) => e(Tag, { color: value === "invoice" ? "blue" : value === "payment_record" ? "green" : "default" }, value),
+      },
+      { title: "置信度", dataIndex: "confidence", width: 100 },
+      { title: "关键字段", dataIndex: "extracted_fields", render: (fields) => fieldTags(fields || {}) },
+    ];
+    return e(Card, { title: "材料识别", className: "work-card" }, e(Table, { rowKey: "id", columns, dataSource: pkg.documents || [], pagination: false, scroll: { x: 860 } }));
+  }
+
+  function ReturnDiagnosisForm() {
+    const [submitting, setSubmitting] = React.useState(false);
+    async function submit(values) {
+      const body = new FormData();
+      body.append("reason", values.reason || "");
+      setSubmitting(true);
+      try {
+        const response = await fetch(`/packages/${encodeURIComponent(data.package_id)}/return-diagnosis`, { method: "POST", body, redirect: "follow" });
+        window.location.href = response.url || data.return_diagnosis_url;
+      } catch (error) {
+        message.error("生成退回诊断失败");
+        setSubmitting(false);
+      }
+    }
+    return e(
+      Card,
+      { title: "退回诊断", className: "work-card" },
+      e(
+        Space,
+        { direction: "vertical", size: 12, className: "full" },
+        e(
+          Form,
+          { layout: "vertical", onFinish: submit },
+          e(
+            Form.Item,
+            { label: "财务系统退回意见", name: "reason", rules: [{ required: true, message: "请粘贴退回意见" }] },
+            e(Input.TextArea, { rows: 4, placeholder: "例如：请补充公务卡支付记录，并上传包含品名、单价、数量的明细清单。" })
+          ),
+          e(Button, { type: "primary", htmlType: "submit", loading: submitting }, "生成退回诊断")
+        ),
+        data.return_diagnosis ? e(Button, { href: data.return_diagnosis_url }, "查看最近一次退回诊断") : null
+      )
+    );
+  }
+
+  function SupplementForm() {
+    const [fileList, setFileList] = React.useState([]);
+    const [submitting, setSubmitting] = React.useState(false);
+    async function submit(values) {
+      if (!fileList.length) {
+        message.warning("请先选择补充材料");
+        return;
+      }
+      const body = new FormData();
+      body.append("note", values.note || "");
+      fileList.forEach((file) => body.append("files", file.originFileObj || file));
+      setSubmitting(true);
+      try {
+        const response = await fetch(`/packages/${encodeURIComponent(data.package_id)}/supplement`, { method: "POST", body, redirect: "follow" });
+        window.location.href = response.url || window.location.href;
+      } catch (error) {
+        message.error("补充材料失败");
+        setSubmitting(false);
+      }
+    }
+    return e(
+      Card,
+      { title: "补充材料并重新整理", className: "work-card" },
+      e(
+        Form,
+        { layout: "vertical", onFinish: submit },
+        e(Form.Item, { label: "补充说明", name: "note" }, e(Input.TextArea, { rows: 3, placeholder: "例如：根据退回意见补充公务卡支付记录。" })),
+        e(
+          Form.Item,
+          { label: "补充材料" },
+          e(
+            Dragger,
+            {
+              multiple: true,
+              beforeUpload: () => false,
+              fileList,
+              onChange: ({ fileList: next }) => setFileList(next),
+            },
+            e("p", { className: "upload-symbol" }, "↑"),
+            e("p", { className: "ant-upload-text" }, "拖入或选择补充材料"),
+            e("p", { className: "ant-upload-hint" }, "系统会保留旧版本，并用原材料加补充材料重新生成报销包。")
+          )
+        ),
+        e(Button, { type: "primary", htmlType: "submit", loading: submitting }, "补充并重新生成")
+      )
+    );
+  }
+
+  function PackagePage() {
+    const missing = packageMissingCount(pkg);
+    const ready = (pkg.checklist || []).filter((item) => item.status === "ready").length;
+    return e(
+      ConfigProvider,
+      {
+        theme: {
+          algorithm: theme.defaultAlgorithm,
+          token: {
+            colorPrimary: "#1677ff",
+            borderRadius: 0,
+            borderRadiusLG: 0,
+            borderRadiusSM: 0,
+            borderRadiusXS: 0,
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif",
+          },
+        },
+      },
+      e(
+        App,
+        null,
+        e(
+          Layout,
+          { className: "antd-shell app-frame" },
+          e(Sidebar),
+          e(
+            Layout,
+            { className: "main-layout" },
+            e(
+              Content,
+              { className: "antd-content" },
+            e(
+              "div",
+              { className: "page-head" },
+              e(
+                "div",
+                null,
+                e(Title, { level: 2 }, pkg.title),
+                e(
+                  Space,
+                  { size: 8, wrap: true },
+                  e(Text, { type: "secondary" }, `${pkg.reimbursement_type_name} · 推荐入口：${pkg.school_form_hint} · ${data.file_count} 份原始材料`),
+                  workflowTag(pkg.workflow_status)
+                )
+              ),
+              e(
+                Space,
+                { wrap: true },
+                e(Button, { href: "/" }, "继续上传"),
+                e(Button, { href: data.markdown_url }, "Markdown"),
+                e(Button, { href: data.json_url }, "JSON"),
+                e(Button, { href: data.playwright_plan_url }, "代填计划")
+              )
+            ),
+            e(
+              Row,
+              { gutter: [16, 16], className: "metric-row" },
+              e(Col, { xs: 24, md: 8 }, e(Card, null, e(Statistic, { title: "分类置信度", value: pkg.confidence }))),
+              e(Col, { xs: 24, md: 8 }, e(Card, null, e(Statistic, { title: "已就绪检查项", value: ready, suffix: "项" }))),
+              e(Col, { xs: 24, md: 8 }, e(Card, null, e(Statistic, { title: "待补缺漏", value: missing, suffix: "项" })))
+            ),
+            e(
+              Card,
+              { className: "work-card", title: "报销事由草稿" },
+              e(Paragraph, { className: "reason-text" }, pkg.reason_draft)
+            ),
+            missing
+              ? e(Alert, { className: "page-alert", type: "warning", showIcon: true, message: "提交前仍需补材料", description: `当前还有 ${missing} 项必需材料未就绪。` })
+              : e(Alert, { className: "page-alert", type: "success", showIcon: true, message: "材料已进入可复核状态", description: "仍需本人确认票据真实性、经费项目、收款账号和提交动作。" }),
+            e(StatusPanel, { missing }),
+            e(MissingChecklist),
+            e(DocumentsTable),
+            e(
+              Card,
+              { className: "work-card", title: "风险提示" },
+              pkg.risk_flags && pkg.risk_flags.length
+                ? e(Space, { direction: "vertical", className: "full" }, pkg.risk_flags.map((flag, index) => e(Alert, { key: index, type: "warning", showIcon: true, message: flag })))
+                : e(Alert, { type: "success", showIcon: true, message: "暂无高优先级风险", description: "提交前仍需人工核对。" })
+            ),
+            e(
+              Card,
+              { className: "work-card", title: "提交前必须确认" },
+              e(
+                Space,
+                { wrap: true },
+                ["经费项目", "收款账号", "票据真实性", "提交预审", "提交审批"].map((item) => e(Tag, { key: item, color: "red" }, item))
+              )
+            ),
+            e(Row, { gutter: [16, 16] }, e(Col, { xs: 24, lg: 12 }, e(ReturnDiagnosisForm)), e(Col, { xs: 24, lg: 12 }, e(SupplementForm)))
+            )
+          )
+        )
+      )
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(e(PackagePage));
+})();

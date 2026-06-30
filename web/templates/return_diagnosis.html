@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>退回诊断 - {{ package.title }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <h1>退回诊断</h1>
+            <p>{{ package.title }} · {{ package.reimbursement_type_name }}</p>
+          </div>
+          <nav class="actions">
+            <a class="ghost-link" href="/packages/{{ package_id }}/view">返回报销包</a>
+            <a class="ghost-link" href="{{ markdown_url }}">Markdown</a>
+            <a class="ghost-link" href="{{ json_url }}">JSON</a>
+          </nav>
+        </header>
+
+        <section class="panel">
+          <h2>退回意见</h2>
+          <p class="reason">{{ diagnosis.return_reason }}</p>
+        </section>
+
+        <section class="panel">
+          <h2>命中项</h2>
+          {% if diagnosis.matched_items %}
+            <div class="checklist">
+              {% for item in diagnosis.matched_items %}
+                <article class="check-item missing">
+                  <div>
+                    <strong>{{ item.checklist_name }}</strong>
+                    <p>退回前状态：{{ item.status_before }}</p>
+                    <p>{{ item.action }}</p>
+                    {% if item.evidence_url %}
+                      <a href="{{ item.evidence_url }}">{{ item.evidence_title }}</a>
+                    {% endif %}
+                  </div>
+                  <span class="status">fix</span>
+                </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="empty">{{ diagnosis.fallback_action }}</p>
+          {% endif %}
+        </section>
+
+        <section class="panel">
+          <h2>下一步</h2>
+          <ul class="risk-list">
+            {% for step in diagnosis.next_steps %}
+              <li>{{ step }}</li>
+            {% endfor %}
+          </ul>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

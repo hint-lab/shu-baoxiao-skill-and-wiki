@@ -1,0 +1,6 @@
+Invoice / Receipt
+Journal of Intelligent Systems
+Article Processing Charge
+Article title: A Study on Reimbursement Agents
+Amount: USD 600.00
+Date: 2026-06-10

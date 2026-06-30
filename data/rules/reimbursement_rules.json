@@ -1,0 +1,416 @@
+{
+  "version": 1,
+  "supported_types": [
+    {
+      "id": "domestic_travel",
+      "name": "国内差旅报销",
+      "school_form_hint": "差旅报销",
+      "keywords": [
+        "国内差旅",
+        "差旅",
+        "出差",
+        "会议",
+        "调研",
+        "高铁",
+        "火车",
+        "机票",
+        "酒店",
+        "住宿",
+        "行程",
+        "交通",
+        "北京",
+        "上海",
+        "广州",
+        "深圳"
+      ],
+      "reason_template": "事项：{purpose}。本次报销城市间交通、住宿及相关差旅费用，具体行程、票据和附件见报销包材料。",
+      "policy_queries": [
+        "国内差旅报销需要哪些材料",
+        "国内差旅 出差审批单 差旅费结算单 住宿发票 会议通知",
+        "差旅报销 公务卡 公务机票 交通票据"
+      ],
+      "checklist": [
+        {
+          "id": "travel_approval",
+          "name": "国内出差审批单",
+          "required": true,
+          "accepted_document_types": ["approval"],
+          "why": "国内差旅通常需要先完成出差审批，报销时作为附件。"
+        },
+        {
+          "id": "travel_settlement",
+          "name": "国内差旅费结算单",
+          "required": true,
+          "accepted_document_types": ["settlement"],
+          "why": "差旅费用需要通过差旅费结算单汇总行程、补贴和票据。"
+        },
+        {
+          "id": "transport_ticket",
+          "name": "城市间交通票据或行程单",
+          "required": true,
+          "accepted_document_types": ["itinerary", "invoice"],
+          "keywords": ["高铁", "火车", "机票", "车票", "交通", "行程", "航空", "客票"],
+          "why": "火车票、机票、汽车票等是差旅交通费和行程计算依据。"
+        },
+        {
+          "id": "payment_record",
+          "name": "支付记录",
+          "required": true,
+          "accepted_document_types": ["payment_record"],
+          "why": "公务卡、银行卡、POS 小票或银行记录用于证明实际支付。"
+        },
+        {
+          "id": "meeting_notice",
+          "name": "会议通知或培训通知",
+          "required": false,
+          "accepted_document_types": ["notice"],
+          "why": "如报销会议注册费、会务费或培训费，应附会议或培训通知。"
+        },
+        {
+          "id": "hotel_invoice",
+          "name": "住宿费发票",
+          "required": false,
+          "accepted_document_types": ["invoice"],
+          "keywords": ["住宿", "酒店", "宾馆"],
+          "why": "住宿发票通常也是领取伙食补助和交通补助的重要依据。"
+        }
+      ]
+    },
+    {
+      "id": "publication_fee",
+      "name": "版面费/出版费",
+      "school_form_hint": "日常报销",
+      "keywords": [
+        "版面费",
+        "出版费",
+        "审稿费",
+        "论文",
+        "录用",
+        "期刊",
+        "article",
+        "journal",
+        "acceptance",
+        "invoice",
+        "receipt",
+        "美元",
+        "外币"
+      ],
+      "reason_template": "事项：{purpose}。本次报销论文版面费、审稿费或出版费相关支出，已按要求整理发票、录用通知、付款记录及相关说明材料。",
+      "policy_queries": [
+        "版面费 出版费 报销 需要什么材料",
+        "外币支付 版面费 报销 付款记录 录用通知",
+        "出版费 报销 出版合同 原件"
+      ],
+      "checklist": [
+        {
+          "id": "publication_invoice",
+          "name": "发票或外文 Invoice/Receipt",
+          "required": true,
+          "accepted_document_types": ["invoice"],
+          "why": "版面费、审稿费、出版费报销需要有效发票或外文票据。"
+        },
+        {
+          "id": "acceptance_notice",
+          "name": "论文录用通知/审稿通知",
+          "required": true,
+          "accepted_document_types": ["notice"],
+          "keywords": ["录用", "acceptance", "accepted", "审稿"],
+          "why": "国内版面费和外币版面费均通常需要提供论文录用或审稿通知。"
+        },
+        {
+          "id": "payment_record",
+          "name": "付款记录",
+          "required": true,
+          "accepted_document_types": ["payment_record"],
+          "why": "无法使用公务卡支付的版面费，可用银行卡或银行转账支付，但需提供付款记录。"
+        },
+        {
+          "id": "publication_explanation",
+          "name": "版面费报销说明",
+          "required": false,
+          "accepted_document_types": ["explanation"],
+          "why": "外币支付的版面费通常需要版面费报销说明。"
+        },
+        {
+          "id": "publishing_contract",
+          "name": "出版合同原件",
+          "required": false,
+          "accepted_document_types": ["contract"],
+          "keywords": ["出版", "合同"],
+          "why": "出版费报销通常需要出版合同原件。"
+        }
+      ]
+    },
+    {
+      "id": "office_supplies",
+      "name": "办公用品/耗材报销",
+      "school_form_hint": "日常报销",
+      "keywords": [
+        "办公用品",
+        "文具",
+        "耗材",
+        "电脑配件",
+        "打印纸",
+        "硒鼓",
+        "墨盒",
+        "移动硬盘",
+        "键盘",
+        "鼠标",
+        "办公",
+        "清单",
+        "明细"
+      ],
+      "reason_template": "事项：{purpose}。本次报销办公用品、耗材或电脑配件采购费用，已按实际业务整理发票、明细清单和支付记录。",
+      "policy_queries": [
+        "办公用品 耗材 电脑配件 报销 明细 清单",
+        "发票 办公用品 文具用品 明细 单价 数量",
+        "耗材 电脑配件 发票金额 超过 300 明细"
+      ],
+      "checklist": [
+        {
+          "id": "office_invoice",
+          "name": "发票",
+          "required": true,
+          "accepted_document_types": ["invoice"],
+          "why": "办公用品、耗材和电脑配件报销需要真实合法发票。"
+        },
+        {
+          "id": "detail_list",
+          "name": "品名、单价、数量等明细清单",
+          "required": true,
+          "accepted_document_types": ["detail_list"],
+          "why": "发票内容应按实际业务开具，笼统品类或达到阈值时需附明细。"
+        },
+        {
+          "id": "payment_record",
+          "name": "支付记录",
+          "required": true,
+          "accepted_document_types": ["payment_record"],
+          "why": "公务卡或银行卡支付记录用于证明实际支出。"
+        },
+        {
+          "id": "asset_approval",
+          "name": "固定资产或两用物资登记/审批材料",
+          "required": false,
+          "accepted_document_types": ["approval"],
+          "keywords": ["固定资产", "设备", "移动硬盘", "打印机", "显示器"],
+          "why": "部分办公设备、两用物资或达到固定资产标准的采购需登记、审批或验收。"
+        }
+      ]
+    },
+    {
+      "id": "materials_fee",
+      "name": "材料费",
+      "school_form_hint": "日常报销",
+      "keywords": [
+        "材料费",
+        "实验材料",
+        "科研材料",
+        "试剂",
+        "耗材",
+        "元器件",
+        "零配件",
+        "样品",
+        "材料采购",
+        "采购订单",
+        "材料订单"
+      ],
+      "reason_template": "事项：{purpose}。本次报销教学科研材料采购费用，已整理发票、明细清单、支付记录及相关采购材料。",
+      "policy_queries": [
+        "材料费 报销 发票 清单 合同",
+        "材料 订单 报销 付款记录",
+        "发票金额 超过 2 万元 合同 上海大学"
+      ],
+      "checklist": [
+        {
+          "id": "materials_invoice",
+          "name": "发票",
+          "required": true,
+          "accepted_document_types": ["invoice"],
+          "why": "材料费报销需要真实合法发票，发票内容应与实际采购材料一致。"
+        },
+        {
+          "id": "materials_detail_list",
+          "name": "品名、单价、数量等材料明细",
+          "required": true,
+          "accepted_document_types": ["detail_list", "contract"],
+          "keywords": ["材料", "清单", "明细", "品名", "单价", "数量", "订单"],
+          "why": "材料采购需要说明具体品名、数量、单价和采购内容，笼统发票需附清单或订单。"
+        },
+        {
+          "id": "materials_payment_record",
+          "name": "支付记录",
+          "required": true,
+          "accepted_document_types": ["payment_record"],
+          "why": "公务卡、银行卡或转账记录用于证明实际支付。"
+        },
+        {
+          "id": "materials_contract",
+          "name": "采购合同或订单",
+          "required": false,
+          "accepted_document_types": ["contract"],
+          "keywords": ["合同", "订单", "采购"],
+          "why": "金额较高或供应商采购场景通常需要合同、订单或采购说明作为附件。"
+        }
+      ]
+    },
+    {
+      "id": "testing_processing_fee",
+      "name": "测试化验加工费",
+      "school_form_hint": "日常报销",
+      "keywords": [
+        "测试化验加工费",
+        "测试费",
+        "化验费",
+        "加工费",
+        "检测费",
+        "分析测试",
+        "样品测试",
+        "测试清单",
+        "加工清单"
+      ],
+      "reason_template": "事项：{purpose}。本次报销科研测试、化验或加工服务费用，已整理发票、测试加工清单或合同、支付记录等材料。",
+      "policy_queries": [
+        "测试化验加工费 报销 发票 测试 加工清单 合同",
+        "测试化验加工费 对方单位 盖章 清单 合同",
+        "测试费 化验费 加工费 报销 材料"
+      ],
+      "checklist": [
+        {
+          "id": "testing_invoice",
+          "name": "发票",
+          "required": true,
+          "accepted_document_types": ["invoice"],
+          "why": "测试化验加工费报销需要有效发票。"
+        },
+        {
+          "id": "testing_list_or_contract",
+          "name": "盖章测试/加工清单或合同",
+          "required": true,
+          "accepted_document_types": ["detail_list", "contract"],
+          "keywords": ["测试", "化验", "加工", "检测", "清单", "合同", "盖章"],
+          "why": "常见业务费指南要求提供对方单位盖章的测试、加工清单或合同。"
+        },
+        {
+          "id": "testing_payment_record",
+          "name": "支付记录",
+          "required": true,
+          "accepted_document_types": ["payment_record"],
+          "why": "支付记录用于证明测试化验加工服务已实际支付。"
+        }
+      ]
+    },
+    {
+      "id": "official_reception",
+      "name": "公务接待费",
+      "school_form_hint": "日常报销",
+      "keywords": [
+        "公务接待",
+        "接待费",
+        "接待清单",
+        "公务接待清单",
+        "邀请函",
+        "派出公函",
+        "来访",
+        "受邀",
+        "餐费",
+        "食品发票",
+        "食堂内转"
+      ],
+      "reason_template": "事项：{purpose}。本次报销公务接待相关费用，已整理接待清单、发票、支付记录及邀请函或派出公函等材料。",
+      "policy_queries": [
+        "公务接待费 报销 公务接待清单 发票 公务卡 邀请函 公函",
+        "上海大学 公务接待费 维持性经费 横向科研经费 接待清单",
+        "公务接待 单次 超过 2000 接待清单"
+      ],
+      "checklist": [
+        {
+          "id": "reception_invoice",
+          "name": "餐费、食品发票或内转单",
+          "required": true,
+          "accepted_document_types": ["invoice"],
+          "keywords": ["餐费", "食品", "食堂", "招待所", "内转", "接待"],
+          "why": "公务接待费需要餐费、食品发票、校内招待所或食堂内转单等票据。"
+        },
+        {
+          "id": "reception_payment_record",
+          "name": "公务卡消费记录",
+          "required": true,
+          "accepted_document_types": ["payment_record"],
+          "why": "公务接待支出通常需要公务卡消费记录。"
+        },
+        {
+          "id": "reception_list",
+          "name": "上海大学公务接待清单",
+          "required": true,
+          "accepted_document_types": ["detail_list"],
+          "keywords": ["公务接待清单", "接待清单", "接待", "人数", "时间"],
+          "why": "维持性经费公务接待以及部分横向科研经费接待需要填写公务接待清单。"
+        },
+        {
+          "id": "reception_invitation",
+          "name": "邀请函或外来人员单位派出公函",
+          "required": true,
+          "accepted_document_types": ["notice"],
+          "keywords": ["邀请函", "派出公函", "来访", "受邀", "外来人员"],
+          "why": "公务接待应说明来访或受邀人员姓名、人数、时间，并附邀请函或派出公函。"
+        },
+        {
+          "id": "reception_food_detail",
+          "name": "食品饮料明细清单",
+          "required": false,
+          "accepted_document_types": ["detail_list"],
+          "keywords": ["食品", "饮料", "明细", "清单"],
+          "why": "食品、饮料如开具增值税票据，应在发票上列明细或附销售清单。"
+        }
+      ]
+    },
+    {
+      "id": "information_service_fee",
+      "name": "信息服务费",
+      "school_form_hint": "日常报销",
+      "keywords": [
+        "信息服务费",
+        "数据服务",
+        "数据库",
+        "软件服务",
+        "云服务",
+        "平台服务",
+        "技术服务",
+        "信息技术服务",
+        "检索服务",
+        "服务费"
+      ],
+      "reason_template": "事项：{purpose}。本次报销信息服务、数据服务、软件或平台服务相关费用，已整理发票、服务合同或订单、支付记录等材料。",
+      "policy_queries": [
+        "信息服务费 报销 发票 合同 支付记录",
+        "技术服务费 数据服务 软件服务 报销 材料",
+        "发票 服务费 合同 清单 报销"
+      ],
+      "checklist": [
+        {
+          "id": "information_service_invoice",
+          "name": "发票",
+          "required": true,
+          "accepted_document_types": ["invoice"],
+          "why": "信息服务费报销需要真实合法发票，发票项目应能反映服务内容。"
+        },
+        {
+          "id": "information_service_contract",
+          "name": "服务合同、订单或服务说明",
+          "required": true,
+          "accepted_document_types": ["contract", "explanation", "detail_list"],
+          "keywords": ["合同", "订单", "服务", "数据", "软件", "平台", "技术", "说明"],
+          "why": "信息服务类支出需要说明服务内容、服务期限、供应商和费用构成。"
+        },
+        {
+          "id": "information_service_payment_record",
+          "name": "支付记录",
+          "required": true,
+          "accepted_document_types": ["payment_record"],
+          "why": "支付记录用于证明服务费用已实际支付。"
+        }
+      ]
+    }
+  ]
+}

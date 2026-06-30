@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ package.title }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/antd@5/dist/reset.css">
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      window.__PACKAGE_DATA__ = {{ {
+        "package": package,
+        "package_id": package_id,
+        "markdown_url": markdown_url,
+        "json_url": json_url,
+        "playwright_plan_url": playwright_plan_url,
+        "return_diagnosis": return_diagnosis,
+        "return_diagnosis_url": return_diagnosis_url,
+        "status_events": status_events,
+        "file_count": file_count
+      } | tojson }};
+    </script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1/dayjs.min.js"></script>
+    <script src="https://unpkg.com/antd@5/dist/antd.min.js"></script>
+    <script src="/static/app-package.js"></script>
+  </body>
+</html>

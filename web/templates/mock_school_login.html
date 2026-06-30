@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>模拟上海大学财务系统</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <h1>模拟上海大学财务系统</h1>
+            <p>这里模拟统一身份认证后的跳转。真实环境中由老师本人登录、处理验证码和二次认证。</p>
+          </div>
+        </header>
+        <section class="panel">
+          <h2>人工登录边界</h2>
+          <p class="reason">Agent 不保存密码，不绕过验证码。登录完成后才进入报销单填写页。</p>
+          <a class="primary-link" data-testid="manual-login-done" href="/mock-school/reimburse">我已人工登录，进入报销</a>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

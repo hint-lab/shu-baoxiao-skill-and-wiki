@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "missing_payment_record",
+      "checklist_ids": ["payment_record"],
+      "keywords": ["支付记录", "付款记录", "公务卡", "银行卡", "刷卡", "pos", "银行流水", "转账记录", "消费记录"],
+      "action": "补充公务卡、银行卡、POS 小票、银行回单或系统认可的支付记录，并重新生成报销包。"
+    },
+    {
+      "id": "missing_travel_approval",
+      "checklist_ids": ["travel_approval"],
+      "keywords": ["出差审批", "出差申请", "审批单", "未审批", "差旅审批"],
+      "action": "补充《上海大学国内出差审批单》或系统中的出差审批材料。"
+    },
+    {
+      "id": "missing_travel_settlement",
+      "checklist_ids": ["travel_settlement"],
+      "keywords": ["差旅费结算单", "差旅结算", "结算单", "补贴计算", "伙食补助", "交通补助"],
+      "action": "补充《上海大学国内差旅费结算单》，核对行程、补贴和票据。"
+    },
+    {
+      "id": "missing_transport_ticket",
+      "checklist_ids": ["transport_ticket"],
+      "keywords": ["交通票", "火车票", "高铁票", "机票", "行程单", "客票", "车票"],
+      "action": "补充城市间交通票据、电子客票行程单或可证明行程的材料。"
+    },
+    {
+      "id": "missing_meeting_notice",
+      "checklist_ids": ["meeting_notice"],
+      "keywords": ["会议通知", "培训通知", "会务通知", "注册费通知", "参会通知"],
+      "action": "补充包含会议名称、时间、地点、金额或注册信息的会议/培训通知。"
+    },
+    {
+      "id": "missing_hotel_invoice",
+      "checklist_ids": ["hotel_invoice"],
+      "keywords": ["住宿发票", "酒店发票", "宾馆发票", "住宿费"],
+      "action": "补充住宿费发票；如没有住宿费发票，需按学校要求确认补贴和报销方式。"
+    },
+    {
+      "id": "missing_acceptance_notice",
+      "checklist_ids": ["acceptance_notice"],
+      "keywords": ["录用通知", "接收函", "acceptance", "accepted", "审稿通知"],
+      "action": "补充论文录用通知、审稿通知或期刊接收证明。"
+    },
+    {
+      "id": "missing_publication_invoice",
+      "checklist_ids": ["publication_invoice"],
+      "keywords": ["invoice", "receipt", "外文发票", "发票", "票据"],
+      "action": "补充版面费/出版费发票，外币支付场景需保留 Invoice 或 Receipt。"
+    },
+    {
+      "id": "missing_publication_explanation",
+      "checklist_ids": ["publication_explanation"],
+      "keywords": ["版面费说明", "报销说明", "情况说明", "外币", "美元"],
+      "action": "补充版面费报销说明，外币支付时说明论文、期刊、金额和支付情况。"
+    },
+    {
+      "id": "missing_detail_list",
+      "checklist_ids": ["detail_list"],
+      "keywords": ["明细", "清单", "品名", "单价", "数量", "销货清单"],
+      "action": "补充品名、单价、数量等明细清单，避免笼统品类导致退回。"
+    },
+    {
+      "id": "asset_approval_needed",
+      "checklist_ids": ["asset_approval"],
+      "keywords": ["固定资产", "设备", "两用物资", "验收", "登记", "移动硬盘", "打印机", "显示器"],
+      "action": "核对是否属于固定资产或两用物资；如属于，补充登记、审批或验收材料。"
+    }
+  ],
+  "fallback_action": "未能精确匹配到既有缺漏项。请把退回意见原文保留，并人工核对报销包材料、发票抬头、支付记录、审批单和附件完整性。"
+}
