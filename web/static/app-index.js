@@ -555,19 +555,100 @@
   }
 
   function SettingsView() {
+    const [status, setStatus] = React.useState(null);
+    const [error, setError] = React.useState("");
+    React.useEffect(() => {
+      let mounted = true;
+      fetch("/api/settings/status")
+        .then((response) => response.json())
+        .then((payload) => {
+          if (mounted) setStatus(payload);
+        })
+        .catch(() => {
+          if (mounted) setError("读取本地配置状态失败");
+        });
+      return () => {
+        mounted = false;
+      };
+    }, []);
+
+    function stateTag(ok, readyText, pendingText) {
+      return e(Tag, { color: ok ? "green" : "gold" }, ok ? readyText : pendingText);
+    }
+
+    function ConfigRow({ title, description, ok, readyText, pendingText, extra }) {
+      return e(
+        "div",
+        { className: "settings-row" },
+        e(
+          "div",
+          null,
+          e(Text, { strong: true }, title),
+          e(Paragraph, { type: "secondary", className: "settings-desc" }, description)
+        ),
+        e(
+          Space,
+          { wrap: true },
+          stateTag(ok, readyText, pendingText),
+          extra ? e(Text, { type: "secondary" }, extra) : null
+        )
+      );
+    }
+
+    const doubao = status && status.doubao;
+    const imap = status && status.imap;
+    const kb = status && status.knowledge_base;
+    const playwright = status && status.playwright;
     return e(
       React.Fragment,
       null,
       e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "设置"), e(Text, { type: "secondary" }, "本地服务只展示配置说明，不把邮箱或大模型密钥暴露到前端页面。"))),
       e(
         Card,
-        { className: "work-card", title: "可接入能力" },
+        { className: "work-card", title: "接入状态" },
         e(
           Space,
-          { direction: "vertical", size: 10, className: "full" },
-          e(Alert, { type: "info", showIcon: true, message: "Doubao 识别", description: "后端通过 DOUBAO_EXTRACT_ENABLED 和 DOUBAO_API_KEY 控制，可用于发票金额、抬头、明细字段识别。" }),
-          e(Alert, { type: "info", showIcon: true, message: "邮箱归集", description: "后端通过 IMAP 配置接收发票邮件，整理附件后生成本地报销包。" }),
-          e(Alert, { type: "warning", showIcon: true, message: "学校系统代填", description: "Playwright 只负责辅助录入，最终提交、经费项目和账号仍必须由本人确认。" })
+          { direction: "vertical", size: 0, className: "full" },
+          error ? e(Alert, { type: "error", showIcon: true, message: error }) : null,
+          !status ? e(Alert, { type: "info", showIcon: true, message: "正在读取本地配置状态" }) : null,
+          status
+            ? e(
+                React.Fragment,
+                null,
+                e(ConfigRow, {
+                  title: "Doubao 票据识别",
+                  description: "用于补充本地规则没有识别出的金额、抬头、发票号、日期和支付信息。",
+                  ok: doubao.enabled && doubao.has_model,
+                  readyText: "已启用",
+                  pendingText: doubao.has_api_key ? "缺模型或未启用" : "未配置",
+                  extra: doubao.model ? `模型 ${doubao.model}` : "密钥不会显示在前端",
+                }),
+                e(ConfigRow, {
+                  title: "邮箱归集",
+                  description: "通过 IMAP 拉取发票邮件和附件，去重后生成本地报销包。",
+                  ok: imap.configured,
+                  readyText: "已配置",
+                  pendingText: "未配置完整",
+                  extra: `邮箱目录 ${imap.mailbox}`,
+                }),
+                e(ConfigRow, {
+                  title: "报销知识库",
+                  description: "基于财务处公开网页和本地 PDF 的 BM25 检索索引。",
+                  ok: kb.index_exists && kb.documents_exists,
+                  readyText: "索引可用",
+                  pendingText: "索引缺失",
+                  extra: kb.index_exists ? `${Math.round(kb.index_size_bytes / 1024 / 1024)} MB` : "",
+                }),
+                e(ConfigRow, {
+                  title: "上海大学财务系统适配器",
+                  description: "真实系统适配器必须由老师本人登录后补充页面选择器，不能绕过验证码或二次认证。",
+                  ok: playwright.shu_adapter_configured,
+                  readyText: "真实适配已配置",
+                  pendingText: playwright.shu_adapter_exists ? "模板待配置" : "模板缺失",
+                  extra: playwright.mock_adapter_exists ? "本地 mock 可用" : "本地 mock 缺失",
+                })
+              )
+            : null
         )
       )
     );

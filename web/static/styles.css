@@ -237,6 +237,24 @@ body {
   border-top: 1px solid var(--line);
 }
 
+.settings-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.settings-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.settings-desc {
+  margin: 4px 0 0 !important;
+}
+
 .page-alert {
   margin-bottom: 16px;
 }
@@ -363,6 +381,10 @@ body {
   }
 
   .chat-actions {
+    display: grid;
+  }
+
+  .settings-row {
     display: grid;
   }
 

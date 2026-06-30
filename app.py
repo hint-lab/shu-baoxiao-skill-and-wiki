@@ -3,9 +3,11 @@ from __future__ import annotations
 import shutil
 import uuid
 from dataclasses import asdict
+import os
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
+from fastapi.responses import JSONResponse
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -23,6 +25,10 @@ from app_state import (
 )
 from tools.build_reimbursement_package import OUTPUT_ROOT, build_package, export_package
 from tools.cwc_rag import query_policy
+from tools.doubao_extractor import api_key as doubao_api_key
+from tools.doubao_extractor import base_url as doubao_base_url
+from tools.doubao_extractor import enabled as doubao_enabled
+from tools.doubao_extractor import model_name as doubao_model_name
 from tools.diagnose_return import diagnose, export_diagnosis
 from tools.ingest_eml import ingest_eml
 from tools.playwright_fill_adapter import ARTIFACT_DIR as PLAYWRIGHT_ARTIFACT_DIR
@@ -46,6 +52,48 @@ app.mount("/playwright-output", StaticFiles(directory=str(PLAYWRIGHT_ARTIFACT_DI
 @app.get("/favicon.ico")
 async def favicon() -> Response:
     return Response(status_code=204)
+
+
+@app.get("/api/settings/status")
+async def settings_status() -> JSONResponse:
+    adapter_path = ROOT / "data/adapters/shu_finance.template.json"
+    adapter_text = adapter_path.read_text(encoding="utf-8") if adapter_path.exists() else ""
+    index_path = ROOT / "data/cwc/index.json"
+    documents_path = ROOT / "data/cwc/documents.jsonl"
+    imap_required = {
+        "host": os.getenv("REIMBURSEMENT_IMAP_HOST", ""),
+        "username": os.getenv("REIMBURSEMENT_IMAP_USERNAME", ""),
+        "password": os.getenv("REIMBURSEMENT_IMAP_PASSWORD", ""),
+    }
+    payload = {
+        "doubao": {
+            "enabled": doubao_enabled(),
+            "has_api_key": bool(doubao_api_key()),
+            "has_model": bool(doubao_model_name()),
+            "model": doubao_model_name(),
+            "base_url": doubao_base_url(),
+        },
+        "imap": {
+            "configured": all(imap_required.values()),
+            "host_configured": bool(imap_required["host"]),
+            "username_configured": bool(imap_required["username"]),
+            "password_configured": bool(imap_required["password"]),
+            "mailbox": os.getenv("REIMBURSEMENT_IMAP_MAILBOX", "INBOX"),
+            "mark_seen": os.getenv("REIMBURSEMENT_IMAP_MARK_SEEN", "false").lower() == "true",
+        },
+        "knowledge_base": {
+            "index_exists": index_path.exists(),
+            "documents_exists": documents_path.exists(),
+            "index_size_bytes": index_path.stat().st_size if index_path.exists() else 0,
+            "documents_size_bytes": documents_path.stat().st_size if documents_path.exists() else 0,
+        },
+        "playwright": {
+            "mock_adapter_exists": (ROOT / "data/adapters/mock_school.json").exists(),
+            "shu_adapter_exists": adapter_path.exists(),
+            "shu_adapter_configured": adapter_path.exists() and "填入" not in adapter_text,
+        },
+    }
+    return JSONResponse(payload)
 
 
 def package_dirs() -> list[Path]:
