@@ -2,7 +2,7 @@
 
 一个面向上海大学老师和学生的本地财务工作台：用聊天入口完成政策查询、票据归集、报销包生成、退回诊断和受控代填，把重复搬运数据的工作交给机器，把最终责任和确认留给本人。
 
-本项目来自 [HINT Lab](http://www.hintlab.cn)。完整产品设计见 [PRODUCT_SPEC.md](PRODUCT_SPEC.md)，阶段路线图见 [PRODUCT_PLAN.md](PRODUCT_PLAN.md)。
+本项目来自 [HINT Lab](http://www.hintlab.cn)。完整产品设计见 [PRODUCT_SPEC.md](PRODUCT_SPEC.md)，阶段路线图见 [PRODUCT_PLAN.md](PRODUCT_PLAN.md)，报销人视角的用户体验型 PRD 见 [PRODUCT_UX_PRD.md](PRODUCT_UX_PRD.md)。
 
 ## 为什么做
 
