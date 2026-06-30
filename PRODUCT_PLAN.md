@@ -211,8 +211,9 @@ Playwright 负责受控浏览器代填，不负责静默报销。
 当前本地实现：
 
 - FastAPI 提供本地网页服务。
-- React + Ant Design 提供左侧工作区、主页 Chat 入口和报销包详情页。
-- 主页 Chat 支持一句话备注和附件上传：有附件生成报销包，无附件进入资料归集随手记。
+- React + Ant Design 提供左侧工作区、主页单一 Chat 入口和报销包详情页。
+- 主页 Chat 使用图标化工具栏支持一句话备注、知识库查询和附件上传：有附件生成报销包，无附件进入资料归集随手记。
+- 等待报销按真实状态分组展示：缺材料、等待复核、可代填、已提交和退回待处理。
 - 报销包正文继续导出为 `package.json`、`package.md` 和 `playwright_plan.json`。
 - SQLite 记录报销包工作流状态和状态变更日志。
 - “已报销”只来自用户手动标记或未来学校系统回写，不由材料齐全自动推断。
@@ -436,7 +437,7 @@ BrowserActionLog
 - IMAP 邮箱轮询器：读取环境变量连接邮箱，拉取未处理邮件，去重后生成报销包。
 - 七类样例验证脚本，当前 `python3 tools/verify_mvp.py` 可通过。
 - 网页 RAG 验证脚本，当前 `python3 tools/verify_web_rag.py` 可通过。
-- Ant Design 前端渲染和上传验证脚本，当前 `python3 tools/verify_frontend_render.py`、`python3 tools/verify_frontend_upload.py` 可通过。
+- Ant Design 前端渲染和上传验证脚本覆盖主页 Chat、侧边栏、等待报销状态标签和附件上传，当前 `python3 tools/verify_frontend_render.py`、`python3 tools/verify_frontend_upload.py` 可通过。
 - 发票结构化字段验证脚本，当前 `python3 tools/verify_structured_fields.py` 可通过。
 - Playwright 演示验证脚本，当前 `python3 tools/verify_playwright_demo.py` 可通过。
 - 退回诊断验证脚本，当前 `python3 tools/verify_return_diagnosis.py` 可通过。

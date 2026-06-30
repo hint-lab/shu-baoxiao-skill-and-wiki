@@ -178,6 +178,7 @@ async def index(request: Request, q: str = "", source_type: str = "") -> HTMLRes
     for path in package_dirs():
         package = load_package(path.name)
         if package and not is_validation_package(package):
+            package["has_return_diagnosis"] = (OUTPUT_ROOT / package["id"] / "return_diagnosis.json").exists()
             packages.append(attach_status(package))
     recent = packages[:8]
     allowed_source_type = source_type if source_type in {"page", "attachment", "local_pdf"} else ""

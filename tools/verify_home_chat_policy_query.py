@@ -61,7 +61,7 @@ def main() -> None:
             page = browser.new_page(viewport={"width": 1360, "height": 920})
             page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
             page.goto(BASE_URL, wait_until="networkidle")
-            page.get_by_label("报销助手").fill(QUESTION)
+            page.get_by_placeholder("问：版面费报销需要哪些材料？").fill(QUESTION)
             page.get_by_role("button", name="查询依据").click()
             page.locator("h2:has-text('报销知识库')").wait_for(timeout=10000)
             page.get_by_text("检索式答复").wait_for(timeout=10000)

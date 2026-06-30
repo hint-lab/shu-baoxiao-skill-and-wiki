@@ -123,7 +123,7 @@ body {
   display: grid;
   align-content: center;
   min-height: calc(100vh - 72px);
-  width: min(840px, 100%);
+  width: min(860px, 100%);
   margin: 0 auto;
   padding: 40px 0;
 }
@@ -138,7 +138,7 @@ body {
 
 .home-chat-head h1.ant-typography {
   margin: 0;
-  font-size: 34px;
+  font-size: 32px;
   line-height: 1.15;
   letter-spacing: 0;
 }
@@ -156,28 +156,72 @@ body {
 }
 
 .home-chat-card {
-  border: 1px solid rgba(22, 119, 255, 0.18);
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(31, 41, 55, 0.12);
+  background: #fff;
+  box-shadow: 0 20px 54px rgba(15, 23, 42, 0.09);
 }
 
 .home-chat-card .ant-card-body {
-  padding: 20px;
+  padding: 18px;
 }
 
-.chat-upload {
-  margin-top: 8px;
+.chat-form {
+  display: grid;
+  gap: 0;
 }
 
-.chat-upload .ant-upload-drag {
-  background: #fbfdff;
+.chat-title-item,
+.chat-note-item {
+  margin-bottom: 0;
 }
 
-.chat-actions {
+.chat-title-input {
+  height: 42px;
+  border-color: transparent !important;
+  border-bottom-color: var(--line) !important;
+  padding-left: 2px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.chat-title-input:focus,
+.chat-title-input:hover {
+  border-color: transparent !important;
+  border-bottom-color: #1677ff !important;
+  box-shadow: none !important;
+}
+
+.chat-note-item textarea.ant-input {
+  border: 0 !important;
+  padding: 16px 2px 12px;
+  font-size: 16px;
+  line-height: 1.7;
+  resize: none;
+  box-shadow: none !important;
+}
+
+.chat-file-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 0 4px;
+  border-top: 1px solid var(--line);
+}
+
+.chat-file-strip .ant-tag {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-toolbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 14px;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
 
 .work-card {
@@ -361,6 +405,19 @@ body {
     min-height: auto;
   }
 
+  .app-sider.ant-layout-sider-collapsed {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    height: 0;
+    min-height: 0;
+  }
+
+  .app-sider.ant-layout-sider-collapsed .ant-layout-sider-children {
+    display: none;
+  }
+
   .app-sider .ant-layout-sider-children {
     position: static;
     height: auto;
@@ -372,15 +429,16 @@ body {
   }
 
   .home-chat-wrap {
-    min-height: auto;
-    padding: 22px 0 34px;
+    align-content: start;
+    min-height: 0;
+    padding: 72px 0 34px;
   }
 
   .home-chat-head h1.ant-typography {
     font-size: 28px;
   }
 
-  .chat-actions {
+  .chat-toolbar {
     display: grid;
   }
 

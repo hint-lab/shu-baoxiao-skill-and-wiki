@@ -17,6 +17,7 @@
     Select,
     Space,
     Statistic,
+    Tabs,
     Tag,
     Typography,
     Upload,
@@ -35,6 +36,8 @@
     CheckCircleOutlined,
     ClockCircleOutlined,
     DatabaseOutlined,
+    DeleteOutlined,
+    FileAddOutlined,
     FolderOpenOutlined,
     HomeOutlined,
     InboxOutlined,
@@ -110,6 +113,16 @@
     const missing = missingCount(pkg);
     if (missing) return e(Tag, { color: "red" }, `${missing} 项缺漏`);
     return e(Tag, { color: "blue" }, "待本人复核");
+  }
+
+  function waitingGroupOf(pkg) {
+    if (pkg.has_return_diagnosis) return "returned";
+    const status = packageStatus(pkg);
+    if (status === "ready_for_school") return "ready_for_school";
+    if (status === "ready_for_review") return "ready_for_review";
+    if (status === "submitted_by_user") return "submitted";
+    if (needsMaterials(pkg)) return "needs_materials";
+    return "ready_for_review";
   }
 
   function menuLabel(label, count) {
@@ -267,44 +280,68 @@
         { className: "home-chat-head" },
         e("div", { className: "assistant-mark" }, icon(MessageOutlined)),
         e(Title, { level: 1 }, "上海大学报销助手"),
-        e(Text, { type: "secondary" }, "直接问报销规则，或说一句要报什么并拖入发票、邮件、附件。")
+        e(Text, { type: "secondary" }, "把问题、发票、邮件和附件丢进来，我先整理好，最后由本人确认。")
       ),
       e(
         Card,
-        { className: "home-chat-card" },
+        { className: "home-chat-card", bordered: false },
         e(
           Form,
-          { form, layout: "vertical", onFinish: submit },
-          e(Form.Item, { label: "事项名称", name: "title" }, e(Input, { placeholder: "例如：北京会议差旅 / 材料采购 / 信息服务费" })),
+          { form, layout: "vertical", onFinish: submit, className: "chat-form" },
+          e(Form.Item, { name: "title", className: "chat-title-item" }, e(Input, { className: "chat-title-input", placeholder: "事项名称，可不填" })),
           e(
             Form.Item,
-            { label: "报销助手", name: "note" },
+            { name: "note", className: "chat-note-item" },
             e(Input.TextArea, {
-              rows: 7,
-              placeholder: "例如：版面费报销需要哪些材料？\n或者：6 月去北京参加高校人工智能会议，报销高铁、酒店和会务相关费用，走张老师科研项目。",
+              autoSize: { minRows: 6, maxRows: 10 },
+              placeholder: "问：版面费报销需要哪些材料？\n记：6 月北京人工智能会议，报销高铁、酒店和会务费，走张老师科研项目。",
             })
           ),
-          e(
-            Dragger,
-            {
-              className: "chat-upload",
-              multiple: true,
-              beforeUpload: () => false,
-              fileList,
-              onChange: ({ fileList: next }) => setFileList(next),
-            },
-            e("p", { className: "upload-symbol" }, icon(PaperClipOutlined) || "↑"),
-            e("p", { className: "ant-upload-text" }, "拖入发票、支付记录、合同、通知或 .eml 邮件"),
-            e("p", { className: "ant-upload-hint" }, "带附件会直接整理成报销包；只有文字会先进入资料归集。")
-          ),
+          fileList.length
+            ? e(
+                "div",
+                { className: "chat-file-strip" },
+                fileList.slice(0, 4).map((file) =>
+                  e(
+                    Tag,
+                    { key: file.uid || file.name, icon: icon(PaperClipOutlined) },
+                    file.name
+                  )
+                ),
+                fileList.length > 4 ? e(Tag, null, `+${fileList.length - 4}`) : null
+              )
+            : null,
           e(
             "div",
-            { className: "chat-actions" },
-            e(Button, { href: "/#knowledge", icon: icon(SearchOutlined) }, "查报销依据"),
+            { className: "chat-toolbar" },
+            e(
+              Space,
+              { wrap: true, size: 8 },
+              e(
+                Upload,
+                {
+                  multiple: true,
+                  beforeUpload: () => false,
+                  fileList,
+                  showUploadList: false,
+                  onChange: ({ fileList: next }) => setFileList(next),
+                },
+                e(Button, { icon: icon(PaperClipOutlined) || icon(FileAddOutlined) }, "附件")
+              ),
+              e(Button, { href: "/#knowledge", icon: icon(SearchOutlined) }, "知识库"),
+              fileList.length
+                ? e(Button, { danger: true, icon: icon(DeleteOutlined), onClick: () => setFileList([]) }, "清空")
+                : null
+            ),
             e(
               Button,
-              { type: "primary", htmlType: "submit", loading: submitting, icon: icon(shouldAskPolicy ? SearchOutlined : fileList.length ? InboxOutlined : SendOutlined) },
-              shouldAskPolicy ? "查询依据" : fileList.length ? "生成报销包" : "存入资料归集"
+              {
+                type: "primary",
+                htmlType: "submit",
+                loading: submitting,
+                icon: icon(shouldAskPolicy ? SearchOutlined : fileList.length ? InboxOutlined : SendOutlined),
+              },
+              shouldAskPolicy ? "查询依据" : fileList.length ? "生成报销包" : "发送"
             )
           )
         )
@@ -452,6 +489,7 @@
                     { size: 8, wrap: true },
                     e("a", { href: `/packages/${encodeURIComponent(pkg.id)}/view` }, pkg.title),
                     e(Tag, { color: typeColor(pkg.reimbursement_type) }, pkg.reimbursement_type_name),
+                    pkg.has_return_diagnosis ? e(Tag, { color: "orange" }, "有退回诊断") : null,
                     statusSummary(pkg)
                   ),
                   description: `${(pkg.documents || []).length} 份材料 · 推荐入口：${pkg.school_form_hint || "待识别"}`,
@@ -586,15 +624,68 @@
   }
 
   function WaitingView() {
+    const waiting = waitingPackages(allPackages);
+    const groups = {
+      needs_materials: waiting.filter((pkg) => waitingGroupOf(pkg) === "needs_materials"),
+      ready_for_review: waiting.filter((pkg) => waitingGroupOf(pkg) === "ready_for_review"),
+      ready_for_school: waiting.filter((pkg) => waitingGroupOf(pkg) === "ready_for_school"),
+      submitted: waiting.filter((pkg) => waitingGroupOf(pkg) === "submitted"),
+      returned: waiting.filter((pkg) => waitingGroupOf(pkg) === "returned"),
+    };
+    const items = [
+      {
+        key: "needs_materials",
+        label: `缺材料 ${groups.needs_materials.length}`,
+        children: e(PackageList, {
+          title: "缺材料",
+          packages: groups.needs_materials,
+          emptyDescription: "当前没有缺必需材料的报销包。",
+        }),
+      },
+      {
+        key: "ready_for_review",
+        label: `等待复核 ${groups.ready_for_review.length}`,
+        children: e(PackageList, {
+          title: "等待本人复核",
+          packages: groups.ready_for_review,
+          emptyDescription: "当前没有等待复核的报销包。",
+        }),
+      },
+      {
+        key: "ready_for_school",
+        label: `可代填 ${groups.ready_for_school.length}`,
+        children: e(PackageList, {
+          title: "可进入上海大学财务系统",
+          packages: groups.ready_for_school,
+          emptyDescription: "当前没有已确认可代填的报销包。",
+        }),
+      },
+      {
+        key: "submitted",
+        label: `已提交 ${groups.submitted.length}`,
+        children: e(PackageList, {
+          title: "已提交待回写",
+          packages: groups.submitted,
+          emptyDescription: "当前没有已提交但未标记报销的事项。",
+        }),
+      },
+      {
+        key: "returned",
+        label: `退回待处理 ${groups.returned.length}`,
+        children: e(PackageList, {
+          title: "退回待处理",
+          packages: groups.returned,
+          emptyDescription: "当前没有带退回诊断的报销包。",
+        }),
+      },
+    ];
     return e(
       React.Fragment,
       null,
-      e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "等待报销"), e(Text, { type: "secondary" }, "这里展示还没有被标记为已报销的本地报销包，提交动作必须由本人确认。"))),
-      e(PackageList, {
-        title: "等待处理",
-        packages: waitingPackages(allPackages),
-        emptyDescription: "当前没有等待报销的事项。",
-      })
+      e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "等待报销"), e(Text, { type: "secondary" }, "按真实状态分组：缺材料、等待复核、可代填、已提交和退回待处理。提交动作必须由本人确认。"))),
+      waiting.length
+        ? e(Tabs, { className: "work-tabs", defaultActiveKey: "needs_materials", items })
+        : e(Card, { className: "work-card" }, e(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: "当前没有等待报销的事项。" }))
     );
   }
 
