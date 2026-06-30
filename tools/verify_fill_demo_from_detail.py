@@ -73,6 +73,16 @@ def main() -> None:
             page.get_by_text("待本人复核").first.wait_for(timeout=10000)
             if not page.get_by_role("button", name="启动本地代填演示").is_disabled():
                 raise AssertionError("Fill demo button should be disabled before ready_for_school")
+            if not page.get_by_role("button", name="确认可代填").is_disabled():
+                raise AssertionError("Ready-for-school button should require responsibility confirmations")
+            for label in [
+                "经费项目已经本人确认",
+                "收款账号或对公账户已经本人确认",
+                "票据和附件真实、合法、与业务相关",
+                "我知道 Agent 不会自动提交学校系统",
+                "进入学校系统后提交前仍由本人最终复核",
+            ]:
+                page.get_by_text(label).click()
             page.get_by_role("button", name="确认可代填").click()
             page.get_by_text("等待代填").first.wait_for(timeout=10000)
             page.get_by_role("button", name="启动本地代填演示").click()

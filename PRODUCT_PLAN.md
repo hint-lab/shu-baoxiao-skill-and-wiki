@@ -217,6 +217,7 @@ Playwright 负责受控浏览器代填，不负责静默报销。
 - 报销包正文继续导出为 `package.json`、`package.md` 和 `playwright_plan.json`。
 - SQLite 记录报销包工作流状态和状态变更日志。
 - 报销包详情页支持手动标记待复核、可代填、已提交、已退回和已报销；生成退回诊断会同步进入已退回状态。
+- 确认可代填前必须逐项勾选经费项目、收款账号、票据真实性、不自动提交和提交前人工复核，后端会拒绝未确认的直接状态变更请求。
 - “已报销”只来自用户手动标记或未来学校系统回写，不由材料齐全自动推断。
 - 报销包详情页提供受控代填入口：只有材料齐全并由本人确认“可代填”后，才能运行本地 Playwright mock 演示；演示必须停在提交前。
 - 设置页展示真实接入状态：豆包、IMAP 邮箱、知识库索引、上海大学财务系统适配器，并且不暴露密钥或密码。
@@ -442,6 +443,7 @@ BrowserActionLog
 - Ant Design 前端渲染和上传验证脚本覆盖主页 Chat、侧边栏、等待报销状态标签和附件上传，当前 `python3 tools/verify_frontend_render.py`、`python3 tools/verify_frontend_upload.py` 可通过。
 - 发票结构化字段验证脚本，当前 `python3 tools/verify_structured_fields.py` 可通过。
 - Playwright 演示验证脚本，当前 `python3 tools/verify_playwright_demo.py` 可通过。
+- 责任确认门禁验证脚本，当前 `python3 tools/verify_responsibility_confirmation_gate.py` 可通过。
 - 退回诊断验证脚本，当前 `python3 tools/verify_return_diagnosis.py` 可通过。
 - 已退回状态流验证脚本，当前 `python3 tools/verify_returned_status_flow.py` 可通过。
 - 补材料重建验证脚本，当前 `python3 tools/verify_supplement_flow.py` 可通过。

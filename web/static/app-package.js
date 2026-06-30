@@ -5,6 +5,7 @@
     App,
     Button,
     Card,
+    Checkbox,
     Col,
     ConfigProvider,
     Form,
@@ -36,6 +37,13 @@
     returned: ["orange", "已退回"],
     reimbursed: ["green", "已报销"],
   };
+  const responsibilityConfirmations = [
+    ["funding_project", "经费项目已经本人确认"],
+    ["payment_account", "收款账号或对公账户已经本人确认"],
+    ["invoice_truth", "票据和附件真实、合法、与业务相关"],
+    ["no_auto_submit", "我知道 Agent 不会自动提交学校系统"],
+    ["review_before_submit", "进入学校系统后提交前仍由本人最终复核"],
+  ];
 
   function packageMissingCount(packageData) {
     return (packageData.checklist || []).filter((item) => item.status === "missing").length;
@@ -89,12 +97,17 @@
 
   function StatusPanel({ missing }) {
     const [submitting, setSubmitting] = React.useState("");
+    const [confirmedItems, setConfirmedItems] = React.useState([]);
     const current = pkg.workflow_status || (missing ? "needs_materials" : "ready_for_review");
     const events = data.status_events || [];
+    const readyConfirmDone = confirmedItems.length === responsibilityConfirmations.length;
     async function updateStatus(status, note) {
       const body = new FormData();
       body.append("status", status);
       body.append("note", note || "");
+      if (status === "ready_for_school") {
+        confirmedItems.forEach((item) => body.append("confirm_items", item));
+      }
       setSubmitting(status);
       try {
         const response = await fetch(`/packages/${encodeURIComponent(data.package_id)}/status`, { method: "POST", body, redirect: "follow" });
@@ -135,7 +148,7 @@
                 key: status,
                 type: status === "ready_for_school" ? "primary" : "default",
                 loading: submitting === status,
-                disabled: current === status || (status === "ready_for_school" && missing > 0),
+                disabled: current === status || (status === "ready_for_school" && (missing > 0 || !readyConfirmDone)),
                 onClick: () => updateStatus(status, note),
               },
               label
@@ -144,6 +157,19 @@
         ),
         missing > 0
           ? e(Alert, { type: "warning", showIcon: true, message: "材料未齐时不能确认可代填", description: "先补齐必需材料，再进入学校财务系统辅助录入。" })
+          : null,
+        current !== "ready_for_school" && current !== "reimbursed"
+          ? e(
+              "div",
+              { className: "responsibility-confirm-box" },
+              e(Text, { strong: true }, "确认可代填前必须逐项确认"),
+              e(Checkbox.Group, {
+                className: "responsibility-confirm-list",
+                value: confirmedItems,
+                options: responsibilityConfirmations.map(([value, label]) => ({ value, label })),
+                onChange: setConfirmedItems,
+              })
+            )
           : null,
         events.length
           ? e(

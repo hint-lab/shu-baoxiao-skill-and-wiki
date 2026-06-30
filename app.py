@@ -48,6 +48,14 @@ WEB_STATIC = ROOT / "web/static"
 WEB_TEMPLATES = ROOT / "web/templates"
 PLAYWRIGHT_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 
+RESPONSIBILITY_CONFIRMATIONS = {
+    "funding_project",
+    "payment_account",
+    "invoice_truth",
+    "no_auto_submit",
+    "review_before_submit",
+}
+
 app = FastAPI(title="上海大学自助报销 Agent")
 templates = Jinja2Templates(directory=str(WEB_TEMPLATES))
 app.mount("/static", StaticFiles(directory=str(WEB_STATIC)), name="static")
@@ -330,8 +338,19 @@ async def view_package(request: Request, package_id: str) -> HTMLResponse:
 
 
 @app.post("/packages/{package_id}/status", response_class=HTMLResponse)
-async def update_package_status(package_id: str, status: str = Form(...), note: str = Form("")) -> RedirectResponse:
-    if load_package(package_id) is not None:
+async def update_package_status(
+    package_id: str,
+    status: str = Form(...),
+    note: str = Form(""),
+    confirm_items: list[str] = Form(default=[]),
+) -> RedirectResponse:
+    package = load_package(package_id)
+    if package is not None:
+        if status == "ready_for_school":
+            missing = [item for item in package.get("checklist", []) if item.get("status") == "missing"]
+            if missing or set(confirm_items) != RESPONSIBILITY_CONFIRMATIONS:
+                return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+            note = f"{note}；本人已逐项确认经费项目、收款账号、票据真实性和提交前人工复核".strip("；")
         set_package_status(package_id, status, note)
     return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
 

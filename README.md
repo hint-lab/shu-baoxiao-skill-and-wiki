@@ -24,6 +24,7 @@
 - 设置页支持在 IMAP 配置完整后手动拉取发票邮件；未配置时按钮禁用，接口只返回缺失项，不暴露邮箱密钥。
 - 导入本地报销材料，生成报销包、缺漏清单、政策依据和事由草稿。
 - 报销包详情页支持受控代填演示：材料齐全且本人确认可代填后，运行 Playwright mock 代填并停在提交前。
+- 确认可代填前必须逐项勾选经费项目、收款账号、票据真实性、不会自动提交和提交前复核；后端也会拦截未确认的直接请求。
 - 设置页展示真实接入状态：豆包、IMAP 邮箱、知识库索引和 Playwright 适配器；不暴露密钥或邮箱密码。
 - 报销知识库展示索引统计、抓取时间和来源类型，并支持按财务处网页、附件入口、本地 PDF 筛选检索结果。
 - 文本型发票可提取购买方、销售方、项目、发票号、日期、金额和币种；图片材料在本机装有 tesseract 时会尝试 OCR。
@@ -95,6 +96,7 @@ python3 tools/verify_structured_fields.py
 ```bash
 python3 tools/verify_playwright_demo.py
 python3 tools/verify_fill_demo_from_detail.py
+python3 tools/verify_responsibility_confirmation_gate.py
 ```
 
 验证报销状态流和已报销工作区：
