@@ -216,6 +216,7 @@ Playwright 负责受控浏览器代填，不负责静默报销。
 - 等待报销按真实状态分组展示：缺材料、等待复核、可代填、已提交和退回待处理。
 - 报销包正文继续导出为 `package.json`、`package.md` 和 `playwright_plan.json`。
 - SQLite 记录报销包工作流状态和状态变更日志。
+- 报销包详情页支持手动标记待复核、可代填、已提交、已退回和已报销；生成退回诊断会同步进入已退回状态。
 - “已报销”只来自用户手动标记或未来学校系统回写，不由材料齐全自动推断。
 - 报销包详情页提供受控代填入口：只有材料齐全并由本人确认“可代填”后，才能运行本地 Playwright mock 演示；演示必须停在提交前。
 - 设置页展示真实接入状态：豆包、IMAP 邮箱、知识库索引、上海大学财务系统适配器，并且不暴露密钥或密码。
@@ -442,6 +443,7 @@ BrowserActionLog
 - 发票结构化字段验证脚本，当前 `python3 tools/verify_structured_fields.py` 可通过。
 - Playwright 演示验证脚本，当前 `python3 tools/verify_playwright_demo.py` 可通过。
 - 退回诊断验证脚本，当前 `python3 tools/verify_return_diagnosis.py` 可通过。
+- 已退回状态流验证脚本，当前 `python3 tools/verify_returned_status_flow.py` 可通过。
 - 补材料重建验证脚本，当前 `python3 tools/verify_supplement_flow.py` 可通过。
 - 邮件导入验证脚本，当前 `python3 tools/verify_email_ingest.py` 和 `python3 tools/verify_web_email_upload.py` 可通过。
 - IMAP fixture 验证脚本，当前 `python3 tools/verify_imap_fixture.py` 可通过。

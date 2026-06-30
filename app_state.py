@@ -15,6 +15,7 @@ ALLOWED_STATUSES = {
     "ready_for_review",
     "ready_for_school",
     "submitted_by_user",
+    "returned",
     "reimbursed",
 }
 
@@ -24,6 +25,7 @@ STATUS_LABELS = {
     "ready_for_review": "待本人复核",
     "ready_for_school": "等待代填",
     "submitted_by_user": "已提交",
+    "returned": "已退回",
     "reimbursed": "已报销",
 }
 
@@ -51,10 +53,14 @@ def init_db() -> None:
               updated_at TEXT NOT NULL,
               ready_for_school_at TEXT,
               submitted_at TEXT,
+              returned_at TEXT,
               reimbursed_at TEXT
             )
             """
         )
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(package_status)").fetchall()}
+        if "returned_at" not in columns:
+            conn.execute("ALTER TABLE package_status ADD COLUMN returned_at TEXT")
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS package_status_events (
@@ -134,11 +140,14 @@ def set_package_status(package_id: str, status: str, note: str = "") -> dict[str
         old_status = row["status"] if row else None
         ready_for_school_at = row["ready_for_school_at"] if row else None
         submitted_at = row["submitted_at"] if row else None
+        returned_at = row["returned_at"] if row and "returned_at" in row.keys() else None
         reimbursed_at = row["reimbursed_at"] if row else None
         if status == "ready_for_school" and not ready_for_school_at:
             ready_for_school_at = timestamp
         if status == "submitted_by_user" and not submitted_at:
             submitted_at = timestamp
+        if status == "returned" and not returned_at:
+            returned_at = timestamp
         if status == "reimbursed" and not reimbursed_at:
             reimbursed_at = timestamp
         if row:
@@ -146,21 +155,21 @@ def set_package_status(package_id: str, status: str, note: str = "") -> dict[str
                 """
                 UPDATE package_status
                 SET status = ?, note = ?, updated_at = ?,
-                    ready_for_school_at = ?, submitted_at = ?, reimbursed_at = ?
+                    ready_for_school_at = ?, submitted_at = ?, returned_at = ?, reimbursed_at = ?
                 WHERE package_id = ?
                 """,
-                (status, note, timestamp, ready_for_school_at, submitted_at, reimbursed_at, package_id),
+                (status, note, timestamp, ready_for_school_at, submitted_at, returned_at, reimbursed_at, package_id),
             )
         else:
             conn.execute(
                 """
                 INSERT INTO package_status (
                   package_id, status, note, created_at, updated_at,
-                  ready_for_school_at, submitted_at, reimbursed_at
+                  ready_for_school_at, submitted_at, returned_at, reimbursed_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (package_id, status, note, timestamp, timestamp, ready_for_school_at, submitted_at, reimbursed_at),
+                (package_id, status, note, timestamp, timestamp, ready_for_school_at, submitted_at, returned_at, reimbursed_at),
             )
         conn.execute(
             """

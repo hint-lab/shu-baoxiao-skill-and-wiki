@@ -104,6 +104,7 @@
       ready_for_review: ["blue", "待本人复核"],
       ready_for_school: ["geekblue", "等待代填"],
       submitted_by_user: ["gold", "已提交"],
+      returned: ["orange", "已退回"],
       reimbursed: ["green", "已报销"],
     };
     const status = packageStatus(pkg);
@@ -119,6 +120,7 @@
   function waitingGroupOf(pkg) {
     if (pkg.has_return_diagnosis) return "returned";
     const status = packageStatus(pkg);
+    if (status === "returned") return "returned";
     if (status === "ready_for_school") return "ready_for_school";
     if (status === "ready_for_review") return "ready_for_review";
     if (status === "submitted_by_user") return "submitted";

@@ -230,6 +230,7 @@
 - `ready_for_review`：材料齐全，等待用户复核。
 - `ready_for_school`：用户确认后，等待进入上海大学财务系统代填。
 - `submitted_by_user`：用户标记已在上海大学财务系统提交。
+- `returned`：上海大学财务系统已退回，等待退回诊断或补充材料。
 - `reimbursed`：用户或学校回写明确标记已报销。
 
 注意：

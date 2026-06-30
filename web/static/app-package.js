@@ -33,6 +33,7 @@
     ready_for_review: ["blue", "待本人复核"],
     ready_for_school: ["geekblue", "等待代填"],
     submitted_by_user: ["gold", "已提交"],
+    returned: ["orange", "已退回"],
     reimbursed: ["green", "已报销"],
   };
 
@@ -107,6 +108,7 @@
       ["ready_for_review", "标记待复核", "本人需要继续核对材料"],
       ["ready_for_school", "确认可代填", "本人已确认材料完整，准备进入上海大学财务系统"],
       ["submitted_by_user", "标记已提交", "本人已在上海大学财务系统提交"],
+      ["returned", "标记已退回", "上海大学财务系统已退回，等待补材料或诊断"],
       ["reimbursed", "标记已报销", "本人确认学校系统已报销或已支付"],
     ];
     return e(
@@ -351,6 +353,50 @@
     );
   }
 
+  function WorkflowAlert({ missing }) {
+    const current = pkg.workflow_status || (missing ? "needs_materials" : "ready_for_review");
+    if (current === "returned") {
+      return e(Alert, {
+        className: "page-alert",
+        type: "warning",
+        showIcon: true,
+        message: "上海大学财务系统已退回",
+        description: "先查看退回诊断或粘贴退回意见，再补充材料并重新整理。",
+      });
+    }
+    if (current === "submitted_by_user") {
+      return e(Alert, {
+        className: "page-alert",
+        type: "info",
+        showIcon: true,
+        message: "已在上海大学财务系统提交",
+        description: "等待学校预审、支付或回写结果。只有确认支付完成后才能标记已报销。",
+      });
+    }
+    if (current === "reimbursed") {
+      return e(Alert, {
+        className: "page-alert",
+        type: "success",
+        showIcon: true,
+        message: "已标记报销完成",
+        description: "该事项只在已报销工作区展示，可继续保留材料和状态记录。",
+      });
+    }
+    if (current === "ready_for_school") {
+      return e(Alert, {
+        className: "page-alert",
+        type: "info",
+        showIcon: true,
+        message: "本人已确认可进入学校系统",
+        description: "代填 Agent 只能辅助填写草稿，真实登录、验证码、经费项目和提交动作必须人工处理。",
+      });
+    }
+    if (missing > 0) {
+      return e(Alert, { className: "page-alert", type: "warning", showIcon: true, message: "提交前仍需补材料", description: `当前还有 ${missing} 项必需材料未就绪。` });
+    }
+    return e(Alert, { className: "page-alert", type: "success", showIcon: true, message: "材料已进入可复核状态", description: "仍需本人确认票据真实性、经费项目、收款账号和提交动作。" });
+  }
+
   function PackagePage() {
     const missing = packageMissingCount(pkg);
     const ready = (pkg.checklist || []).filter((item) => item.status === "ready").length;
@@ -417,9 +463,7 @@
               { className: "work-card", title: "报销事由草稿" },
               e(Paragraph, { className: "reason-text" }, pkg.reason_draft)
             ),
-            missing
-              ? e(Alert, { className: "page-alert", type: "warning", showIcon: true, message: "提交前仍需补材料", description: `当前还有 ${missing} 项必需材料未就绪。` })
-              : e(Alert, { className: "page-alert", type: "success", showIcon: true, message: "材料已进入可复核状态", description: "仍需本人确认票据真实性、经费项目、收款账号和提交动作。" }),
+            e(WorkflowAlert, { missing }),
             e(StatusPanel, { missing }),
             e(FillAgentPanel, { missing }),
             e(MissingChecklist),

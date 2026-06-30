@@ -366,6 +366,7 @@ async def create_return_diagnosis(package_id: str, reason: str = Form(...)) -> R
         return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
     diagnosis = diagnose(package_json, reason)
     export_diagnosis(diagnosis, package_json.parent)
+    set_package_status(package_id, "returned", "根据财务系统退回意见生成退回诊断")
     return RedirectResponse(url=f"/packages/{package_id}/return-diagnosis", status_code=303)
 
 
