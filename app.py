@@ -4,7 +4,9 @@ import shutil
 import uuid
 from dataclasses import asdict
 import os
+import json
 from pathlib import Path
+from collections import Counter
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
@@ -96,6 +98,38 @@ async def settings_status() -> JSONResponse:
     return JSONResponse(payload)
 
 
+@app.get("/api/knowledge/status")
+async def knowledge_status() -> JSONResponse:
+    index_path = ROOT / "data/cwc/index.json"
+    manifest_path = ROOT / "data/cwc/crawl_manifest.json"
+    if not index_path.exists():
+        return JSONResponse(
+            {
+                "index_exists": False,
+                "chunk_count": 0,
+                "source_types": {},
+                "manifest": {},
+            }
+        )
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    source_types = Counter(chunk.get("source_type") or "page" for chunk in index.get("chunks", []))
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
+    return JSONResponse(
+        {
+            "index_exists": True,
+            "chunk_count": index.get("chunk_count", len(index.get("chunks", []))),
+            "source_types": dict(source_types),
+            "manifest": {
+                "base_url": manifest.get("base_url", ""),
+                "created_at": manifest.get("created_at", ""),
+                "document_count": manifest.get("document_count", 0),
+                "page_count": manifest.get("page_count", 0),
+                "attachment_count": manifest.get("attachment_count", 0),
+            },
+        }
+    )
+
+
 def package_dirs() -> list[Path]:
     if not OUTPUT_ROOT.exists():
         return []
@@ -139,14 +173,15 @@ def is_validation_package(package: dict) -> bool:
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request, q: str = "") -> HTMLResponse:
+async def index(request: Request, q: str = "", source_type: str = "") -> HTMLResponse:
     packages = []
     for path in package_dirs():
         package = load_package(path.name)
         if package and not is_validation_package(package):
             packages.append(attach_status(package))
     recent = packages[:8]
-    rag_result = query_policy(q, top_k=5) if q.strip() else None
+    allowed_source_type = source_type if source_type in {"page", "attachment", "local_pdf"} else ""
+    rag_result = query_policy(q, top_k=5, source_type=allowed_source_type) if q.strip() else None
     return templates.TemplateResponse(
         "index.html",
         {
@@ -156,6 +191,7 @@ async def index(request: Request, q: str = "") -> HTMLResponse:
             "inbox_items": list_inbox_items(),
             "rag_result": rag_result,
             "q": q,
+            "source_type": allowed_source_type,
         },
     )
 

@@ -47,7 +47,7 @@ def main() -> None:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page(viewport={"width": 1360, "height": 900})
             page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
-            page.goto(f"{BASE_URL}/?{query}", wait_until="networkidle")
+            page.goto(f"{BASE_URL}/?{query}#knowledge", wait_until="networkidle")
             page.get_by_text("检索式答复").wait_for(timeout=10000)
             page.get_by_text("版面费、出版费报销指南").first.wait_for(timeout=10000)
             page.get_by_text("财务处").first.wait_for(timeout=10000)

@@ -14,6 +14,7 @@
     List,
     Menu,
     Row,
+    Select,
     Space,
     Statistic,
     Tag,
@@ -351,6 +352,7 @@
 
   function RagPanel() {
     const [query, setQuery] = React.useState(data.q || "");
+    const [sourceType, setSourceType] = React.useState(data.source_type || "");
     const result = data.rag_result;
     function search() {
       const value = query.trim();
@@ -358,7 +360,9 @@
         message.warning("请输入报销问题");
         return;
       }
-      window.location.href = "/?q=" + encodeURIComponent(value) + "#knowledge";
+      const params = new URLSearchParams({ q: value });
+      if (sourceType) params.set("source_type", sourceType);
+      window.location.href = "/?" + params.toString() + "#knowledge";
     }
     return e(
       Card,
@@ -375,7 +379,22 @@
           },
           placeholder: "例如：版面费报销需要哪些材料",
         }),
-        e(Button, { type: "primary", onClick: search }, "查依据"),
+        e(
+          Space,
+          { wrap: true },
+          e(Select, {
+            value: sourceType,
+            style: { width: 180 },
+            onChange: setSourceType,
+            options: [
+              { value: "", label: "全部来源" },
+              { value: "page", label: "财务处网页" },
+              { value: "attachment", label: "附件入口" },
+              { value: "local_pdf", label: "本地 PDF" },
+            ],
+          }),
+          e(Button, { type: "primary", onClick: search }, "查依据")
+        ),
         result
           ? e(Alert, {
               type: result.hits && result.hits.length ? "success" : "warning",
@@ -485,6 +504,21 @@
   }
 
   function KnowledgeView() {
+    const [kbStatus, setKbStatus] = React.useState(null);
+    React.useEffect(() => {
+      let mounted = true;
+      fetch("/api/knowledge/status")
+        .then((response) => response.json())
+        .then((payload) => {
+          if (mounted) setKbStatus(payload);
+        })
+        .catch(() => {
+          if (mounted) setKbStatus({ index_exists: false, source_types: {}, manifest: {} });
+        });
+      return () => {
+        mounted = false;
+      };
+    }, []);
     const supported = [
       "差旅费",
       "版面费",
@@ -498,11 +532,34 @@
       React.Fragment,
       null,
       e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "报销知识库"), e(Text, { type: "secondary" }, "基于财务处公开网页和本地指南检索，回答必须能追溯来源。"))),
+      kbStatus
+        ? e(
+            Row,
+            { gutter: [16, 16], className: "metric-row" },
+            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "索引片段", value: kbStatus.chunk_count || 0, suffix: "条" }))),
+            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "财务处网页", value: (kbStatus.source_types || {}).page || 0, suffix: "条" }))),
+            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "附件入口", value: (kbStatus.source_types || {}).attachment || 0, suffix: "条" }))),
+            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "本地 PDF", value: (kbStatus.source_types || {}).local_pdf || 0, suffix: "条" })))
+          )
+        : null,
       e(RagPanel),
       e(
         Card,
         { className: "work-card", title: "当前支持的报销类别" },
-        e(Space, { wrap: true }, supported.map((item) => e(Tag, { key: item, color: "blue" }, item)))
+        e(
+          Space,
+          { direction: "vertical", className: "full", size: 10 },
+          e(Space, { wrap: true }, supported.map((item) => e(Tag, { key: item, color: "blue" }, item))),
+          kbStatus && kbStatus.manifest
+            ? e(
+                Text,
+                { type: "secondary" },
+                kbStatus.manifest.created_at
+                  ? `最近抓取：${kbStatus.manifest.created_at} · 页面 ${kbStatus.manifest.page_count || 0} · 附件 ${kbStatus.manifest.attachment_count || 0}`
+                  : "未找到抓取清单"
+              )
+            : null
+        )
       )
     );
   }

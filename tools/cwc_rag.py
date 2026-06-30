@@ -13,7 +13,7 @@ def load_index(path: Path = INDEX_PATH) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def bm25_scores(index: dict[str, Any], query: str, top_k: int) -> list[tuple[float, dict[str, Any]]]:
+def bm25_scores(index: dict[str, Any], query: str, top_k: int, source_type: str = "") -> list[tuple[float, dict[str, Any]]]:
     q_tokens = tokenize(query)
     if not q_tokens:
         return []
@@ -23,6 +23,9 @@ def bm25_scores(index: dict[str, Any], query: str, top_k: int) -> list[tuple[flo
     b = 0.75
     scores: list[tuple[float, int]] = []
     for i, tf in enumerate(index["term_freqs"]):
+        chunk = index["chunks"][i]
+        if source_type and chunk.get("source_type") != source_type:
+            continue
         dl = index["lengths"][i] or 1
         score = 0.0
         for term, q_weight in q_counts.items():
@@ -54,8 +57,9 @@ def snippet(text: str, query: str, max_len: int = 360) -> str:
     return ("..." if start else "") + text[start:end] + ("..." if end < len(text) else "")
 
 
-def query_policy(query: str, top_k: int = 5, index_path: Path = INDEX_PATH) -> dict[str, Any]:
+def query_policy(query: str, top_k: int = 5, index_path: Path = INDEX_PATH, source_type: str = "") -> dict[str, Any]:
     query = query.strip()
+    source_type = source_type.strip()
     if not query:
         return {"query": "", "answer": "", "hits": [], "source_count": 0}
     if not index_path.exists():
@@ -64,10 +68,11 @@ def query_policy(query: str, top_k: int = 5, index_path: Path = INDEX_PATH) -> d
             "answer": "本地财务处索引还不存在，请先刷新资料并重建索引。",
             "hits": [],
             "source_count": 0,
+            "source_type": source_type,
         }
 
     index = load_index(index_path)
-    raw_hits = bm25_scores(index, query, top_k)
+    raw_hits = bm25_scores(index, query, top_k, source_type)
     hits = []
     for rank, (score, chunk) in enumerate(raw_hits, 1):
         metadata = chunk.get("metadata") or {}
@@ -87,7 +92,7 @@ def query_policy(query: str, top_k: int = 5, index_path: Path = INDEX_PATH) -> d
         answer = "没有在本地财务处资料库里找到足够证据。建议换关键词，或检查资料是否需要校内登录、验证码附件或人工补充。"
     else:
         answer = f"找到 {len(hits)} 条可核对依据。下面是财务处公开网页或本地 PDF 片段；提交前仍以财务处系统预审和最新通知为准。"
-    return {"query": query, "answer": answer, "hits": hits, "source_count": len(hits)}
+    return {"query": query, "answer": answer, "hits": hits, "source_count": len(hits), "source_type": source_type}
 
 
 def format_cli_answer(result: dict[str, Any]) -> str:
