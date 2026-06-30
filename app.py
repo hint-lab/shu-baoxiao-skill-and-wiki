@@ -35,6 +35,10 @@ from tools.diagnose_return import diagnose, export_diagnosis
 from tools.ingest_eml import ingest_eml
 from tools.playwright_fill_adapter import ARTIFACT_DIR as PLAYWRIGHT_ARTIFACT_DIR
 from tools.playwright_fill_adapter import run_fill
+from tools.poll_imap import STATE_PATH as MAIL_STATE_PATH
+from tools.poll_imap import load_state as load_mail_state
+from tools.poll_imap import poll_imap
+from tools.poll_imap import save_state as save_mail_state
 from tools.supplement_package import rebuild_with_supplements
 
 
@@ -51,6 +55,24 @@ app.mount("/package-output", StaticFiles(directory=str(OUTPUT_ROOT)), name="pack
 app.mount("/playwright-output", StaticFiles(directory=str(PLAYWRIGHT_ARTIFACT_DIR)), name="playwright-output")
 
 
+def imap_env_status() -> dict[str, object]:
+    required = {
+        "host": os.getenv("REIMBURSEMENT_IMAP_HOST", ""),
+        "username": os.getenv("REIMBURSEMENT_IMAP_USERNAME", ""),
+        "password": os.getenv("REIMBURSEMENT_IMAP_PASSWORD", ""),
+    }
+    state = load_mail_state(MAIL_STATE_PATH)
+    return {
+        "configured": all(required.values()),
+        "host_configured": bool(required["host"]),
+        "username_configured": bool(required["username"]),
+        "password_configured": bool(required["password"]),
+        "mailbox": os.getenv("REIMBURSEMENT_IMAP_MAILBOX", "INBOX"),
+        "mark_seen": os.getenv("REIMBURSEMENT_IMAP_MARK_SEEN", "false").lower() == "true",
+        "processed_count": len(state.get("processed", [])),
+    }
+
+
 @app.get("/favicon.ico")
 async def favicon() -> Response:
     return Response(status_code=204)
@@ -62,11 +84,6 @@ async def settings_status() -> JSONResponse:
     adapter_text = adapter_path.read_text(encoding="utf-8") if adapter_path.exists() else ""
     index_path = ROOT / "data/cwc/index.json"
     documents_path = ROOT / "data/cwc/documents.jsonl"
-    imap_required = {
-        "host": os.getenv("REIMBURSEMENT_IMAP_HOST", ""),
-        "username": os.getenv("REIMBURSEMENT_IMAP_USERNAME", ""),
-        "password": os.getenv("REIMBURSEMENT_IMAP_PASSWORD", ""),
-    }
     payload = {
         "doubao": {
             "enabled": doubao_enabled(),
@@ -75,14 +92,7 @@ async def settings_status() -> JSONResponse:
             "model": doubao_model_name(),
             "base_url": doubao_base_url(),
         },
-        "imap": {
-            "configured": all(imap_required.values()),
-            "host_configured": bool(imap_required["host"]),
-            "username_configured": bool(imap_required["username"]),
-            "password_configured": bool(imap_required["password"]),
-            "mailbox": os.getenv("REIMBURSEMENT_IMAP_MAILBOX", "INBOX"),
-            "mark_seen": os.getenv("REIMBURSEMENT_IMAP_MARK_SEEN", "false").lower() == "true",
-        },
+        "imap": imap_env_status(),
         "knowledge_base": {
             "index_exists": index_path.exists(),
             "documents_exists": documents_path.exists(),
@@ -96,6 +106,46 @@ async def settings_status() -> JSONResponse:
         },
     }
     return JSONResponse(payload)
+
+
+@app.post("/api/mail/poll")
+async def poll_mailbox(limit: int = Form(10), force: bool = Form(False)) -> JSONResponse:
+    imap = imap_env_status()
+    if not imap["configured"]:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": "IMAP 未配置完整，请先在本机环境变量中配置邮箱服务器、账号和授权密码。",
+                "missing": {
+                    "host": not imap["host_configured"],
+                    "username": not imap["username_configured"],
+                    "password": not imap["password_configured"],
+                },
+            },
+            status_code=400,
+        )
+    safe_limit = max(1, min(int(limit or 10), 50))
+    state = load_mail_state(MAIL_STATE_PATH)
+    try:
+        results = poll_imap(state, safe_limit, force=bool(force))
+        save_mail_state(state, MAIL_STATE_PATH)
+    except Exception as exc:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": "邮箱连接或邮件解析失败，请检查本机 IMAP 配置、邮箱授权和网络状态。",
+                "error_type": exc.__class__.__name__,
+            },
+            status_code=502,
+        )
+    processed = []
+    for result in results:
+        payload = asdict(result)
+        payload["package_id"] = Path(result.package_path).name
+        payload.pop("eml_path", None)
+        payload.pop("package_path", None)
+        processed.append(payload)
+    return JSONResponse({"ok": True, "count": len(processed), "processed": processed, "processed_total": len(state.get("processed", []))})
 
 
 @app.get("/api/knowledge/status")

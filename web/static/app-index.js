@@ -46,6 +46,7 @@
     SearchOutlined,
     SendOutlined,
     SettingOutlined,
+    SyncOutlined,
   } = Icons;
   const NAV_KEYS = ["home", "knowledge", "collection", "waiting", "reimbursed", "settings"];
 
@@ -705,26 +706,60 @@
   function SettingsView() {
     const [status, setStatus] = React.useState(null);
     const [error, setError] = React.useState("");
-    React.useEffect(() => {
-      let mounted = true;
+    const [mailPolling, setMailPolling] = React.useState(false);
+    const [mailPollResult, setMailPollResult] = React.useState(null);
+
+    function refreshStatus(shouldUpdate = () => true) {
       fetch("/api/settings/status")
         .then((response) => response.json())
         .then((payload) => {
-          if (mounted) setStatus(payload);
+          if (shouldUpdate()) setStatus(payload);
         })
         .catch(() => {
-          if (mounted) setError("读取本地配置状态失败");
+          if (shouldUpdate()) setError("读取本地配置状态失败");
         });
+    }
+
+    React.useEffect(() => {
+      let mounted = true;
+      refreshStatus(() => mounted);
       return () => {
         mounted = false;
       };
     }, []);
 
+    async function pollMailbox() {
+      setMailPolling(true);
+      setMailPollResult(null);
+      try {
+        const body = new FormData();
+        body.append("limit", "10");
+        const response = await fetch("/api/mail/poll", { method: "POST", body });
+        const payload = await response.json();
+        setMailPollResult(payload);
+        if (!response.ok || !payload.ok) {
+          message.error(payload.error || "拉取邮箱失败");
+          return;
+        }
+        if (payload.count > 0) {
+          message.success(`已整理 ${payload.count} 封邮件`);
+        } else {
+          message.info("没有新的未读发票邮件");
+        }
+        refreshStatus(() => true);
+      } catch (mailError) {
+        setMailPollResult({ ok: false, error: "拉取邮箱失败，请检查本地服务状态。" });
+        message.error("拉取邮箱失败");
+      } finally {
+        setMailPolling(false);
+      }
+    }
+
     function stateTag(ok, readyText, pendingText) {
       return e(Tag, { color: ok ? "green" : "gold" }, ok ? readyText : pendingText);
     }
 
-    function ConfigRow({ title, description, ok, readyText, pendingText, extra }) {
+    function ConfigRow({ title, description, ok, readyText, pendingText, extra, action }) {
       return e(
         "div",
         { className: "settings-row" },
@@ -738,7 +773,8 @@
           Space,
           { wrap: true },
           stateTag(ok, readyText, pendingText),
-          extra ? e(Text, { type: "secondary" }, extra) : null
+          extra ? e(Text, { type: "secondary" }, extra) : null,
+          action || null
         )
       );
     }
@@ -777,8 +813,36 @@
                   ok: imap.configured,
                   readyText: "已配置",
                   pendingText: "未配置完整",
-                  extra: `邮箱目录 ${imap.mailbox}`,
+                  extra: `邮箱目录 ${imap.mailbox} · 已处理 ${imap.processed_count || 0} 封`,
+                  action: e(
+                    Button,
+                    {
+                      icon: icon(SyncOutlined),
+                      loading: mailPolling,
+                      disabled: !imap.configured,
+                      onClick: pollMailbox,
+                    },
+                    "立即拉取邮箱"
+                  ),
                 }),
+                mailPollResult
+                  ? e(Alert, {
+                      className: "settings-inline-alert",
+                      type: mailPollResult.ok ? "success" : "warning",
+                      showIcon: true,
+                      message: mailPollResult.ok ? `邮箱拉取完成：${mailPollResult.count || 0} 封新邮件` : "邮箱拉取未完成",
+                      description: mailPollResult.ok
+                        ? (mailPollResult.count || 0) > 0
+                          ? e(
+                              Space,
+                              { direction: "vertical", className: "full", size: 6 },
+                              e(Text, null, "新邮件已整理为本地报销包。"),
+                              e(Button, { href: "/?refresh=" + Date.now() + "#waiting", type: "primary" }, "查看等待报销")
+                            )
+                          : "没有新的未读发票邮件，历史邮件不会重复生成报销包。"
+                        : mailPollResult.error || "请检查本机 IMAP 配置。",
+                    })
+                  : null,
                 e(ConfigRow, {
                   title: "报销知识库",
                   description: "基于财务处公开网页和本地 PDF 的 BM25 检索索引。",

@@ -21,6 +21,7 @@
 - 资料归集支持聊天随手记：先保存一句备注，后续再转成待补材料报销包。
 - 主页是单一 Chat 入口，使用 Ant Design 图标按钮完成附件上传、知识库跳转和发送；报销规则问题进入知识库检索，事项描述进入资料归集，带附件则生成报销包。
 - 等待报销页按真实状态分组：缺材料、等待复核、可代填、已提交和退回待处理。
+- 设置页支持在 IMAP 配置完整后手动拉取发票邮件；未配置时按钮禁用，接口只返回缺失项，不暴露邮箱密钥。
 - 导入本地报销材料，生成报销包、缺漏清单、政策依据和事由草稿。
 - 报销包详情页支持受控代填演示：材料齐全且本人确认可代填后，运行 Playwright mock 代填并停在提交前。
 - 设置页展示真实接入状态：豆包、IMAP 邮箱、知识库索引和 Playwright 适配器；不暴露密钥或邮箱密码。
@@ -118,6 +119,7 @@ python3 tools/verify_home_chat_policy_query.py
 
 ```bash
 python3 tools/verify_settings_status.py
+python3 tools/verify_mail_poll_settings.py
 ```
 
 验证退回诊断：

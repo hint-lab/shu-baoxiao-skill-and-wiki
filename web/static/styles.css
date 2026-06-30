@@ -299,6 +299,11 @@ body {
   margin: 4px 0 0 !important;
 }
 
+.settings-inline-alert {
+  width: 100%;
+  margin: 4px 0 14px;
+}
+
 .page-alert {
   margin-bottom: 16px;
 }
