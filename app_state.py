@@ -67,6 +67,20 @@ def init_db() -> None:
             )
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS inbox_items (
+              id TEXT PRIMARY KEY,
+              source TEXT NOT NULL,
+              title TEXT NOT NULL DEFAULT '',
+              note TEXT NOT NULL,
+              status TEXT NOT NULL,
+              linked_package_id TEXT,
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            )
+            """
+        )
 
 
 def derive_status(package: dict[str, Any]) -> str:
@@ -187,3 +201,58 @@ def attach_status(package: dict[str, Any]) -> dict[str, Any]:
     package["workflow_updated_at"] = status["updated_at"]
     package["workflow_status_meta"] = status
     return package
+
+
+def create_inbox_item(item_id: str, source: str, title: str, note: str) -> dict[str, Any]:
+    init_db()
+    timestamp = now_iso()
+    title = title.strip()
+    note = note.strip()
+    with connect() as conn:
+        conn.execute(
+            """
+            INSERT INTO inbox_items (id, source, title, note, status, linked_package_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, 'unprocessed', NULL, ?, ?)
+            """,
+            (item_id, source.strip() or "chat", title, note, timestamp, timestamp),
+        )
+        row = conn.execute("SELECT * FROM inbox_items WHERE id = ?", (item_id,)).fetchone()
+    return dict(row)
+
+
+def list_inbox_items(include_processed: bool = False) -> list[dict[str, Any]]:
+    init_db()
+    where = "" if include_processed else "WHERE status != 'packaged'"
+    with connect() as conn:
+        rows = conn.execute(
+            f"""
+            SELECT id, source, title, note, status, linked_package_id, created_at, updated_at
+            FROM inbox_items
+            {where}
+            ORDER BY created_at DESC
+            """
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_inbox_item(item_id: str) -> dict[str, Any] | None:
+    init_db()
+    with connect() as conn:
+        row = conn.execute("SELECT * FROM inbox_items WHERE id = ?", (item_id,)).fetchone()
+    return dict(row) if row else None
+
+
+def mark_inbox_item_packaged(item_id: str, package_id: str) -> dict[str, Any] | None:
+    init_db()
+    timestamp = now_iso()
+    with connect() as conn:
+        conn.execute(
+            """
+            UPDATE inbox_items
+            SET status = 'packaged', linked_package_id = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (package_id, timestamp, item_id),
+        )
+        row = conn.execute("SELECT * FROM inbox_items WHERE id = ?", (item_id,)).fetchone()
+    return dict(row) if row else None

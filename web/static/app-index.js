@@ -25,10 +25,29 @@
 
   const data = window.__REIMBURSEMENT_DATA__ || {};
   const allPackages = data.packages || data.recent || [];
+  const inboxItems = data.inbox_items || [];
   const Dragger = Upload.Dragger;
   const { Content, Sider } = Layout;
   const { Title, Text, Paragraph } = Typography;
+  const Icons = window.icons || window.AntDesignIcons || {};
+  const {
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    DatabaseOutlined,
+    FolderOpenOutlined,
+    HomeOutlined,
+    InboxOutlined,
+    MessageOutlined,
+    PaperClipOutlined,
+    SearchOutlined,
+    SendOutlined,
+    SettingOutlined,
+  } = Icons;
   const NAV_KEYS = ["home", "knowledge", "collection", "waiting", "reimbursed", "settings"];
+
+  function icon(IconComponent) {
+    return IconComponent ? e(IconComponent) : null;
+  }
 
   function normalizeKey(value) {
     const key = String(value || "").replace("#", "");
@@ -96,17 +115,21 @@
     return count === undefined ? label : `${label} ${count}`;
   }
 
+  function reloadCollection() {
+    window.location.href = "/?refresh=" + Date.now() + "#collection";
+  }
+
   function Sidebar({ activeKey, onSelect }) {
     const pending = waitingPackages(allPackages).length;
-    const collecting = allPackages.filter(needsMaterials).length;
+    const collecting = allPackages.filter(needsMaterials).length + inboxItems.length;
     const finished = reimbursedPackages(allPackages).length;
     const items = [
-      { key: "home", label: "主页" },
-      { key: "knowledge", label: "报销知识库" },
-      { key: "waiting", label: menuLabel("等待报销", pending) },
-      { key: "collection", label: menuLabel("资料归集", collecting) },
-      { key: "reimbursed", label: menuLabel("已报销", finished) },
-      { key: "settings", label: "设置" },
+      { key: "home", icon: icon(HomeOutlined), label: "主页" },
+      { key: "knowledge", icon: icon(DatabaseOutlined), label: "报销知识库" },
+      { key: "waiting", icon: icon(ClockCircleOutlined), label: menuLabel("等待报销", pending) },
+      { key: "collection", icon: icon(FolderOpenOutlined), label: menuLabel("资料归集", collecting) },
+      { key: "reimbursed", icon: icon(CheckCircleOutlined), label: menuLabel("已报销", finished) },
+      { key: "settings", icon: icon(SettingOutlined), label: "设置" },
     ];
     return e(
       Sider,
@@ -183,6 +206,128 @@
           )
         ),
         e(Button, { type: "primary", htmlType: "submit", loading: submitting }, "生成报销包")
+      )
+    );
+  }
+
+  function HomeAssistantChat() {
+    const [form] = Form.useForm();
+    const [fileList, setFileList] = React.useState([]);
+    const [submitting, setSubmitting] = React.useState(false);
+
+    async function submit(values) {
+      const note = (values.note || "").trim();
+      const title = (values.title || "").trim();
+      if (!note && !fileList.length) {
+        message.warning("写一句报销事项，或者上传发票和附件");
+        return;
+      }
+      const body = new FormData();
+      body.append("title", title);
+      body.append("note", note);
+      fileList.forEach((file) => body.append("files", file.originFileObj || file));
+      setSubmitting(true);
+      try {
+        const url = fileList.length ? "/packages" : "/inbox-items";
+        const response = await fetch(url, { method: "POST", body, redirect: "follow" });
+        if (fileList.length) {
+          window.location.href = response.url || "/";
+        } else {
+          reloadCollection();
+        }
+      } catch (error) {
+        message.error("处理失败，请检查材料后重试");
+        setSubmitting(false);
+      }
+    }
+
+    return e(
+      "div",
+      { className: "home-chat-wrap" },
+      e(
+        "div",
+        { className: "home-chat-head" },
+        e("div", { className: "assistant-mark" }, icon(MessageOutlined)),
+        e(Title, { level: 1 }, "上海大学报销助手"),
+        e(Text, { type: "secondary" }, "说一句要报什么，拖入发票、邮件或附件；没有附件也可以先存到资料归集。")
+      ),
+      e(
+        Card,
+        { className: "home-chat-card" },
+        e(
+          Form,
+          { form, layout: "vertical", onFinish: submit },
+          e(Form.Item, { label: "事项名称", name: "title" }, e(Input, { placeholder: "例如：北京会议差旅 / 材料采购 / 信息服务费" })),
+          e(
+            Form.Item,
+            { label: "报销助手", name: "note" },
+            e(Input.TextArea, {
+              rows: 7,
+              placeholder: "例如：6 月去北京参加高校人工智能会议，报销高铁、酒店和会务相关费用，走张老师科研项目。",
+            })
+          ),
+          e(
+            Dragger,
+            {
+              className: "chat-upload",
+              multiple: true,
+              beforeUpload: () => false,
+              fileList,
+              onChange: ({ fileList: next }) => setFileList(next),
+            },
+            e("p", { className: "upload-symbol" }, icon(PaperClipOutlined) || "↑"),
+            e("p", { className: "ant-upload-text" }, "拖入发票、支付记录、合同、通知或 .eml 邮件"),
+            e("p", { className: "ant-upload-hint" }, "带附件会直接整理成报销包；只有文字会先进入资料归集。")
+          ),
+          e(
+            "div",
+            { className: "chat-actions" },
+            e(Button, { href: "/#knowledge", icon: icon(SearchOutlined) }, "查报销依据"),
+            e(
+              Button,
+              { type: "primary", htmlType: "submit", loading: submitting, icon: icon(fileList.length ? InboxOutlined : SendOutlined) },
+              fileList.length ? "生成报销包" : "存入资料归集"
+            )
+          )
+        )
+      )
+    );
+  }
+
+  function QuickNoteInbox() {
+    const [form] = Form.useForm();
+    const [submitting, setSubmitting] = React.useState(false);
+    async function submit(values) {
+      const note = (values.note || "").trim();
+      if (!note) {
+        message.warning("先写一句随手备注");
+        return;
+      }
+      const body = new FormData();
+      body.append("title", values.title || "");
+      body.append("note", note);
+      setSubmitting(true);
+      try {
+        await fetch("/inbox-items", { method: "POST", body, redirect: "follow" });
+        reloadCollection();
+      } catch (error) {
+        message.error("保存随手记失败");
+        setSubmitting(false);
+      }
+    }
+    return e(
+      Card,
+      { className: "work-card", title: "聊天随手记" },
+      e(
+        Form,
+        { form, layout: "vertical", onFinish: submit },
+        e(Form.Item, { label: "事项名称", name: "title" }, e(Input, { placeholder: "例如：6 月北京会议酒店票" })),
+        e(
+          Form.Item,
+          { label: "随手备注", name: "note", rules: [{ required: true, message: "请写一句备注" }] },
+          e(Input.TextArea, { rows: 4, placeholder: "例如：这张酒店发票是 6 月去北京开会，住宿两晚，后面再补会议通知和支付记录。" })
+        ),
+        e(Button, { type: "primary", htmlType: "submit", loading: submitting }, "存入资料归集")
       )
     );
   }
@@ -281,45 +426,45 @@
     );
   }
 
-  function HomeView() {
-    const packages = allPackages;
-    const pending = waitingPackages(packages);
-    const missingPackages = packages.filter(needsMaterials);
-    const finished = reimbursedPackages(packages);
+  function InboxList() {
     return e(
-      React.Fragment,
-      null,
-      e(
-        "div",
-        { className: "page-head" },
-        e(
-          "div",
-          null,
-          e(Title, { level: 2 }, "上海大学报销工作台"),
-          e(Text, { type: "secondary" }, "收票、整理、问依据、生成报销包，进入上海大学财务系统前先把材料理清。")
-        ),
-        e(Button, { href: "/package-output" }, "报销包文件")
-      ),
-      e(
-        Row,
-        { gutter: [16, 16], className: "metric-row" },
-        e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "本地报销包", value: packages.length, suffix: "个" }))),
-        e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "等待报销", value: pending.length, suffix: "个" }))),
-        e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "待补材料", value: missingPackages.length, suffix: "个" }))),
-        e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "已标记报销", value: finished.length, suffix: "个" })))
-      ),
-      e(
-        Row,
-        { gutter: [16, 16], align: "top" },
-        e(Col, { xs: 24, lg: 13 }, e(UploadWorkbench)),
-        e(Col, { xs: 24, lg: 11 }, e(RagPanel))
-      ),
-      e(PackageList, {
-        title: "最近报销包",
-        packages: packages.slice(0, 8),
-        emptyDescription: "还没有本地报销包。先上传发票、邮件或审批材料生成第一个。",
-      })
+      Card,
+      { className: "work-card", title: "未处理随手记" },
+      inboxItems.length
+        ? e(List, {
+            itemLayout: "vertical",
+            dataSource: inboxItems,
+            renderItem: (item) =>
+              e(
+                List.Item,
+                {
+                  actions: [
+                    e(
+                      "form",
+                      { key: "package", action: `/inbox-items/${encodeURIComponent(item.id)}/package`, method: "post" },
+                      e(Button, { htmlType: "submit", type: "primary" }, "生成报销包")
+                    ),
+                  ],
+                },
+                e(List.Item.Meta, {
+                  title: e(
+                    Space,
+                    { size: 8, wrap: true },
+                    e(Text, { strong: true }, item.title || "未命名随手记"),
+                    e(Tag, { color: "default" }, item.source === "chat" ? "聊天备注" : item.source),
+                    e(Tag, { color: "red" }, "未归类")
+                  ),
+                  description: item.created_at,
+                }),
+                e(Paragraph, { ellipsis: { rows: 3, expandable: true, symbol: "展开" } }, item.note)
+              ),
+          })
+        : e(Empty, { image: Empty.PRESENTED_IMAGE_SIMPLE, description: "当前没有未处理随手记。" })
     );
+  }
+
+  function HomeView() {
+    return e(HomeAssistantChat);
   }
 
   function KnowledgeView() {
@@ -351,7 +496,13 @@
       React.Fragment,
       null,
       e("div", { className: "page-head" }, e("div", null, e(Title, { level: 2 }, "资料归集"), e(Text, { type: "secondary" }, "先把发票、附件、邮件和随口备注收齐，再决定是否进入学校系统。"))),
-      e(UploadWorkbench),
+      e(
+        Row,
+        { gutter: [16, 16], align: "top" },
+        e(Col, { xs: 24, lg: 12 }, e(QuickNoteInbox)),
+        e(Col, { xs: 24, lg: 12 }, e(UploadWorkbench))
+      ),
+      e(InboxList),
       e(PackageList, {
         title: "待补材料",
         packages: collecting,

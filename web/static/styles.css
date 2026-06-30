@@ -119,6 +119,67 @@ body {
   margin-bottom: 16px;
 }
 
+.home-chat-wrap {
+  display: grid;
+  align-content: center;
+  min-height: calc(100vh - 72px);
+  width: min(840px, 100%);
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+.home-chat-head {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.home-chat-head h1.ant-typography {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.assistant-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #b7d4ff;
+  background: #eaf3ff;
+  color: #1677ff;
+  font-size: 22px;
+}
+
+.home-chat-card {
+  border: 1px solid rgba(22, 119, 255, 0.18);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+}
+
+.home-chat-card .ant-card-body {
+  padding: 20px;
+}
+
+.chat-upload {
+  margin-top: 8px;
+}
+
+.chat-upload .ant-upload-drag {
+  background: #fbfdff;
+}
+
+.chat-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 .work-card {
   margin-bottom: 16px;
   border: 1px solid rgba(31, 41, 55, 0.06);
@@ -290,6 +351,19 @@ body {
   .antd-content {
     width: min(100vw - 20px, 1280px);
     padding-top: 16px;
+  }
+
+  .home-chat-wrap {
+    min-height: auto;
+    padding: 22px 0 34px;
+  }
+
+  .home-chat-head h1.ant-typography {
+    font-size: 28px;
+  }
+
+  .chat-actions {
+    display: grid;
   }
 
   .page-head,

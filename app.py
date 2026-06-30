@@ -10,7 +10,16 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app_state import attach_status, package_status_events, reset_package_status_from_materials, set_package_status
+from app_state import (
+    attach_status,
+    create_inbox_item,
+    get_inbox_item,
+    list_inbox_items,
+    mark_inbox_item_packaged,
+    package_status_events,
+    reset_package_status_from_materials,
+    set_package_status,
+)
 from tools.build_reimbursement_package import OUTPUT_ROOT, build_package, export_package
 from tools.cwc_rag import query_policy
 from tools.diagnose_return import diagnose, export_diagnosis
@@ -82,10 +91,36 @@ async def index(request: Request, q: str = "") -> HTMLResponse:
             "request": request,
             "packages": packages,
             "recent": recent,
+            "inbox_items": list_inbox_items(),
             "rag_result": rag_result,
             "q": q,
         },
     )
+
+
+@app.post("/inbox-items", response_class=HTMLResponse)
+async def create_chat_inbox_item(title: str = Form(""), note: str = Form(...)) -> RedirectResponse:
+    item_id = uuid.uuid4().hex[:12]
+    create_inbox_item(item_id, "chat", title, note)
+    return RedirectResponse(url="/#collection", status_code=303)
+
+
+@app.post("/inbox-items/{item_id}/package", response_class=HTMLResponse)
+async def package_inbox_item(item_id: str) -> RedirectResponse:
+    item = get_inbox_item(item_id)
+    if item is None:
+        return RedirectResponse(url="/#collection", status_code=303)
+    work_dir = ROOT / "data/package_work" / f"inbox-{item_id}"
+    work_dir.mkdir(parents=True, exist_ok=True)
+    note_path = work_dir / "随手备注.txt"
+    note_path.write_text(item["note"], encoding="utf-8")
+    package_title = item["title"] or f"随手记报销包-{item_id}"
+    package = build_package(work_dir, item["note"], package_title)
+    out_dir = OUTPUT_ROOT / package.id
+    export_package(package, out_dir)
+    reset_package_status_from_materials(asdict(package), "由资料归集随手记生成报销包")
+    mark_inbox_item_packaged(item_id, package.id)
+    return RedirectResponse(url=f"/packages/{package.id}/view", status_code=303)
 
 
 @app.post("/packages", response_class=HTMLResponse)

@@ -211,7 +211,8 @@ Playwright 负责受控浏览器代填，不负责静默报销。
 当前本地实现：
 
 - FastAPI 提供本地网页服务。
-- React + Ant Design 提供左侧工作区和报销包详情页。
+- React + Ant Design 提供左侧工作区、主页 Chat 入口和报销包详情页。
+- 主页 Chat 支持一句话备注和附件上传：有附件生成报销包，无附件进入资料归集随手记。
 - 报销包正文继续导出为 `package.json`、`package.md` 和 `playwright_plan.json`。
 - SQLite 记录报销包工作流状态和状态变更日志。
 - “已报销”只来自用户手动标记或未来学校系统回写，不由材料齐全自动推断。
