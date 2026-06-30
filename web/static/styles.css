@@ -47,6 +47,7 @@ body {
 }
 
 .main-layout {
+  flex: 1 1 auto;
   min-width: 0;
   background: transparent;
 }
@@ -66,17 +67,17 @@ body {
 .brand-block {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 72px;
-  padding: 18px 18px 14px;
+  gap: 12px;
+  height: 80px;
+  padding: 20px 20px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
   text-decoration: none;
 }
 
 .brand-block img {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
   flex: 0 0 auto;
 }
@@ -105,24 +106,25 @@ body {
 }
 
 .app-sider .ant-menu-item {
-  height: 42px;
-  line-height: 42px;
-  margin: 4px 10px;
-  width: calc(100% - 20px);
+  height: 44px;
+  line-height: 44px;
+  margin: 5px 12px;
+  width: calc(100% - 24px);
 }
 
 .antd-content {
-  width: min(1280px, calc(100vw - 32px));
+  width: 100%;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 24px 0 48px;
+  padding: 32px 40px 56px;
 }
 
 .page-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 24px;
+  margin-bottom: 22px;
 }
 
 .page-head .ant-typography {
@@ -136,23 +138,23 @@ body {
 .home-chat-wrap {
   display: grid;
   align-content: center;
-  min-height: calc(100vh - 72px);
-  width: min(860px, 100%);
+  min-height: calc(100vh - 96px);
+  width: min(820px, 100%);
   margin: 0 auto;
-  padding: 40px 0;
+  padding: 32px 0 48px;
 }
 
 .home-chat-head {
   display: grid;
   justify-items: center;
-  gap: 10px;
-  margin-bottom: 22px;
+  gap: 12px;
+  margin-bottom: 28px;
   text-align: center;
 }
 
 .home-chat-head h1.ant-typography {
   margin: 0;
-  font-size: 32px;
+  font-size: 34px;
   line-height: 1.15;
   letter-spacing: 0;
 }
@@ -172,11 +174,11 @@ body {
 .home-chat-card {
   border: 1px solid rgba(31, 41, 55, 0.12);
   background: #fff;
-  box-shadow: 0 20px 54px rgba(15, 23, 42, 0.09);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
 }
 
 .home-chat-card .ant-card-body {
-  padding: 18px;
+  padding: 26px 28px 24px;
 }
 
 .chat-form {
@@ -190,10 +192,10 @@ body {
 }
 
 .chat-title-input {
-  height: 42px;
+  height: 46px;
   border-color: transparent !important;
   border-bottom-color: var(--line) !important;
-  padding-left: 2px;
+  padding: 4px 0 12px;
   font-size: 15px;
   font-weight: 600;
 }
@@ -207,9 +209,9 @@ body {
 
 .chat-note-item textarea.ant-input {
   border: 0 !important;
-  padding: 16px 2px 12px;
+  padding: 20px 0 18px;
   font-size: 16px;
-  line-height: 1.7;
+  line-height: 1.75;
   resize: none;
   box-shadow: none !important;
 }
@@ -218,7 +220,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 10px 0 4px;
+  padding: 12px 0 6px;
   border-top: 1px solid var(--line);
 }
 
@@ -233,15 +235,23 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding-top: 14px;
+  gap: 18px;
+  padding-top: 18px;
   border-top: 1px solid var(--line);
 }
 
 .work-card {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   border: 1px solid rgba(31, 41, 55, 0.06);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.work-card .ant-card-head {
+  padding: 0 24px;
+}
+
+.work-card .ant-card-body {
+  padding: 24px;
 }
 
 .rag-card .ant-list-item {
@@ -499,18 +509,24 @@ body {
   }
 
   .antd-content {
-    width: min(100vw - 20px, 1280px);
-    padding-top: 16px;
+    width: 100%;
+    max-width: none;
+    padding: 18px 14px 40px;
   }
 
   .home-chat-wrap {
     align-content: start;
     min-height: 0;
-    padding: 72px 0 34px;
+    padding: 48px 0 34px;
   }
 
   .home-chat-head h1.ant-typography {
     font-size: 28px;
+  }
+
+  .home-chat-card .ant-card-body,
+  .work-card .ant-card-body {
+    padding: 18px;
   }
 
   .chat-toolbar {
@@ -528,5 +544,12 @@ body {
   .page-head,
   .topbar {
     display: grid;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  .antd-content {
+    padding-left: 28px;
+    padding-right: 28px;
   }
 }

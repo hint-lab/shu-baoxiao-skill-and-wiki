@@ -514,8 +514,22 @@
                   },
                   e(List.Item.Meta, {
                     title: e("a", { href: hit.url, target: "_blank", rel: "noreferrer" }, `${hit.rank}. ${hit.title}`),
-                    description: hit.published_date ? `日期 ${hit.published_date} · 分数 ${hit.score}` : `分数 ${hit.score}`,
+                    description: [
+                      hit.published_date ? `日期 ${hit.published_date}` : "",
+                      `综合 ${hit.score}`,
+                      hit.bm25_score !== undefined ? `BM25 ${hit.bm25_score}` : "",
+                      hit.keyword_score !== undefined ? `关键词 ${hit.keyword_score}` : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" · "),
                   }),
+                  hit.matched_keywords && hit.matched_keywords.length
+                    ? e(
+                        Space,
+                        { wrap: true, size: [4, 4], className: "hit-keywords" },
+                        hit.matched_keywords.slice(0, 8).map((keyword) => e(Tag, { key: keyword }, keyword))
+                      )
+                    : null,
                   e(Paragraph, { ellipsis: { rows: 4, expandable: true, symbol: "展开" } }, hit.snippet)
                 ),
             })
@@ -667,6 +681,8 @@
       "公务接待费",
       "信息服务费",
     ];
+    const report = (kbStatus && kbStatus.corpus_report) || {};
+    const emptyBySource = report.empty_text_by_source_type || {};
     return e(
       React.Fragment,
       null,
@@ -676,9 +692,21 @@
             Row,
             { gutter: [16, 16], className: "metric-row" },
             e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "索引片段", value: kbStatus.chunk_count || 0, suffix: "条" }))),
-            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "财务处网页", value: (kbStatus.source_types || {}).page || 0, suffix: "条" }))),
-            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "附件入口", value: (kbStatus.source_types || {}).attachment || 0, suffix: "条" }))),
-            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "本地 PDF", value: (kbStatus.source_types || {}).local_pdf || 0, suffix: "条" })))
+            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "已索引文档", value: report.indexed_document_count || 0, suffix: "份" }))),
+            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "文档总量", value: report.document_count || 0, suffix: "份" }))),
+            e(Col, { xs: 24, md: 6 }, e(Card, null, e(Statistic, { title: "空文本附件", value: emptyBySource.attachment || 0, suffix: "个" })))
+          )
+        : null,
+      report.warnings && report.warnings.length
+        ? e(
+            Alert,
+            {
+              className: "page-alert",
+              type: "warning",
+              showIcon: true,
+              message: "入库校验提示",
+              description: report.warnings.join("；"),
+            }
           )
         : null,
       e(RagPanel),
@@ -696,6 +724,14 @@
                 kbStatus.manifest.created_at
                   ? `最近抓取：${kbStatus.manifest.created_at} · 页面 ${kbStatus.manifest.page_count || 0} · 附件 ${kbStatus.manifest.attachment_count || 0}`
                   : "未找到抓取清单"
+              )
+            : null
+          ,
+          report.indexed_source_types
+            ? e(
+                Text,
+                { type: "secondary" },
+                `已索引来源：网页 ${(report.indexed_source_types || {}).page || 0} · 附件 ${(report.indexed_source_types || {}).attachment || 0} · 本地 PDF ${(report.indexed_source_types || {}).local_pdf || 0}`
               )
             : null
         )
@@ -885,6 +921,15 @@
     const imap = status && status.imap;
     const kb = status && status.knowledge_base;
     const playwright = status && status.playwright;
+    const shuAuth = status && status.shu_auth;
+    function authStatusLabel(auth) {
+      if (!auth || !auth.profile_exists) return ["gold", "未建立"];
+      if (auth.status === "ready") return ["green", "会话可用"];
+      if (auth.status === "needs_scan") return ["orange", "需要扫码"];
+      if (auth.status === "needs_renew") return ["gold", "需要续登"];
+      if (auth.status === "error") return ["red", "检查失败"];
+      return ["blue", "待检测"];
+    }
     return e(
       React.Fragment,
       null,
@@ -960,8 +1005,51 @@
                   readyText: "真实适配已配置",
                   pendingText: playwright.shu_adapter_exists ? "模板待配置" : "模板缺失",
                   extra: playwright.mock_adapter_exists ? "本地 mock 可用" : "本地 mock 缺失",
-                })
-              )
+                }),
+                shuAuth
+                  ? e(
+                      "div",
+                      { className: "settings-row" },
+                      e(
+                        "div",
+                        null,
+                        e(Text, { strong: true }, "上海大学扫码登录保持"),
+                        e(
+                          Paragraph,
+                          { type: "secondary", className: "settings-desc" },
+                          "使用本机专用浏览器 profile 保存 newsso 和财务系统登录态。过期后通过 ShuAuth 续登，统一认证也过期时再由本人扫码。"
+                        ),
+                        e(
+                          Paragraph,
+                          { className: "settings-desc" },
+                          e("code", null, "python3 tools/shu_auth_session.py login")
+                        )
+                      ),
+                      e(
+                        Space,
+                        { wrap: true },
+                        (() => {
+                          const label = authStatusLabel(shuAuth);
+                          return e(Tag, { color: label[0] }, label[1]);
+                        })(),
+                        e(Text, { type: "secondary" }, shuAuth.checked_at ? `上次检测 ${shuAuth.checked_at}` : "尚未检测"),
+                        e(Text, { type: "secondary" }, shuAuth.profile_exists ? "本机 profile 已存在" : "本机 profile 未建立")
+                      )
+                    )
+                  : null,
+                shuAuth && shuAuth.message
+                  ? e(Alert, {
+                      className: "settings-inline-alert",
+                      type: shuAuth.status === "ready" ? "success" : "info",
+                      showIcon: true,
+                      message: "扫码登录保持状态",
+                      description: shuAuth.message,
+                    })
+                  : null,
+                shuAuth && shuAuth.url
+                  ? e(Paragraph, { type: "secondary", className: "settings-desc" }, `最近页面：${shuAuth.url}`)
+                  : null
+                )
             : null
         )
       )

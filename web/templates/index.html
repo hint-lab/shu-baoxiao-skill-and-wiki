@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>上海大学自助报销 Agent</title>
-    <link rel="stylesheet" href="https://unpkg.com/antd@5/dist/reset.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16.png">
+    <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png">
     <link rel="stylesheet" href="/static/styles.css">
   </head>
   <body>
@@ -12,11 +14,6 @@
     <script>
       window.__REIMBURSEMENT_DATA__ = {{ {"packages": packages, "recent": recent, "inbox_items": inbox_items, "material_items": material_items, "rag_result": rag_result, "q": q, "source_type": source_type} | tojson }};
     </script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/dayjs@1/dayjs.min.js"></script>
-    <script src="https://unpkg.com/@ant-design/icons@5/dist/index.umd.js"></script>
-    <script src="https://unpkg.com/antd@5/dist/antd.min.js"></script>
-    <script src="/static/app-index.js"></script>
+    {{ vite_assets("index.jsx") }}
   </body>
 </html>

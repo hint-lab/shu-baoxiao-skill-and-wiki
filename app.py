@@ -5,6 +5,7 @@ import uuid
 from dataclasses import asdict
 import os
 import json
+import shutil
 from pathlib import Path
 from collections import Counter
 
@@ -13,6 +14,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from markupsafe import Markup
 
 from app_state import (
     attach_status,
@@ -43,6 +45,7 @@ from tools.poll_imap import STATE_PATH as MAIL_STATE_PATH
 from tools.poll_imap import load_state as load_mail_state
 from tools.poll_imap import poll_imap
 from tools.poll_imap import save_state as save_mail_state
+from tools.shu_auth_session import saved_status as shu_auth_saved_status
 from tools.supplement_package import rebuild_with_supplements
 
 
@@ -51,6 +54,7 @@ UPLOAD_ROOT = ROOT / "data/uploads"
 MATERIAL_ROOT = ROOT / "data/material_items"
 WEB_STATIC = ROOT / "web/static"
 WEB_TEMPLATES = ROOT / "web/templates"
+VITE_MANIFEST = WEB_STATIC / "dist/.vite/manifest.json"
 PLAYWRIGHT_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 
 RESPONSIBILITY_CONFIRMATIONS = {
@@ -66,6 +70,49 @@ templates = Jinja2Templates(directory=str(WEB_TEMPLATES))
 app.mount("/static", StaticFiles(directory=str(WEB_STATIC)), name="static")
 app.mount("/package-output", StaticFiles(directory=str(OUTPUT_ROOT)), name="package-output")
 app.mount("/playwright-output", StaticFiles(directory=str(PLAYWRIGHT_ARTIFACT_DIR)), name="playwright-output")
+
+
+def vite_assets(entry: str) -> Markup:
+    dev_server = os.getenv("VITE_DEV_SERVER", "").rstrip("/")
+    if dev_server:
+        return Markup(
+            "\n".join(
+                [
+                    f'<script type="module" src="{dev_server}/@vite/client"></script>',
+                    f'<script type="module" src="{dev_server}/src/{entry}"></script>',
+                ]
+            )
+        )
+
+    fallback = {
+        "index.jsx": "/static/app-index.js",
+        "package.jsx": "/static/app-package.js",
+    }
+    if not VITE_MANIFEST.exists():
+        return Markup(f'<script src="{fallback[entry]}"></script>')
+
+    manifest = json.loads(VITE_MANIFEST.read_text(encoding="utf-8"))
+    entry_key = f"src/{entry}"
+    chunk = manifest[entry_key]
+    seen_css: set[str] = set()
+    css_files: list[str] = []
+
+    def collect_css(chunk_key: str) -> None:
+        item = manifest.get(chunk_key, {})
+        for imported in item.get("imports", []):
+            collect_css(imported)
+        for css in item.get("css", []):
+            if css not in seen_css:
+                seen_css.add(css)
+                css_files.append(css)
+
+    collect_css(entry_key)
+    tags = [f'<link rel="stylesheet" href="/static/dist/{css}">' for css in css_files]
+    tags.append(f'<script type="module" src="/static/dist/{chunk["file"]}"></script>')
+    return Markup("\n".join(tags))
+
+
+templates.env.globals["vite_assets"] = vite_assets
 
 
 def imap_env_status() -> dict[str, object]:
@@ -87,13 +134,22 @@ def imap_env_status() -> dict[str, object]:
 
 
 @app.get("/favicon.ico")
-async def favicon() -> Response:
+@app.head("/favicon.ico")
+async def favicon():
+    favicon_path = WEB_STATIC / "icons/favicon.ico"
+    if favicon_path.exists():
+        return FileResponse(favicon_path)
     return Response(status_code=204)
 
 
 @app.get("/logo.png")
 async def logo() -> FileResponse:
     return FileResponse(ROOT / "logo.png")
+
+
+@app.get("/icon.png")
+async def icon_source() -> FileResponse:
+    return FileResponse(ROOT / "icon.png")
 
 
 @app.get("/api/settings/status")
@@ -122,6 +178,7 @@ async def settings_status() -> JSONResponse:
             "shu_adapter_exists": adapter_path.exists(),
             "shu_adapter_configured": adapter_path.exists() and "填入" not in adapter_text,
         },
+        "shu_auth": shu_auth_saved_status(),
     }
     return JSONResponse(payload)
 
@@ -169,24 +226,34 @@ async def poll_mailbox(limit: int = Form(10), force: bool = Form(False)) -> JSON
 @app.get("/api/knowledge/status")
 async def knowledge_status() -> JSONResponse:
     index_path = ROOT / "data/cwc/index.json"
+    documents_path = ROOT / "data/cwc/documents.jsonl"
     manifest_path = ROOT / "data/cwc/crawl_manifest.json"
+    documents_exists = documents_path.exists()
     if not index_path.exists():
         return JSONResponse(
             {
                 "index_exists": False,
+                "documents_exists": documents_exists,
                 "chunk_count": 0,
                 "source_types": {},
+                "corpus_report": {},
                 "manifest": {},
             }
         )
     index = json.loads(index_path.read_text(encoding="utf-8"))
     source_types = Counter(chunk.get("source_type") or "page" for chunk in index.get("chunks", []))
     manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
+    corpus_report = index.get("corpus_report") or {}
     return JSONResponse(
         {
             "index_exists": True,
+            "documents_exists": documents_exists,
+            "index_version": index.get("version", 1),
+            "created_at": index.get("created_at", ""),
+            "tokenizer": index.get("tokenizer", ""),
             "chunk_count": index.get("chunk_count", len(index.get("chunks", []))),
             "source_types": dict(source_types),
+            "corpus_report": corpus_report,
             "manifest": {
                 "base_url": manifest.get("base_url", ""),
                 "created_at": manifest.get("created_at", ""),

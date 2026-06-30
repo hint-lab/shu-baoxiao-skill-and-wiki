@@ -1,6 +1,7 @@
 .DS_Store
 .env
 .venv/
+node_modules/
 __pycache__/
 *.py[cod]
 
@@ -14,11 +15,17 @@ data/material_items/
 data/package_work/
 data/mail_inbox/
 data/mail_ingest/
+data/browser_profiles/
+data/auth_sessions/
 data/cwc/raw/
 data/cwc/attachments/
 
 # Generated artifacts
 output/
 tmp/
+
+# Desktop build cache
+src-tauri/gen/schemas/
+src-tauri/target/
 
 # Keep reproducible sample inputs, rules, adapters, and compact RAG index in Git.
