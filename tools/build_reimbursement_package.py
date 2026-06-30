@@ -785,6 +785,8 @@ def markdown_report(package: ReimbursementPackage) -> str:
 
 
 def playwright_plan(package: ReimbursementPackage) -> dict[str, Any]:
+    reason_short = package.user_note.strip() or package.reason_draft.strip()
+    note_short = package.reason_draft.strip()
     ready_documents = [
         {
             "id": doc.id,
@@ -814,6 +816,8 @@ def playwright_plan(package: ReimbursementPackage) -> dict[str, Any]:
         },
         "draft_fields": {
             "reason": package.reason_draft,
+            "reason_short": reason_short[:30],
+            "note_short": note_short[:60],
             "user_note": package.user_note,
         },
         "upload_documents": ready_documents,
@@ -878,7 +882,7 @@ def export_package(package: ReimbursementPackage, out_dir: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build a reimbursement package from local files.")
     parser.add_argument("input_dir", type=Path)
-    parser.add_argument("--note", default="", help="User's free-form context, e.g. '6 月去北京开会，高铁和酒店走张老师项目'.")
+    parser.add_argument("--note", default="", help="User's free-form reimbursement context.")
     parser.add_argument("--title", default="")
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()

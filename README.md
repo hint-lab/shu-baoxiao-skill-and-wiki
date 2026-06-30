@@ -18,7 +18,7 @@
 
 ## 当前能力
 
-- 单一聊天首页：直接输入“版面费需要哪些材料”或“6 月北京会议差旅，报销高铁酒店”，系统自动判断是查政策、记录待报销事项，还是生成报销包。
+- 单一聊天首页：直接输入报销政策问题、事项描述，或上传发票附件，系统自动判断是查政策、记录待报销事项，还是生成报销包。
 - 上海大学财务知识库：抓取并整理财务处公开网页、附件入口、本地 PDF 和操作手册，支持 BM25 + 关键词召回，以及 DeepSeek、豆包/火山方舟或 OpenAI 兼容接口的带引用 RAG 回答。
 - 材料归集：支持网页上传、`.eml` 邮件导入、IMAP 邮箱收票、聊天随手记和未归类材料池。
 - 报销包生成：导出结构化报销包、缺漏清单、政策依据、事由草稿和 Playwright 代填计划。
@@ -189,25 +189,25 @@ python3 tools/knowledge_seed.py --build --import-db
 从本地材料生成报销包：
 
 ```bash
-python3 tools/build_reimbursement_package.py samples/domestic_travel \
-  --note "6 月去北京参加高校人工智能学术会议，报销高铁和酒店费用，走张老师科研项目" \
-  --title "北京会议差旅报销包"
+python3 tools/build_reimbursement_package.py <真实材料目录> \
+  --note "<真实业务说明>" \
+  --title "<报销事项名称>"
 ```
 
 补充材料并重建同一报销包：
 
 ```bash
 python3 tools/supplement_package.py \
-  "办公用品报销包" \
-  samples/office_supplies/03-公务卡支付记录.txt \
-  --note "根据退回意见补充公务卡支付记录"
+  "<报销事项名称>" \
+  <补充材料路径> \
+  --note "<补充说明>"
 ```
 
 从 `.eml` 邮件导入：
 
 ```bash
-python3 tools/ingest_eml.py samples/emails/office_supplies_forward.eml \
-  --title "邮件导入办公用品报销包"
+python3 tools/ingest_eml.py <邮件文件.eml> \
+  --title "<报销事项名称>"
 ```
 
 每个报销包会输出：
@@ -223,7 +223,7 @@ python3 tools/ingest_eml.py samples/emails/office_supplies_forward.eml \
 
 ```bash
 python3 tools/playwright_fill_adapter.py \
-  --plan output/packages/论文版面费报销包/playwright_plan.json \
+  --plan output/packages/<报销事项名称>/playwright_plan.json \
   --adapter data/adapters/mock_school.json \
   --allow-auto-login
 ```

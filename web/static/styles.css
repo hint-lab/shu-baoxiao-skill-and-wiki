@@ -673,6 +673,10 @@ body {
   border-radius: 8px;
 }
 
+.chat-message--assistant .chat-message-text {
+  border-top-left-radius: 0;
+}
+
 .chat-message-text--streaming {
   border-color: rgba(22, 119, 255, 0.22);
 }
@@ -737,6 +741,7 @@ body {
   border-color: rgba(22, 119, 255, 0.28);
   background: #1677ff;
   color: #fff;
+  border-top-right-radius: 0;
 }
 
 .chat-title-item,
@@ -831,10 +836,25 @@ body {
   margin-top: 12px;
 }
 
+.chat-suggestion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chat-suggestion-actions .ant-btn {
+  max-width: 100%;
+  height: auto;
+  min-height: 30px;
+  white-space: normal;
+  text-align: left;
+}
+
 .chat-hint {
   display: inline-flex;
   align-items: center;
-  margin-left: 4px;
+  margin-left: auto;
   color: #98a2b3;
   font-size: 12px;
   line-height: 1.4;
@@ -1386,6 +1406,51 @@ body {
 
 .page-alert {
   margin-bottom: 16px;
+}
+
+.supplement-card .ant-card-body {
+  display: grid;
+  gap: 14px;
+}
+
+.missing-supplement-item {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(239, 68, 68, 0.24);
+  background: rgba(254, 242, 242, 0.45);
+}
+
+.missing-supplement-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.missing-supplement-head > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.missing-supplement-evidence {
+  color: #2563eb;
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.missing-supplement-evidence:hover {
+  text-decoration: underline;
+}
+
+.missing-supplement-form {
+  display: grid;
+  gap: 10px;
+}
+
+.missing-supplement-form .ant-form-item {
+  margin-bottom: 0;
 }
 
 .ant-table-cell {

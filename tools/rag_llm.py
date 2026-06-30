@@ -112,7 +112,7 @@ def _extract_json_object(text: str) -> dict[str, Any]:
     return payload
 
 
-def analyze_home_intent(note: str, title: str = "", file_names: list[str] | None = None) -> dict[str, Any]:
+def analyze_home_intent(note: str, title: str = "", file_names: list[str] | None = None, conversation_context: str = "") -> dict[str, Any]:
     file_names = file_names or []
     fallback = fallback_home_intent(note, bool(file_names))
     config = effective_config()
@@ -127,12 +127,14 @@ def analyze_home_intent(note: str, title: str = "", file_names: list[str] | None
         "如果用户描述一件待报销事项但没有上传材料，action=create_inbox；"
         "如果上传了发票或附件且不像单纯问政策，action=create_package；"
         "如果含糊不清，action=ask_clarification。"
+        "如果当前输入包含“这个、刚才、上面、继续、它”等指代词，必须结合 conversation_context 判断。"
         "reply 用一句中文告诉用户你准备怎么处理。"
     )
     user = json.dumps(
         {
             "title": title,
             "note": note,
+            "conversation_context": conversation_context,
             "has_files": bool(file_names),
             "file_names": file_names[:12],
         },

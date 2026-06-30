@@ -92,14 +92,23 @@ def saved_status() -> dict[str, Any]:
 def classify_page(page: Page) -> SessionStatus:
     url = page.url
     title = ""
+    body_text = ""
     try:
         title = page.title()
     except Exception:
         title = ""
+    try:
+        body_text = page.locator("body").inner_text(timeout=3000)
+    except Exception:
+        body_text = ""
 
     status = STATUS_UNKNOWN
     message = "未能判断当前登录态。"
-    if BUSINESS_HOST_MARKER in url and BUSINESS_APP_MARKER in url and "#/Frame/" in url:
+    has_login_form = "拖动滑块验证" in body_text or ("记住账号" in body_text and "登录" in body_text)
+    if has_login_form:
+        status = STATUS_NEEDS_RENEW
+        message = "财务系统业务会话不可用，可以尝试通过上海大学统一身份认证续登。"
+    elif BUSINESS_HOST_MARKER in url and BUSINESS_APP_MARKER in url and "#/Frame/" in url and len(body_text.strip()) >= 20:
         status = STATUS_READY
         message = "上海大学财务系统业务会话可用。"
     elif BUSINESS_HOST_MARKER in url and "#/Login/ShuAuth" in url:
@@ -134,7 +143,9 @@ def _best_effort_wait(page: Page, timeout_ms: int) -> None:
 
 def _best_effort_goto(page: Page, url: str, timeout_ms: int) -> None:
     try:
+        page.bring_to_front()
         page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+        page.bring_to_front()
     except PlaywrightTimeoutError:
         pass
 
@@ -150,6 +161,16 @@ def _wait_for_auth_transition(page: Page, timeout_ms: int) -> None:
         )
     except PlaywrightTimeoutError:
         pass
+
+
+def _stabilize_status(page: Page, status: SessionStatus, wait_ms: int = 5000) -> SessionStatus:
+    if status.status not in {STATUS_READY, STATUS_UNKNOWN}:
+        return status
+    try:
+        page.wait_for_timeout(wait_ms)
+    except Exception:
+        return status
+    return classify_page(page)
 
 
 def _launch_context(playwright, headed: bool):
@@ -171,6 +192,7 @@ def check_business_session(headed: bool = False, timeout_ms: int = 15000) -> Ses
             _best_effort_goto(page, BUSINESS_HOME_URL, timeout_ms)
             _best_effort_wait(page, min(timeout_ms, 8000))
             status = classify_page(page)
+            status = _stabilize_status(page, status)
         except Exception as exc:
             status = SessionStatus(
                 status=STATUS_ERROR,
@@ -189,9 +211,10 @@ def ensure_ready(headed: bool = True, wait_scan: bool = True, timeout_ms: int = 
         context = _launch_context(p, headed=headed)
         page = context.pages[0] if context.pages else context.new_page()
         try:
-            _best_effort_goto(page, BUSINESS_HOME_URL, 30000)
+            _best_effort_goto(page, SHU_AUTH_URL, 30000)
             _best_effort_wait(page, 8000)
             status = classify_page(page)
+            status = _stabilize_status(page, status)
             save_meta(status)
             if status.status != STATUS_READY:
                 _best_effort_goto(page, SHU_AUTH_URL, 30000)
@@ -209,6 +232,7 @@ def ensure_ready(headed: bool = True, wait_scan: bool = True, timeout_ms: int = 
                 else:
                     _wait_for_auth_transition(page, min(timeout_ms, 30000))
                 status = classify_page(page)
+                status = _stabilize_status(page, status)
                 save_meta(status)
             if headed and keep_open:
                 try:

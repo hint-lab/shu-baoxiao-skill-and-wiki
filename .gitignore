@@ -18,6 +18,7 @@ data/mail_ingest/
 data/browser_profiles/
 data/auth_sessions/
 data/settings/
+data/logs/
 data/cwc/raw/
 data/cwc/attachments/
 data/cwc/attachments_retry/

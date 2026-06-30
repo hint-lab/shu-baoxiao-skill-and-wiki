@@ -530,50 +530,101 @@ const App = AntdApp;
     );
   }
 
+  function missingChecklistItems() {
+    return (pkg.checklist || []).filter((item) => item.status === "missing");
+  }
+
   function SupplementForm() {
-    const [fileList, setFileList] = React.useState([]);
-    const [submitting, setSubmitting] = React.useState(false);
+    const [fileLists, setFileLists] = React.useState({});
+    const [submitting, setSubmitting] = React.useState("");
     async function submit(values) {
+      const fileList = fileLists[values.missing_item_id] || [];
       if (!fileList.length) {
         message.warning("请先选择补充材料");
         return;
       }
       const body = new FormData();
       body.append("note", values.note || "");
+      body.append("missing_item_id", values.missing_item_id || "");
+      body.append("missing_item_name", values.missing_item_name || "");
       fileList.forEach((file) => body.append("files", file.originFileObj || file));
-      setSubmitting(true);
+      setSubmitting(values.missing_item_id || "supplement");
       try {
         const response = await fetch(`/packages/${encodeURIComponent(data.package_id)}/supplement`, { method: "POST", body, redirect: "follow" });
         window.location.href = response.url || window.location.href;
       } catch (error) {
         message.error("补充材料失败");
-        setSubmitting(false);
+        setSubmitting("");
       }
+    }
+    const missingItems = missingChecklistItems();
+    if (!missingItems.length) {
+      return e(
+        Card,
+        { title: "待补材料", className: "work-card supplement-card" },
+        e(Alert, {
+          type: "success",
+          showIcon: true,
+          message: "当前没有必需材料缺漏",
+          description: "系统已经把材料整理到可复核状态。你只需要核对票据真实性、经费项目和收款信息。",
+        })
+      );
     }
     return e(
       Card,
-      { title: "补充材料并重新整理", className: "work-card" },
+      { title: `待补材料 ${missingItems.length} 项`, className: "work-card supplement-card" },
       e(
-        Form,
-        { layout: "vertical", onFinish: submit },
-        e(Form.Item, { label: "补充说明", name: "note" }, e(Input.TextArea, { rows: 3, placeholder: "例如：根据退回意见补充公务卡支付记录。" })),
-        e(
-          Form.Item,
-          { label: "补充材料" },
+        Space,
+        { direction: "vertical", size: 14, className: "full" },
+        e(Alert, {
+          type: "warning",
+          showIcon: true,
+          message: "只需要按缺项补材料",
+          description: "系统已经完成分类、清单检查和草稿生成。你不用重新整理，只要在下面对应缺项上传文件或写一句说明。",
+        }),
+        missingItems.map((item) =>
           e(
-            Dragger,
-            {
-              multiple: true,
-              beforeUpload: () => false,
-              fileList,
-              onChange: ({ fileList: next }) => setFileList(next),
-            },
-            e("p", { className: "upload-symbol" }, "↑"),
-            e("p", { className: "ant-upload-text" }, "拖入或选择补充材料"),
-            e("p", { className: "ant-upload-hint" }, "系统会保留旧版本，并用原材料加补充材料重新生成报销包。")
+            "section",
+            { key: item.id, className: "missing-supplement-item" },
+            e(
+              "div",
+              { className: "missing-supplement-head" },
+              e("div", null, e(Text, { strong: true }, item.name), item.why ? e(Text, { type: "secondary" }, item.why) : null),
+              statusTag(item.status)
+            ),
+            item.evidence
+              ? e(
+                  "a",
+                  { className: "missing-supplement-evidence", href: item.evidence.url, target: "_blank", rel: "noreferrer" },
+                  item.evidence.title
+                )
+              : null,
+            e(
+              Form,
+              { layout: "vertical", onFinish: submit, className: "missing-supplement-form" },
+              e(Form.Item, { name: "missing_item_id", initialValue: item.id, hidden: true }, e(Input)),
+              e(Form.Item, { name: "missing_item_name", initialValue: item.name, hidden: true }, e(Input)),
+              e(Form.Item, { label: "补充说明", name: "note" }, e(Input.TextArea, { rows: 2, placeholder: `补充 ${item.name} 的说明，可留空` })),
+              e(
+                Form.Item,
+                { label: "上传材料" },
+                e(
+                  Dragger,
+                  {
+                    multiple: true,
+                    beforeUpload: () => false,
+                    fileList: fileLists[item.id] || [],
+                    onChange: ({ fileList: next }) => setFileLists((current) => ({ ...current, [item.id]: next })),
+                  },
+                  e("p", { className: "upload-symbol" }, "↑"),
+                  e("p", { className: "ant-upload-text" }, `上传 ${item.name}`),
+                  e("p", { className: "ant-upload-hint" }, "系统会自动合并到这个报销包，并重新检查缺漏。")
+                )
+              ),
+              e(Button, { type: "primary", htmlType: "submit", loading: submitting === item.id }, "补充并重新检查")
+            )
           )
-        ),
-        e(Button, { type: "primary", htmlType: "submit", loading: submitting }, "补充并重新生成")
+        )
       )
     );
   }
@@ -692,10 +743,9 @@ const App = AntdApp;
               e(Paragraph, { className: "reason-text" }, pkg.reason_draft)
             ),
             e(WorkflowAlert, { missing }),
+            e(SupplementForm),
             e(StatusPanel, { missing }),
             e(FillAgentPanel, { missing }),
-            e(MissingChecklist),
-            e(DocumentsTable),
             e(
               Card,
               { className: "work-card", title: "风险提示" },
@@ -712,7 +762,9 @@ const App = AntdApp;
                 ["经费项目", "收款账号", "票据真实性", "提交预审", "提交审批"].map((item) => e(Tag, { key: item, color: "red" }, item))
               )
             ),
-            e(Row, { gutter: [16, 16] }, e(Col, { xs: 24, lg: 12 }, e(ReturnDiagnosisForm)), e(Col, { xs: 24, lg: 12 }, e(SupplementForm)))
+            e(Row, { gutter: [16, 16] }, e(Col, { xs: 24, lg: 12 }, e(ReturnDiagnosisForm))),
+            e(MissingChecklist),
+            e(DocumentsTable)
               )
             )
           )

@@ -62,6 +62,7 @@ from tools.poll_imap import STATE_PATH as MAIL_STATE_PATH
 from tools.poll_imap import load_state as load_mail_state
 from tools.poll_imap import poll_imap
 from tools.poll_imap import save_state as save_mail_state
+from tools.shu_auth_session import check_business_session
 from tools.shu_auth_session import saved_status as shu_auth_saved_status
 from tools.supplement_package import rebuild_with_supplements
 
@@ -365,6 +366,26 @@ async def start_shu_auth_login(dry_run: bool = False) -> JSONResponse:
     )
 
 
+@app.post("/api/shu-auth/check")
+async def check_shu_auth_session() -> JSONResponse:
+    if shu_auth_login_running():
+        auth = shu_auth_saved_status()
+        auth["login_running"] = True
+        auth["login_pids"] = shu_auth_login_pids()
+        auth["message"] = "登录窗口已打开，请先在窗口内完成登录或关闭窗口后再实时检查。"
+        return JSONResponse({"ok": True, "checked": False, "shu_auth": auth})
+    try:
+        status = asdict(await asyncio.to_thread(check_business_session, headed=False, timeout_ms=20000))
+    except Exception as exc:
+        return JSONResponse(
+            {"ok": False, "error": f"实时检查财务系统会话失败：{exc.__class__.__name__}: {exc}"},
+            status_code=500,
+        )
+    status["login_running"] = False
+    status["login_pids"] = []
+    return JSONResponse({"ok": True, "checked": True, "shu_auth": status})
+
+
 @app.post("/api/settings/rag-llm")
 async def save_rag_llm_settings(
     provider: str = Form("deepseek"),
@@ -592,16 +613,58 @@ def save_uploaded_files(files: list[UploadFile], upload_dir: Path) -> tuple[list
 async def home_assistant(
     title: str = Form(""),
     note: str = Form(""),
+    history: str = Form(""),
     files: list[UploadFile] | None = File(None),
 ) -> JSONResponse:
-    payload, status_code = create_home_assistant_payload(title, note, files)
+    payload, status_code = create_home_assistant_payload(title, note, files, history)
     return JSONResponse(payload, status_code=status_code)
+
+
+def parse_chat_history(raw: str, limit: int = 8) -> list[dict[str, str]]:
+    if not raw:
+        return []
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        return []
+    if not isinstance(payload, list):
+        return []
+    items: list[dict[str, str]] = []
+    for item in payload[-limit:]:
+        if not isinstance(item, dict):
+            continue
+        role = str(item.get("role") or "").strip()
+        text = str(item.get("text") or "").strip()
+        if role not in {"user", "assistant"} or not text:
+            continue
+        items.append({"role": role, "text": text[:800]})
+    return items
+
+
+def conversation_context_text(history: list[dict[str, str]], max_chars: int = 2400) -> str:
+    lines = []
+    for item in history:
+        label = "用户" if item["role"] == "user" else "报销 Agent"
+        lines.append(f"{label}：{item['text']}")
+    text = "\n".join(lines)
+    if len(text) > max_chars:
+        text = text[-max_chars:]
+    return text
+
+
+def note_with_context(note: str, context: str) -> str:
+    if not context:
+        return note
+    if not note:
+        return f"对话上下文：\n{context}"
+    return f"对话上下文：\n{context}\n\n本轮输入：\n{note}"
 
 
 def create_home_assistant_payload(
     title: str,
     note: str,
     files: list[UploadFile] | None,
+    history: str = "",
 ) -> tuple[dict[str, object], int]:
     uploads = [upload for upload in (files or []) if upload.filename]
     clean_title = title.strip()
@@ -610,7 +673,10 @@ def create_home_assistant_payload(
         return {"ok": False, "error": "请先输入问题、报销事项，或者上传发票和附件。"}, 400
 
     file_names = [Path(upload.filename or "").name for upload in uploads]
-    intent = analyze_home_intent(clean_note, clean_title, file_names)
+    chat_history = parse_chat_history(history)
+    context_text = conversation_context_text(chat_history)
+    note_for_reasoning = note_with_context(clean_note, context_text)
+    intent = analyze_home_intent(clean_note, clean_title, file_names, conversation_context=context_text)
     action = intent.get("action") or "ask_clarification"
     if uploads and action in {"create_inbox", "ask_clarification"}:
         action = "create_package"
@@ -618,12 +684,13 @@ def create_home_assistant_payload(
         action = "create_inbox" if clean_note else "ask_clarification"
 
     if action == "answer_policy":
-        query = intent.get("search_query") or clean_note
+        query = intent.get("search_query") or note_for_reasoning
         policy = query_policy(query, top_k=5)
         return {
             "ok": True,
             "action": "answer_policy",
             "intent": intent,
+            "used_context": bool(context_text),
             "message": intent.get("reply") or "我查了财务处资料库，下面是可追溯回答。",
             "policy": policy,
         }, 200
@@ -632,7 +699,7 @@ def create_home_assistant_payload(
         upload_id = uuid.uuid4().hex[:12]
         upload_dir = UPLOAD_ROOT / upload_id
         _, note_parts = save_uploaded_files(uploads, upload_dir)
-        package_note = "\n".join(part for part in [clean_note, *note_parts] if part)
+        package_note = "\n".join(part for part in [note_for_reasoning, *note_parts] if part)
         package = build_package(upload_dir, package_note, clean_title or intent.get("title") or None)
         out_dir = OUTPUT_ROOT / package.id
         export_package(package, out_dir)
@@ -642,6 +709,7 @@ def create_home_assistant_payload(
             "ok": True,
             "action": "create_package",
             "intent": intent,
+            "used_context": bool(context_text),
             "message": intent.get("reply") or "我已按报销材料生成报销包，下一步由你复核。",
             "package": {
                 "id": package.id,
@@ -654,11 +722,12 @@ def create_home_assistant_payload(
 
     if action == "create_inbox":
         item_id = uuid.uuid4().hex[:12]
-        create_inbox_item(item_id, "chat", clean_title or intent.get("title") or "", clean_note)
+        create_inbox_item(item_id, "chat", clean_title or intent.get("title") or "", note_for_reasoning)
         return {
             "ok": True,
             "action": "create_inbox",
             "intent": intent,
+            "used_context": bool(context_text),
             "message": intent.get("reply") or "我已放进资料归集，后面补材料后再生成报销包。",
             "item": {"id": item_id, "url": "/#collection"},
         }, 200
@@ -707,12 +776,13 @@ def stream_text_chunks(text: str, size: int = 12) -> list[str]:
 async def home_assistant_stream(
     title: str = Form(""),
     note: str = Form(""),
+    history: str = Form(""),
     files: list[UploadFile] | None = File(None),
 ) -> StreamingResponse:
     async def generate():
         yield sse_event("status", {"message": "正在判断报销意图"})
         await asyncio.sleep(0.05)
-        payload, status_code = create_home_assistant_payload(title, note, files)
+        payload, status_code = create_home_assistant_payload(title, note, files, history)
         if status_code >= 400 or not payload.get("ok"):
             yield sse_event("error", {"error": payload.get("error") or "处理失败"})
             return
@@ -909,6 +979,8 @@ async def create_return_diagnosis(package_id: str, reason: str = Form(...)) -> R
 async def supplement_existing_package(
     package_id: str,
     note: str = Form(""),
+    missing_item_id: str = Form(""),
+    missing_item_name: str = Form(""),
     files: list[UploadFile] = File(...),
 ) -> RedirectResponse:
     package_dir = OUTPUT_ROOT / package_id
@@ -917,6 +989,8 @@ async def supplement_existing_package(
     upload_id = uuid.uuid4().hex[:12]
     upload_dir = UPLOAD_ROOT / "supplements" / upload_id
     upload_dir.mkdir(parents=True, exist_ok=True)
+    if missing_item_name:
+        note = "\n".join(part for part in [f"补充缺项：{missing_item_name}", note.strip()] if part)
     paths = []
     for upload in files:
         if not upload.filename:

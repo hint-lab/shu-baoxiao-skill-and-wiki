@@ -60,6 +60,146 @@
     return IconComponent ? e(IconComponent) : null;
   }
 
+  const TYPO_REPLACEMENTS = [
+    ["财物处", "财务处"],
+    ["财物系统", "财务系统"],
+    ["报消", "报销"],
+    ["抱销", "报销"],
+    ["报帐", "报账"],
+    ["抱账", "报账"],
+    ["报章", "报账"],
+    ["发飘", "发票"],
+    ["发漂", "发票"],
+    ["法票", "发票"],
+    ["发片", "发票"],
+    ["板面费", "版面费"],
+    ["版免费", "版面费"],
+    ["版面飞", "版面费"],
+    ["差旅废", "差旅费"],
+    ["差旅飞", "差旅费"],
+    ["会物费", "会务费"],
+    ["会义费", "会议费"],
+    ["住缩", "住宿"],
+    ["住宿飞", "住宿费"],
+    ["高帖", "高铁"],
+    ["工好", "工号"],
+    ["项目好", "项目号"],
+    ["扫吗", "扫码"],
+    ["登路", "登录"],
+    ["只识库", "知识库"],
+    ["知识裤", "知识库"],
+    ["邮香", "邮箱"],
+    ["才料", "材料"],
+    ["材聊", "材料"],
+  ];
+  const TYPO_TERMS = [
+    "财务处",
+    "财务系统",
+    "报销",
+    "报账",
+    "发票",
+    "版面费",
+    "差旅费",
+    "会议费",
+    "会务费",
+    "住宿费",
+    "高铁",
+    "工号",
+    "项目号",
+    "扫码",
+    "登录",
+    "知识库",
+    "邮箱",
+    "材料",
+    "审批单",
+    "支付记录",
+  ];
+
+  function shortLabel(text, max = 22) {
+    return text && text.length > max ? `${text.slice(0, max)}...` : text;
+  }
+
+  function editDistance(a, b) {
+    const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+    for (let i = 0; i <= a.length; i += 1) dp[i][0] = i;
+    for (let j = 0; j <= b.length; j += 1) dp[0][j] = j;
+    for (let i = 1; i <= a.length; i += 1) {
+      for (let j = 1; j <= b.length; j += 1) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+      }
+    }
+    return dp[a.length][b.length];
+  }
+
+  function buildTypoCorrectionMessage(note) {
+    const original = (note || "").trim();
+    const compact = original.replace(/\s+/g, "");
+    if (compact.length < 2) return null;
+    const candidates = [];
+    const seenQueries = new Set();
+    const addCandidate = (query, label) => {
+      const clean = (query || "").trim();
+      if (!clean || clean === original || seenQueries.has(clean)) return;
+      seenQueries.add(clean);
+      candidates.push({ label, query: clean });
+    };
+
+    let combined = original;
+    TYPO_REPLACEMENTS.forEach(([wrong, right]) => {
+      if (combined.includes(wrong) && !combined.includes(right)) {
+        combined = combined.split(wrong).join(right);
+      }
+    });
+    addCandidate(combined, "按正确词问");
+
+    TYPO_REPLACEMENTS.forEach(([wrong, right]) => {
+      if (original.includes(wrong) && !original.includes(right)) {
+        addCandidate(original.split(wrong).join(right), `改成「${right}」`);
+      }
+    });
+
+    if (!candidates.length && compact.length <= 16) {
+      TYPO_TERMS.forEach((term) => {
+        if (compact.includes(term)) return;
+        const minLen = Math.max(2, term.length - 1);
+        const maxLen = Math.min(compact.length, term.length + 1);
+        for (let len = minLen; len <= maxLen; len += 1) {
+          for (let start = 0; start <= compact.length - len; start += 1) {
+            const fragment = compact.slice(start, start + len);
+            const limit = term.length >= 4 ? 2 : 1;
+            if (editDistance(fragment, term) <= limit) {
+              addCandidate(original.replace(fragment, term), `可能是「${term}」`);
+              return;
+            }
+          }
+        }
+      });
+    }
+
+    if (!candidates.length) return null;
+    const actions = candidates.slice(0, 3).map((candidate, index) => ({
+      type: "ask",
+      primary: index === 0,
+      label: `${candidate.label}：${shortLabel(candidate.query)}`,
+      query: candidate.query,
+    }));
+    actions.push({ type: "ask", label: "仍按原文发送", query: original, skipTypoCheck: true });
+    const routingText = `${original} ${candidates.map((candidate) => candidate.query).join(" ")}`;
+    const settingsLike = /登录|扫码|工号|账号|账户|财务系统|财物系统|邮箱/.test(routingText);
+    actions.push({
+      type: "href",
+      label: settingsLike ? "去设置检查" : "去知识库查",
+      href: settingsLike ? "/#settings" : "/#knowledge",
+    });
+    return {
+      role: "assistant",
+      suggestionOnly: true,
+      text: "是不是打错了？我猜你可能想问下面这些，也可以继续按原文发送。",
+      actions,
+    };
+  }
+
   async function startShuAuthLogin() {
     const response = await fetch("/api/shu-auth/login", { method: "POST" });
     const payload = await response.json().catch(() => ({}));
@@ -253,13 +393,13 @@
       e(
         Form,
         { form, layout: "vertical", onFinish: submit },
-        e(Form.Item, { label: "报销事项名称", name: "title" }, e(Input, { placeholder: "例如：北京会议差旅报销包" })),
+        e(Form.Item, { label: "报销事项名称", name: "title" }, e(Input, { placeholder: "请输入这次报销事项的名称" })),
         e(
           Form.Item,
           { label: "一句话备注", name: "note" },
           e(Input.TextArea, {
             rows: 4,
-            placeholder: "例如：6 月去北京参加高校人工智能学术会议，报销高铁和酒店费用，走张老师科研项目",
+            placeholder: "请描述业务事实、费用类型、发生时间、附件情况和经费项目",
           })
         ),
         e(
@@ -332,20 +472,36 @@
       return { role: "assistant", text: payload.message || "你是想查政策依据、记录一个待报销事项，还是整理已有发票？" };
     }
 
-    async function submit(values) {
+    async function submit(values = {}, options = {}) {
       const currentValues = form.getFieldsValue();
-      const note = (values.note || currentValues.note || noteValue || "").trim();
+      const note = (options.note || values.note || currentValues.note || noteValue || "").trim();
       const title = (values.title || currentValues.title || "").trim();
       if (!note && !fileList.length) {
         message.warning("写一句报销事项，或者上传发票和附件");
         return;
       }
       activateChat();
+      const typoMessage = !options.skipTypoCheck && note ? buildTypoCorrectionMessage(note) : null;
+      if (typoMessage) {
+        setMessages((current) => [...current, { role: "user", text: note }, typoMessage]);
+        form.setFieldsValue({ title: "", note: "" });
+        return;
+      }
       const body = new FormData();
       body.append("title", title);
       body.append("note", note);
+      body.append(
+        "history",
+        JSON.stringify(
+          messages
+            .filter((item) => item.text && !item.suggestionOnly)
+            .slice(-8)
+            .map((item) => ({ role: item.role, text: item.text }))
+        )
+      );
       fileList.forEach((file) => body.append("files", file.originFileObj || file));
       setMessages((current) => [...current, { role: "user", text: note || `上传了 ${fileList.length} 份材料` }]);
+      form.setFieldsValue({ title: "", note: "" });
       setSubmitting(true);
       try {
         const response = await fetch("/api/home/assistant", { method: "POST", body });
@@ -356,13 +512,23 @@
           return;
         }
         setMessages((current) => [...current, assistantMessageFrom(payload)]);
-        form.setFieldsValue({ title: "", note: "" });
         setFileList([]);
       } catch (error) {
         message.error("处理失败，请检查材料后重试");
         setMessages((current) => [...current, { role: "assistant", text: "处理失败，请检查本地服务、大模型配置或网络后重试。" }]);
       } finally {
         setSubmitting(false);
+      }
+    }
+
+    function handleMessageAction(action) {
+      if (!action) return;
+      if (action.href) {
+        window.location.href = action.href;
+        return;
+      }
+      if (action.query) {
+        submit({ note: action.query }, { note: action.query, skipTypoCheck: Boolean(action.skipTypoCheck) || action.type === "ask" });
       }
     }
 
@@ -419,6 +585,26 @@
                             )
                           : null,
                         item.link ? e(Button, { className: "chat-message-action", type: "primary", href: item.link.href }, item.link.label) : null
+                        ,
+                        item.actions && item.actions.length
+                          ? e(
+                              "div",
+                              { className: "chat-suggestion-actions" },
+                              item.actions.map((action, actionIndex) =>
+                                e(
+                                  Button,
+                                  {
+                                    key: `${action.label}-${actionIndex}`,
+                                    size: "small",
+                                    type: action.primary ? "primary" : "default",
+                                    href: action.href,
+                                    onClick: action.href ? undefined : () => handleMessageAction(action),
+                                  },
+                                  action.label
+                                )
+                              )
+                            )
+                          : null
                       )
                     )
                   )
@@ -430,7 +616,7 @@
             { name: "note", className: "chat-note-item" },
             e(Input.TextArea, {
               autoSize: chatActive ? { minRows: 2, maxRows: 7 } : { minRows: 5, maxRows: 9 },
-              placeholder: "直接输入：版面费报销需要哪些材料？ 或：6 月北京会议差旅，报销高铁酒店，会务费走张老师项目。",
+              placeholder: "直接输入报销问题、事项描述，或拖入发票和附件。",
               onFocus: activateChat,
               onPressEnter: (event) => {
                 if (!event.shiftKey) {
@@ -480,6 +666,11 @@
               fileList.length
                 ? e(Button, { danger: true, icon: icon(DeleteOutlined), onClick: () => setFileList([]) }, "清空")
                 : null
+            ),
+            e(
+              "span",
+              { className: "chat-hint" },
+              "Enter 发送 · Shift+Enter 换行"
             ),
             e(
               Button,
@@ -585,11 +776,11 @@
       e(
         Form,
         { form, layout: "vertical", onFinish: submit },
-        e(Form.Item, { label: "事项名称", name: "title" }, e(Input, { placeholder: "例如：6 月北京会议酒店票" })),
+        e(Form.Item, { label: "事项名称", name: "title" }, e(Input, { placeholder: "请输入待整理事项名称" })),
         e(
           Form.Item,
           { label: "随手备注", name: "note", rules: [{ required: true, message: "请写一句备注" }] },
-          e(Input.TextArea, { rows: 4, placeholder: "例如：这张酒店发票是 6 月去北京开会，住宿两晚，后面再补会议通知和支付记录。" })
+          e(Input.TextArea, { rows: 4, placeholder: "请随手记录这张票据对应的业务、缺什么材料、准备走哪个经费项目。" })
         ),
         e(Button, { type: "primary", htmlType: "submit", loading: submitting }, "存入资料归集")
       )
@@ -624,8 +815,8 @@
       e(
         Form,
         { form, layout: "vertical", onFinish: submit },
-        e(Form.Item, { label: "材料组名称", name: "title" }, e(Input, { placeholder: "例如：李老师差旅票据一组" })),
-        e(Form.Item, { label: "线索备注", name: "note" }, e(Input.TextArea, { rows: 3, placeholder: "例如：这些票据可能是 6 月北京会议，后面再补会议通知。" })),
+        e(Form.Item, { label: "材料组名称", name: "title" }, e(Input, { placeholder: "请输入这组材料的名称" })),
+        e(Form.Item, { label: "线索备注", name: "note" }, e(Input.TextArea, { rows: 3, placeholder: "记录这些材料可能对应的业务、缺失附件和后续处理线索。" })),
         e(
           Form.Item,
           { label: "原始材料" },
@@ -674,7 +865,7 @@
           onPressEnter: (event) => {
             if ((event.metaKey || event.ctrlKey) && query.trim()) search();
           },
-          placeholder: "例如：版面费报销需要哪些材料",
+          placeholder: "输入要查询的报销政策或材料要求",
         }),
         e(
           Space,
@@ -982,6 +1173,7 @@
     const [error, setError] = React.useState("");
     const [mailPolling, setMailPolling] = React.useState(false);
     const [authLaunching, setAuthLaunching] = React.useState(false);
+    const [authChecking, setAuthChecking] = React.useState(false);
 
     function refreshStatus() {
       fetch("/api/settings/status")
@@ -1029,6 +1221,30 @@
         message.error(authError.message || "启动扫码登录窗口失败");
       } finally {
         setAuthLaunching(false);
+      }
+    }
+
+    async function checkShuAuth() {
+      setAuthChecking(true);
+      try {
+        const response = await fetch("/api/shu-auth/check", { method: "POST" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || "实时检查财务系统会话失败");
+        }
+        setStatus((current) => {
+          const base = current || {};
+          return { ...base, shu_auth: payload.shu_auth };
+        });
+        if (payload.checked && payload.shu_auth && payload.shu_auth.status === "ready") {
+          message.success("财务系统会话可用");
+        } else {
+          message.info((payload.shu_auth && payload.shu_auth.message) || "请完成登录后再检查");
+        }
+      } catch (authError) {
+        message.error(authError.message || "实时检查财务系统会话失败");
+      } finally {
+        setAuthChecking(false);
       }
     }
 
@@ -1194,14 +1410,19 @@
               : null
           ),
           e(
-            Button,
-            {
-              type: shuAuth.status === "ready" ? "default" : "primary",
-              icon: icon(LoginOutlined),
-              loading: authLaunching || Boolean(shuAuth.login_running),
-              onClick: launchShuAuth,
-            },
-            shuAuth.login_running ? "登录窗口已打开" : "打开扫码登录窗口"
+            Space,
+            { wrap: true },
+            e(
+              Button,
+              {
+                type: shuAuth.status === "ready" ? "default" : "primary",
+                icon: icon(LoginOutlined),
+                loading: authLaunching || Boolean(shuAuth.login_running),
+                onClick: launchShuAuth,
+              },
+              shuAuth.login_running ? "登录窗口已打开" : "打开扫码登录窗口"
+            ),
+            e(Button, { loading: authChecking, disabled: Boolean(shuAuth.login_running), onClick: checkShuAuth }, "实时检查")
           )
         )
       ),

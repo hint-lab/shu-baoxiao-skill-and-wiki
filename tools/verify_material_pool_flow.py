@@ -67,8 +67,8 @@ def main() -> None:
             page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
             page.goto(f"{BASE_URL}/#collection", wait_until="networkidle")
             card = page.locator(".work-card", has_text="暂存未归类材料").first
-            card.get_by_placeholder("例如：李老师差旅票据一组").fill(TITLE)
-            card.get_by_placeholder("例如：这些票据可能是 6 月北京会议，后面再补会议通知。").fill("材料先暂存，不立即生成报销包。")
+            card.get_by_placeholder("请输入这组材料的名称").fill(TITLE)
+            card.get_by_placeholder("记录这些材料可能对应的业务、缺失附件和后续处理线索。").fill("材料先暂存，不立即生成报销包。")
             card.locator('input[type="file"]').set_input_files([str(path) for path in FILES])
             card.get_by_role("button", name="暂存到资料归集").click()
             page.get_by_text(TITLE).wait_for(timeout=10000)
