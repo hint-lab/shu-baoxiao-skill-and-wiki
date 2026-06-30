@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import http.client
 import urllib.error
 import urllib.request
 from typing import Any
@@ -39,7 +40,7 @@ def _chat_completion_content(
         with urllib.request.urlopen(request, timeout=timeout) as response:
             raw = json.loads(response.read().decode("utf-8"))
         content = raw["choices"][0]["message"]["content"]
-    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
+    except (urllib.error.URLError, TimeoutError, http.client.IncompleteRead, json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
         return {
             "enabled": True,
             "content": "",
@@ -68,6 +69,7 @@ def fallback_home_intent(note: str, has_files: bool) -> dict[str, Any]:
             "title": "",
         }
     if re.search(r"[?？]|^(怎么|如何|为什么|哪些|什么|能否|能不能|可不可以|是否)", text) or re.search(
+        r"(怎么|如何).*(报销|办理|申请)|(报销).*(怎么|如何)|"
         r"(需要|要|准备|提供|提交).*(什么|哪些|材料|附件|手续|证明)|"
         r"(报销|发票).*(要求|规定|标准|流程|材料|附件|依据)",
         text,
@@ -80,7 +82,7 @@ def fallback_home_intent(note: str, has_files: bool) -> dict[str, Any]:
             "search_query": text,
             "title": "",
         }
-    if re.search(r"(发票|票据|报销|付款|支付|合同|会议|酒店|高铁|火车票|机票|差旅|住宿|版面费|办公用品|耗材)", text):
+    if re.search(r"(发票|票据|报销|付款|支付|合同|会议|酒店|高铁|火车票|机票|差旅|住宿|版面费|邮费|快递费|邮寄费|办公用品|耗材)", text):
         return {
             "intent": "material_collection",
             "action": "create_inbox",

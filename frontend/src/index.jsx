@@ -277,6 +277,7 @@ const App = AntdApp;
     if (!value) return false;
     if (/[?？]/.test(value)) return true;
     if (/^(怎么|如何|为什么|哪些|什么|能否|能不能|可不可以|是否)/.test(value)) return true;
+    if (/(怎么|如何).*(报销|办理|申请)|报销.*(怎么|如何)/.test(value)) return true;
     if (/需要.*(什么|哪些|材料|附件|手续)/.test(value)) return true;
     if (/(报销|发票).*(要求|规定|标准|流程|材料|附件|依据)/.test(value)) return true;
     return false;
@@ -286,7 +287,7 @@ const App = AntdApp;
     const value = String(text || "").trim();
     if (!value) return false;
     if (/^(记|记一下|帮我记|先存|保存|整理|归集|待报销|我要报销|这张|这些)/.test(value)) return true;
-    return /(发票|票据|报销|付款|支付|合同|会议|酒店|高铁|火车票|机票|差旅|住宿|版面费|出版费|材料费|测试化验|公务接待|信息服务|办公用品|耗材)/.test(value);
+    return /(发票|票据|报销|付款|支付|合同|会议|酒店|高铁|火车票|机票|差旅|住宿|版面费|出版费|邮费|快递费|邮寄费|材料费|测试化验|公务接待|信息服务|办公用品|耗材)/.test(value);
   }
 
   function authActionInfo(authStatus) {
@@ -303,6 +304,14 @@ const App = AntdApp;
       default:
         return { label: "本机模式", tone: "idle", action: "登录学校账号", icon: LoginOutlined };
     }
+  }
+
+  function formatSettingsTime(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    const pad = (num) => String(num).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
   function Sidebar({ activeKey, onSelect, collapsed, onToggleCollapsed, onOpenAbout, onLaunchAuth }) {
@@ -629,6 +638,7 @@ const App = AntdApp;
 
     if (!candidates.length && compact.length <= 16) {
       TYPO_TERMS.forEach((term) => {
+        if (term.length < 3) return;
         if (compact.includes(term)) return;
         const minLen = Math.max(2, term.length - 1);
         const maxLen = Math.min(compact.length, term.length + 1);
@@ -767,6 +777,48 @@ const App = AntdApp;
     const thinkingTimerRef = React.useRef(null);
     const noteValue = Form.useWatch("note", form) || "";
     const user = data.user || {};
+
+    function fileToUploadItem(file, source) {
+      const extension = file.type === "image/png" ? "png" : file.type === "image/jpeg" ? "jpg" : "bin";
+      const name = file.name || `${source || "clipboard"}-${Date.now()}.${extension}`;
+      return {
+        uid: `${source || "file"}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name,
+        status: "done",
+        originFileObj: file,
+      };
+    }
+
+    function addFilesToChat(files, source) {
+      const nextFiles = Array.from(files || []).filter((file) => file && file.size > 0);
+      if (!nextFiles.length) return false;
+      activateChat();
+      setFileList((current) => [...current, ...nextFiles.map((file) => fileToUploadItem(file, source))]);
+      message.success(`已添加 ${nextFiles.length} 个附件`);
+      return true;
+    }
+
+    function handlePaste(event) {
+      const clipboard = event.clipboardData;
+      if (!clipboard) return;
+      const files = clipboard.files && clipboard.files.length ? Array.from(clipboard.files) : [];
+      const itemFiles = Array.from(clipboard.items || [])
+        .filter((item) => item.kind === "file")
+        .map((item) => item.getAsFile())
+        .filter(Boolean);
+      const added = addFilesToChat(files.length ? files : itemFiles, "paste");
+      if (added) {
+        event.preventDefault();
+      }
+    }
+
+    function handleDrop(event) {
+      const files = event.dataTransfer && event.dataTransfer.files ? Array.from(event.dataTransfer.files) : [];
+      const added = addFilesToChat(files, "drop");
+      if (added) {
+        event.preventDefault();
+      }
+    }
 
     function scrollThreadToBottom() {
       const node = threadRef.current;
@@ -1021,13 +1073,25 @@ const App = AntdApp;
         }
         setFileList([]);
       } catch (error) {
-        const errorText = error && error.message ? error.message : "处理失败，请检查材料后重试";
-        message.error(errorText);
-        updateStreamMessage(streamId, {
-          text: errorText || "处理失败，请检查本地服务、大模型配置或网络后重试。",
-          streaming: false,
-          streamStatus: "",
-        });
+        updateStreamMessage(streamId, { streamStatus: "流式连接异常，正在切换普通接口" });
+        try {
+          const fallbackResponse = await fetch("/api/home/assistant", { method: "POST", body });
+          const fallbackPayload = await fallbackResponse.json();
+          if (!fallbackResponse.ok || !fallbackPayload.ok) {
+            throw new Error(fallbackPayload.error || "处理失败");
+          }
+          const finalMessage = assistantMessageFrom(fallbackPayload);
+          updateStreamMessage(streamId, { ...finalMessage, streaming: false, streamStatus: "", streamId });
+          setFileList([]);
+        } catch (fallbackError) {
+          const errorText = fallbackError && fallbackError.message ? fallbackError.message : error && error.message ? error.message : "处理失败，请检查材料后重试";
+          message.error(errorText);
+          updateStreamMessage(streamId, {
+            text: errorText || "处理失败，请检查本地服务、大模型配置或网络后重试。",
+            streaming: false,
+            streamStatus: "",
+          });
+        }
       } finally {
         setSubmitting(false);
         requestAnimationFrame(() => scrollThreadToBottom());
@@ -1078,6 +1142,8 @@ const App = AntdApp;
               autoSize: chatActive ? { minRows: 2, maxRows: 7 } : { minRows: 5, maxRows: 9 },
               placeholder: "直接输入报销问题、事项描述，或拖入发票和附件。",
               onFocus: activateChat,
+              onPaste: handlePaste,
+              onDrop: handleDrop,
               onPressEnter: (event) => {
                 if (!event.shiftKey) {
                   event.preventDefault();
@@ -1117,7 +1183,7 @@ const App = AntdApp;
                   showUploadList: false,
                   onChange: ({ fileList: next }) => {
                     activateChat();
-                    setFileList(next);
+                    setFileList(next.map((file) => (file.originFileObj ? file : { ...file, originFileObj: file.originFileObj || file })));
                   },
                 },
                 e(Button, { icon: icon(PaperClipOutlined) || icon(FileAddOutlined) }, "附件")
@@ -1886,27 +1952,34 @@ const App = AntdApp;
           { xs: 24, lg: 12 },
           e(
             Card,
-            { className: "work-card", title: "学校账号" },
+            { className: "work-card settings-school-card", title: "学校账号" },
             e(
               Space,
-              { direction: "vertical", size: 12, className: "full" },
+              { direction: "vertical", size: 14, className: "full" },
               e(
-                Space,
-                { wrap: true },
-                (() => {
-                  const label = authStatusLabel(shuAuth);
-                  return e(Tag, { color: label[0] }, label[1]);
-                })(),
-                shuAuth && shuAuth.checked_at ? e(Text, { type: "secondary" }, `上次检测 ${shuAuth.checked_at}`) : null
-              ),
-              e(Text, { type: "secondary" }, "用于进入上海大学财务系统。扫码、验证码和最终提交仍由本人完成。"),
-              e(
-                Row,
-                { gutter: [12, 12] },
+                "div",
+                { className: "settings-card-top" },
                 e(
-                  Col,
-                  { xs: 24, md: 14 },
-                  e(Text, { strong: true }, "工号"),
+                  "div",
+                  { className: "settings-status-line" },
+                  (() => {
+                    const label = authStatusLabel(shuAuth);
+                    return e(Tag, { color: label[0] }, label[1]);
+                  })(),
+                  e(Text, { type: "secondary" }, shuAuth && shuAuth.status === "ready" ? "财务系统业务会话可用" : "扫码后建立本机会话")
+                ),
+                shuAuth && shuAuth.checked_at
+                  ? e(Text, { type: "secondary", className: "settings-card-time" }, `上次检测 ${formatSettingsTime(shuAuth.checked_at)}`)
+                  : null
+              ),
+              e(Text, { type: "secondary", className: "settings-desc" }, "用于进入上海大学财务系统。扫码、验证码和最终提交仍由本人完成。"),
+              e(
+                "div",
+                { className: "settings-account-grid" },
+                e(
+                  "div",
+                  { className: "settings-field-panel" },
+                  e("div", { className: "settings-field-label" }, "工号"),
                   e(Input, {
                     value: userWorkId,
                     onChange: (event) => setUserWorkId(event.target.value),
@@ -1914,19 +1987,18 @@ const App = AntdApp;
                   })
                 ),
                 e(
-                  Col,
-                  { xs: 24, md: 10 },
-                  e(Text, { strong: true }, "当前显示"),
+                  "div",
+                  { className: "settings-field-panel" },
+                  e("div", { className: "settings-field-label" }, "当前显示"),
                   e("div", { className: "settings-account-preview" }, settingsUser.display_name || "未绑定工号")
                 )
               ),
               e(
                 Space,
-                { wrap: true },
+                { wrap: true, className: "settings-button-row" },
                 e(
                   Button,
                   {
-                    type: shuAuth && shuAuth.status === "ready" ? "default" : "primary",
                     icon: icon(LoginOutlined),
                     loading: authLaunching || Boolean(shuAuth && shuAuth.login_running),
                     onClick: launchShuAuth,
@@ -1939,6 +2011,7 @@ const App = AntdApp;
               ),
               shuAuth && shuAuth.message
                 ? e(Alert, {
+                    className: "settings-session-alert",
                     type: shuAuth.status === "ready" ? "success" : "info",
                     showIcon: true,
                     message: shuAuth.message,

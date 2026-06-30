@@ -1306,19 +1306,83 @@ body {
   margin: 4px 0 14px;
 }
 
-.settings-account-preview {
-  min-height: 32px;
+.settings-school-card .ant-card-body {
+  padding-top: 20px;
+}
+
+.settings-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.settings-status-line {
   display: inline-flex;
   align-items: center;
-  max-width: 100%;
-  padding: 5px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #f8fafc;
-  color: #111827;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.settings-card-time {
+  font-size: 13px;
+}
+
+.settings-account-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(180px, 240px);
+  gap: 14px;
+  align-items: end;
+}
+
+.settings-field-panel {
+  display: grid;
+  gap: 6px;
+}
+
+.settings-field-label {
+  color: #344054;
   font-size: 13px;
   font-weight: 600;
+  line-height: 1.3;
+}
+
+.settings-field-panel .ant-input {
+  height: 40px;
+  font-size: 15px;
+}
+
+.settings-account-preview {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #1f2937;
+  font-size: 15px;
+  font-weight: 600;
   line-height: 1.4;
+}
+
+.settings-button-row {
+  gap: 8px !important;
+}
+
+.settings-button-row .ant-btn {
+  height: 36px;
+  padding: 0 14px;
+}
+
+.settings-session-alert {
+  padding: 10px 12px;
+}
+
+.settings-session-alert .ant-alert-message {
+  font-size: 14px;
 }
 
 .settings-status-grid {
@@ -1549,15 +1613,83 @@ body {
 @media (max-width: 760px) {
   .app-frame {
     display: flex;
+    flex-direction: column;
+  }
+
+  .app-frame.ant-layout-has-sider {
+    flex-direction: column !important;
   }
 
   .app-sider {
-    min-height: 100vh;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid #1f2937;
   }
 
   .app-sider .ant-layout-sider-children {
-    position: sticky;
-    height: 100vh;
+    position: static;
+    height: auto;
+  }
+
+  .brand-block {
+    height: 64px;
+    padding: 14px 16px;
+  }
+
+  .brand-logo,
+  .brand-logo img,
+  .brand-block > img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand-text strong {
+    font-size: 16px;
+  }
+
+  .brand-collapse-btn {
+    display: none;
+  }
+
+  .sidebar-main-menu {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 10px 10px;
+    scrollbar-width: none;
+  }
+
+  .sidebar-main-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-sider .ant-menu {
+    display: flex;
+    min-width: max-content;
+  }
+
+  .app-sider .ant-menu-item,
+  .app-sider.ant-layout-sider-collapsed .ant-menu-item {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 96px;
+    height: 38px;
+    line-height: 38px;
+    margin: 0;
+    padding-inline: 12px !important;
+  }
+
+  .sidebar-bottom {
+    display: none;
+  }
+
+  .main-layout {
+    width: 100%;
   }
 
   .antd-content {
@@ -1652,6 +1784,10 @@ body {
 
   .settings-row {
     display: grid;
+  }
+
+  .settings-account-grid {
+    grid-template-columns: 1fr;
   }
 
   .page-head,

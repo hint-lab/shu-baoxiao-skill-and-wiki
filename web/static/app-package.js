@@ -8,6 +8,7 @@
     Checkbox,
     Col,
     ConfigProvider,
+    Dropdown,
     Form,
     Input,
     Layout,
@@ -28,6 +29,20 @@
   const Dragger = Upload.Dragger;
   const { Content, Sider } = Layout;
   const { Title, Text, Paragraph } = Typography;
+  const Icons = window.icons || window.AntDesignIcons || {};
+  const {
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    DatabaseOutlined,
+    FolderOpenOutlined,
+    HomeOutlined,
+    InfoCircleOutlined,
+    LoginOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    SettingOutlined,
+    UserOutlined,
+  } = Icons;
   const statusLabels = {
     collecting: ["default", "资料归集中"],
     needs_materials: ["red", "待补材料"],
@@ -49,34 +64,103 @@
     return (packageData.checklist || []).filter((item) => item.status === "missing").length;
   }
 
-  function Sidebar() {
+  function icon(IconComponent) {
+    return IconComponent ? e(IconComponent) : null;
+  }
+
+  function authTone(status) {
+    if (status === "ready") return "ready";
+    if (status === "needs_scan" || status === "needs_renew") return "warn";
+    if (status === "error") return "error";
+    return "idle";
+  }
+
+  function authLabel(user) {
+    if (user.auth_status === "ready") return "已连接";
+    if (user.auth_status === "needs_scan") return "需要扫码";
+    if (user.auth_status === "needs_renew") return "待续登";
+    if (user.auth_status === "error") return "检查失败";
+    return user.subtitle || "本机模式";
+  }
+
+  function Sidebar({ collapsed, onToggleCollapsed }) {
     const selectedKey = packageMissingCount(pkg) > 0 ? "collection" : "waiting";
     const user = data.user || {};
+    const accountName = user.display_name || "未绑定工号";
+    const avatarTone = authTone(user.auth_status);
+    const statusLabel = authLabel(user);
     const items = [
-      { key: "home", label: "报销首页" },
-      { key: "knowledge", label: "报销知识" },
-      { key: "waiting", label: "待办报销" },
-      { key: "collection", label: "资料归集" },
-      { key: "reimbursed", label: "报销记录" },
+      { key: "home", icon: icon(HomeOutlined), label: "报销助手" },
+      { key: "knowledge", icon: icon(DatabaseOutlined), label: "报销知识" },
+      { key: "waiting", icon: icon(ClockCircleOutlined), label: "待办报销" },
+      { key: "collection", icon: icon(FolderOpenOutlined), label: "资料归集" },
+      { key: "reimbursed", icon: icon(CheckCircleOutlined), label: "报销记录" },
     ];
-    const settingsItems = [{ key: "settings", label: "系统设置" }];
+    const userMenuItems = [
+      {
+        key: "user-header",
+        type: "group",
+        label: e(
+          "div",
+          { className: "user-menu-header" },
+          e("div", { className: "user-menu-name" }, accountName),
+          e("div", { className: `user-menu-status user-menu-status--${avatarTone}` }, e("i", { className: "user-menu-status-dot" }), statusLabel)
+        ),
+        disabled: true,
+      },
+      { type: "divider" },
+      { key: "auth", icon: icon(LoginOutlined), label: "扫码登录" },
+      { key: "settings", icon: icon(SettingOutlined), label: "系统设置" },
+      { key: "about", icon: icon(InfoCircleOutlined), label: "说明" },
+    ];
+    const menuProps = {
+      items: userMenuItems,
+      onClick: ({ key }) => {
+        if (key === "about") window.location.href = "/?about=1#home";
+        else window.location.href = "/#" + key;
+      },
+    };
     return e(
       Sider,
-      { width: 224, className: "app-sider", breakpoint: "lg", collapsedWidth: 0 },
+      { width: 224, collapsedWidth: 72, collapsed, collapsible: false, className: "app-sider" },
       e(
         "div",
         { className: "brand-block" },
         e(
-          "a",
-          { className: "brand-logo", href: "/#home", "aria-label": "上海大学财务助手" },
+          "button",
+          {
+            className: "brand-logo",
+            type: "button",
+            onClick: () => collapsed && onToggleCollapsed(),
+            title: collapsed ? "展开侧边栏" : undefined,
+            "aria-label": "上海大学财务助手",
+            tabIndex: collapsed ? 0 : -1,
+          },
           e("img", { src: "/logo.png", alt: "上海大学财务助手" })
         ),
-        e("div", { className: "brand-text" }, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
+        e(
+          "div",
+          { className: "brand-text" },
+          e("strong", null, "上海大学"),
+          e(
+            "button",
+            {
+              className: "brand-collapse-btn",
+              type: "button",
+              onClick: onToggleCollapsed,
+              title: collapsed ? "展开侧边栏" : "收起侧边栏",
+              "aria-label": collapsed ? "展开侧边栏" : "收起侧边栏",
+            },
+            icon(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined)
+          ),
+          e("small", null, "自助报销 Agent")
+        )
       ),
       e(Menu, {
         className: "sidebar-main-menu",
         theme: "dark",
         mode: "inline",
+        inlineCollapsed: collapsed,
         selectedKeys: [selectedKey],
         items,
         onClick: ({ key }) => {
@@ -87,26 +171,22 @@
         "div",
         { className: "sidebar-bottom" },
         e(
-          "div",
-          { className: "sidebar-user" },
-          e("div", { className: "sidebar-user-avatar" }, String(user.display_name || "本").slice(0, 1).toUpperCase()),
+          Dropdown,
+          { trigger: ["click"], placement: "topLeft", overlayClassName: "sidebar-user-dropdown", menu: menuProps },
           e(
-            "div",
-            { className: "sidebar-user-meta" },
-            e("strong", null, user.display_name || "本机用户"),
-            e("span", null, user.subtitle || "本机模式")
+            "button",
+            { className: `sidebar-user sidebar-user--${avatarTone}`, type: "button", title: collapsed ? accountName : undefined },
+            e("span", { className: "sidebar-user-avatar" }, icon(UserOutlined) || String(accountName).slice(0, 1).toUpperCase()),
+            !collapsed &&
+              e(
+                "span",
+                { className: "sidebar-user-meta" },
+                e("span", { className: "sidebar-user-name" }, accountName),
+                e("span", { className: "sidebar-user-status" }, e("i", { className: `sidebar-user-status-dot sidebar-user-status-dot--${avatarTone}` }), statusLabel)
+              ),
+            !collapsed && e("span", { className: "sidebar-user-chevron" }, "⌃")
           )
-        ),
-        e(Menu, {
-          className: "sidebar-settings-menu",
-          theme: "dark",
-          mode: "inline",
-          selectedKeys: [],
-          items: settingsItems,
-          onClick: ({ key }) => {
-            window.location.href = "/#" + key;
-          },
-        })
+        )
       )
     );
   }
@@ -408,50 +488,97 @@
     );
   }
 
+  function missingChecklistItems() {
+    return (pkg.checklist || []).filter((item) => item.status === "missing");
+  }
+
   function SupplementForm() {
-    const [fileList, setFileList] = React.useState([]);
-    const [submitting, setSubmitting] = React.useState(false);
+    const [fileLists, setFileLists] = React.useState({});
+    const [submitting, setSubmitting] = React.useState("");
     async function submit(values) {
+      const fileList = fileLists[values.missing_item_id] || [];
       if (!fileList.length) {
         message.warning("请先选择补充材料");
         return;
       }
       const body = new FormData();
       body.append("note", values.note || "");
+      body.append("missing_item_id", values.missing_item_id || "");
+      body.append("missing_item_name", values.missing_item_name || "");
       fileList.forEach((file) => body.append("files", file.originFileObj || file));
-      setSubmitting(true);
+      setSubmitting(values.missing_item_id || "supplement");
       try {
         const response = await fetch(`/packages/${encodeURIComponent(data.package_id)}/supplement`, { method: "POST", body, redirect: "follow" });
         window.location.href = response.url || window.location.href;
       } catch (error) {
         message.error("补充材料失败");
-        setSubmitting(false);
+        setSubmitting("");
       }
+    }
+    const missingItems = missingChecklistItems();
+    if (!missingItems.length) {
+      return e(
+        Card,
+        { title: "待补材料", className: "work-card supplement-card" },
+        e(Alert, {
+          type: "success",
+          showIcon: true,
+          message: "当前没有必需材料缺漏",
+          description: "系统已经把材料整理到可复核状态。你只需要核对票据真实性、经费项目和收款信息。",
+        })
+      );
     }
     return e(
       Card,
-      { title: "补充材料并重新整理", className: "work-card" },
+      { title: `待补材料 ${missingItems.length} 项`, className: "work-card supplement-card" },
       e(
-        Form,
-        { layout: "vertical", onFinish: submit },
-        e(Form.Item, { label: "补充说明", name: "note" }, e(Input.TextArea, { rows: 3, placeholder: "例如：根据退回意见补充公务卡支付记录。" })),
-        e(
-          Form.Item,
-          { label: "补充材料" },
+        Space,
+        { direction: "vertical", size: 14, className: "full" },
+        e(Alert, {
+          type: "warning",
+          showIcon: true,
+          message: "只需要按缺项补材料",
+          description: "系统已经完成分类、清单检查和草稿生成。你不用重新整理，只要在下面对应缺项上传文件或写一句说明。",
+        }),
+        missingItems.map((item) =>
           e(
-            Dragger,
-            {
-              multiple: true,
-              beforeUpload: () => false,
-              fileList,
-              onChange: ({ fileList: next }) => setFileList(next),
-            },
-            e("p", { className: "upload-symbol" }, "↑"),
-            e("p", { className: "ant-upload-text" }, "拖入或选择补充材料"),
-            e("p", { className: "ant-upload-hint" }, "系统会保留旧版本，并用原材料加补充材料重新生成报销包。")
+            "section",
+            { key: item.id, className: "missing-supplement-item" },
+            e(
+              "div",
+              { className: "missing-supplement-head" },
+              e("div", null, e(Text, { strong: true }, item.name), item.why ? e(Text, { type: "secondary" }, item.why) : null),
+              statusTag(item.status)
+            ),
+            item.evidence
+              ? e("a", { className: "missing-supplement-evidence", href: item.evidence.url, target: "_blank", rel: "noreferrer" }, item.evidence.title)
+              : null,
+            e(
+              Form,
+              { layout: "vertical", onFinish: submit, className: "missing-supplement-form" },
+              e(Form.Item, { name: "missing_item_id", initialValue: item.id, hidden: true }, e(Input)),
+              e(Form.Item, { name: "missing_item_name", initialValue: item.name, hidden: true }, e(Input)),
+              e(Form.Item, { label: "补充说明", name: "note" }, e(Input.TextArea, { rows: 2, placeholder: `补充 ${item.name} 的说明，可留空` })),
+              e(
+                Form.Item,
+                { label: "上传材料" },
+                e(
+                  Dragger,
+                  {
+                    multiple: true,
+                    beforeUpload: () => false,
+                    fileList: fileLists[item.id] || [],
+                    onChange: ({ fileList: next }) => setFileLists((current) => ({ ...current, [item.id]: next })),
+                  },
+                  e("p", { className: "upload-symbol" }, "↑"),
+                  e("p", { className: "ant-upload-text" }, `上传 ${item.name}`),
+                  e("p", { className: "ant-upload-hint" }, "系统会自动合并到这个报销包，并重新检查缺漏。")
+                )
+              ),
+              e(Button, { type: "primary", htmlType: "submit", loading: submitting === item.id }, "补充并重新检查")
+            )
           )
-        ),
-        e(Button, { type: "primary", htmlType: "submit", loading: submitting }, "补充并重新生成")
+        )
       )
     );
   }
@@ -503,6 +630,14 @@
   function PackagePage() {
     const missing = packageMissingCount(pkg);
     const ready = (pkg.checklist || []).filter((item) => item.status === "ready").length;
+    const [sidebarCollapsed, setSidebarCollapsed] = React.useState(() => localStorage.getItem("reimbursement.sidebar.collapsed") === "true");
+    function toggleSidebarCollapsed() {
+      setSidebarCollapsed((current) => {
+        const next = !current;
+        localStorage.setItem("reimbursement.sidebar.collapsed", String(next));
+        return next;
+      });
+    }
     return e(
       ConfigProvider,
       {
@@ -524,13 +659,13 @@
         e(
           Layout,
           { className: "antd-shell app-frame" },
-          e(Sidebar),
+          e(Sidebar, { collapsed: sidebarCollapsed, onToggleCollapsed: toggleSidebarCollapsed }),
           e(
             Layout,
             { className: "main-layout" },
             e(
               Content,
-              { className: "antd-content" },
+              { className: "antd-content package-detail-content" },
             e(
               "div",
               { className: "page-head" },
@@ -567,10 +702,9 @@
               e(Paragraph, { className: "reason-text" }, pkg.reason_draft)
             ),
             e(WorkflowAlert, { missing }),
+            e(SupplementForm),
             e(StatusPanel, { missing }),
             e(FillAgentPanel, { missing }),
-            e(MissingChecklist),
-            e(DocumentsTable),
             e(
               Card,
               { className: "work-card", title: "风险提示" },
@@ -587,7 +721,9 @@
                 ["经费项目", "收款账号", "票据真实性", "提交预审", "提交审批"].map((item) => e(Tag, { key: item, color: "red" }, item))
               )
             ),
-            e(Row, { gutter: [16, 16] }, e(Col, { xs: 24, lg: 12 }, e(ReturnDiagnosisForm)), e(Col, { xs: 24, lg: 12 }, e(SupplementForm)))
+            e(Row, { gutter: [16, 16] }, e(Col, { xs: 24, lg: 12 }, e(ReturnDiagnosisForm))),
+            e(MissingChecklist),
+            e(DocumentsTable)
             )
           )
         )

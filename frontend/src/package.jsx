@@ -24,6 +24,19 @@ import {
   message,
   theme,
 } from "antd";
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  DatabaseOutlined,
+  FolderOpenOutlined,
+  HomeOutlined,
+  InfoCircleOutlined,
+  LoginOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  SettingOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import "antd/dist/reset.css";
 
 const e = React.createElement;
@@ -89,15 +102,37 @@ const App = AntdApp;
     return (packageData.checklist || []).filter((item) => item.status === "missing").length;
   }
 
-  function Sidebar() {
+  function icon(IconComponent) {
+    return e(IconComponent);
+  }
+
+  function authTone(status) {
+    if (status === "ready") return "ready";
+    if (status === "needs_scan" || status === "needs_renew") return "warn";
+    if (status === "error") return "error";
+    return "idle";
+  }
+
+  function authLabel(user) {
+    if (user.auth_status === "ready") return "已连接";
+    if (user.auth_status === "needs_scan") return "需要扫码";
+    if (user.auth_status === "needs_renew") return "待续登";
+    if (user.auth_status === "error") return "检查失败";
+    return user.subtitle || "本机模式";
+  }
+
+  function Sidebar({ collapsed, onToggleCollapsed }) {
     const selectedKey = packageMissingCount(pkg) > 0 ? "collection" : "waiting";
     const user = data.user || {};
+    const accountName = user.display_name || "未绑定工号";
+    const avatarTone = authTone(user.auth_status);
+    const statusLabel = authLabel(user);
     const items = [
-      { key: "home", label: "报销助手" },
-      { key: "knowledge", label: "报销知识" },
-      { key: "waiting", label: "待办报销" },
-      { key: "collection", label: "资料归集" },
-      { key: "reimbursed", label: "报销记录" },
+      { key: "home", icon: icon(HomeOutlined), label: "报销助手" },
+      { key: "knowledge", icon: icon(DatabaseOutlined), label: "报销知识" },
+      { key: "waiting", icon: icon(ClockCircleOutlined), label: "待办报销" },
+      { key: "collection", icon: icon(FolderOpenOutlined), label: "资料归集" },
+      { key: "reimbursed", icon: icon(CheckCircleOutlined), label: "报销记录" },
     ];
     const userMenuItems = [
       {
@@ -106,15 +141,20 @@ const App = AntdApp;
         label: e(
           "div",
           { className: "user-menu-header" },
-          e("div", { className: "user-menu-name" }, user.display_name || "本机用户"),
-          e("div", { className: "user-menu-status" }, user.subtitle || "本机模式")
+          e("div", { className: "user-menu-name" }, accountName),
+          e(
+            "div",
+            { className: `user-menu-status user-menu-status--${avatarTone}` },
+            e("i", { className: "user-menu-status-dot" }),
+            statusLabel
+          )
         ),
         disabled: true,
       },
       { type: "divider" },
-      { key: "auth", label: "扫码登录" },
-      { key: "settings", label: "系统设置" },
-      { key: "about", label: "关于我们" },
+      { key: "auth", icon: icon(LoginOutlined), label: "扫码登录" },
+      { key: "settings", icon: icon(SettingOutlined), label: "系统设置" },
+      { key: "about", icon: icon(InfoCircleOutlined), label: "说明" },
     ];
     const menuProps = {
       items: userMenuItems,
@@ -125,21 +165,45 @@ const App = AntdApp;
     };
     return e(
       Sider,
-      { width: 224, className: "app-sider", breakpoint: "lg", collapsedWidth: 0 },
+      { width: 224, collapsedWidth: 72, collapsed, collapsible: false, className: "app-sider" },
       e(
         "div",
         { className: "brand-block" },
         e(
-          "a",
-          { className: "brand-logo", href: "/#home", "aria-label": "上海大学财务助手" },
+          "button",
+          {
+            className: "brand-logo",
+            type: "button",
+            onClick: () => collapsed && onToggleCollapsed(),
+            title: collapsed ? "展开侧边栏" : undefined,
+            "aria-label": "上海大学财务助手",
+            tabIndex: collapsed ? 0 : -1,
+          },
           e("img", { src: "/logo.png", alt: "上海大学财务助手" })
         ),
-        e("div", { className: "brand-text" }, e("strong", null, "上海大学"), e("small", null, "自助报销 Agent"))
+        e(
+          "div",
+          { className: "brand-text" },
+          e("strong", null, "上海大学"),
+          e(
+            "button",
+            {
+              className: "brand-collapse-btn",
+              type: "button",
+              onClick: onToggleCollapsed,
+              title: collapsed ? "展开侧边栏" : "收起侧边栏",
+              "aria-label": collapsed ? "展开侧边栏" : "收起侧边栏",
+            },
+            e(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined)
+          ),
+          e("small", null, "自助报销 Agent")
+        )
       ),
       e(Menu, {
         className: "sidebar-main-menu",
         theme: "dark",
         mode: "inline",
+        inlineCollapsed: collapsed,
         selectedKeys: [selectedKey],
         items,
         onClick: ({ key }) => {
@@ -159,14 +223,25 @@ const App = AntdApp;
           },
           e(
             "button",
-            { className: "sidebar-user", type: "button" },
-            e("div", { className: "sidebar-user-avatar" }, String(user.display_name || "本").slice(0, 1).toUpperCase()),
-            e(
-              "div",
-              { className: "sidebar-user-meta" },
-              e("strong", null, user.display_name || "本机用户"),
-              e("span", null, user.subtitle || "本机模式")
-            )
+            {
+              className: `sidebar-user sidebar-user--${avatarTone}`,
+              type: "button",
+              title: collapsed ? accountName : undefined,
+            },
+            e("span", { className: "sidebar-user-avatar" }, e(UserOutlined)),
+            !collapsed &&
+              e(
+                "span",
+                { className: "sidebar-user-meta" },
+                e("span", { className: "sidebar-user-name" }, accountName),
+                e(
+                  "span",
+                  { className: "sidebar-user-status" },
+                  e("i", { className: `sidebar-user-status-dot sidebar-user-status-dot--${avatarTone}` }),
+                  statusLabel
+                )
+              ),
+            !collapsed && e("span", { className: "sidebar-user-chevron" }, "⌃")
           )
         )
       )
@@ -676,6 +751,14 @@ const App = AntdApp;
   function PackagePage() {
     const missing = packageMissingCount(pkg);
     const ready = (pkg.checklist || []).filter((item) => item.status === "ready").length;
+    const [sidebarCollapsed, setSidebarCollapsed] = React.useState(() => localStorage.getItem("reimbursement.sidebar.collapsed") === "true");
+    function toggleSidebarCollapsed() {
+      setSidebarCollapsed((current) => {
+        const next = !current;
+        localStorage.setItem("reimbursement.sidebar.collapsed", String(next));
+        return next;
+      });
+    }
     return e(
       ConfigProvider,
       {
@@ -700,13 +783,13 @@ const App = AntdApp;
           e(
             Layout,
             { className: "antd-shell app-frame" },
-            e(Sidebar),
+            e(Sidebar, { collapsed: sidebarCollapsed, onToggleCollapsed: toggleSidebarCollapsed }),
             e(
               Layout,
               { className: "main-layout" },
               e(
                 Content,
-                { className: "antd-content" },
+                { className: "antd-content package-detail-content" },
             e(
               "div",
               { className: "page-head" },

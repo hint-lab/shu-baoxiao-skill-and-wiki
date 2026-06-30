@@ -161,6 +161,7 @@
 
     if (!candidates.length && compact.length <= 16) {
       TYPO_TERMS.forEach((term) => {
+        if (term.length < 3) return;
         if (compact.includes(term)) return;
         const minLen = Math.max(2, term.length - 1);
         const maxLen = Math.min(compact.length, term.length + 1);
@@ -297,6 +298,7 @@
     if (!value) return false;
     if (/[?？]/.test(value)) return true;
     if (/^(怎么|如何|为什么|哪些|什么|能否|能不能|可不可以|是否)/.test(value)) return true;
+    if (/(怎么|如何).*(报销|办理|申请)|报销.*(怎么|如何)/.test(value)) return true;
     if (/需要.*(什么|哪些|材料|附件|手续)/.test(value)) return true;
     if (/(报销|发票).*(要求|规定|标准|流程|材料|附件|依据)/.test(value)) return true;
     return false;
@@ -306,7 +308,7 @@
     const value = String(text || "").trim();
     if (!value) return false;
     if (/^(记|记一下|帮我记|先存|保存|整理|归集|待报销|我要报销|这张|这些)/.test(value)) return true;
-    return /(发票|票据|报销|付款|支付|合同|会议|酒店|高铁|火车票|机票|差旅|住宿|版面费|出版费|材料费|测试化验|公务接待|信息服务|办公用品|耗材)/.test(value);
+    return /(发票|票据|报销|付款|支付|合同|会议|酒店|高铁|火车票|机票|差旅|住宿|版面费|出版费|邮费|快递费|邮寄费|材料费|测试化验|公务接待|信息服务|办公用品|耗材)/.test(value);
   }
 
   function Sidebar({ activeKey, onSelect, collapsed, onToggleCollapsed }) {
@@ -431,6 +433,48 @@
     const [messages, setMessages] = React.useState([]);
     const noteValue = Form.useWatch("note", form) || "";
     const user = data.user || {};
+
+    function fileToUploadItem(file, source) {
+      const extension = file.type === "image/png" ? "png" : file.type === "image/jpeg" ? "jpg" : "bin";
+      const name = file.name || `${source || "clipboard"}-${Date.now()}.${extension}`;
+      return {
+        uid: `${source || "file"}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name,
+        status: "done",
+        originFileObj: file,
+      };
+    }
+
+    function addFilesToChat(files, source) {
+      const nextFiles = Array.from(files || []).filter((file) => file && file.size > 0);
+      if (!nextFiles.length) return false;
+      activateChat();
+      setFileList((current) => [...current, ...nextFiles.map((file) => fileToUploadItem(file, source))]);
+      message.success(`已添加 ${nextFiles.length} 个附件`);
+      return true;
+    }
+
+    function handlePaste(event) {
+      const clipboard = event.clipboardData;
+      if (!clipboard) return;
+      const files = clipboard.files && clipboard.files.length ? Array.from(clipboard.files) : [];
+      const itemFiles = Array.from(clipboard.items || [])
+        .filter((item) => item.kind === "file")
+        .map((item) => item.getAsFile())
+        .filter(Boolean);
+      const added = addFilesToChat(files.length ? files : itemFiles, "paste");
+      if (added) {
+        event.preventDefault();
+      }
+    }
+
+    function handleDrop(event) {
+      const files = event.dataTransfer && event.dataTransfer.files ? Array.from(event.dataTransfer.files) : [];
+      const added = addFilesToChat(files, "drop");
+      if (added) {
+        event.preventDefault();
+      }
+    }
 
     function activateChat() {
       setChatActive(true);
@@ -618,6 +662,8 @@
               autoSize: chatActive ? { minRows: 2, maxRows: 7 } : { minRows: 5, maxRows: 9 },
               placeholder: "直接输入报销问题、事项描述，或拖入发票和附件。",
               onFocus: activateChat,
+              onPaste: handlePaste,
+              onDrop: handleDrop,
               onPressEnter: (event) => {
                 if (!event.shiftKey) {
                   event.preventDefault();
@@ -657,7 +703,7 @@
                   showUploadList: false,
                   onChange: ({ fileList: next }) => {
                     activateChat();
-                    setFileList(next);
+                    setFileList(next.map((file) => (file.originFileObj ? file : { ...file, originFileObj: file.originFileObj || file })));
                   },
                 },
                 e(Button, { icon: icon(PaperClipOutlined) || icon(FileAddOutlined) }, "附件")
@@ -1415,7 +1461,6 @@
             e(
               Button,
               {
-                type: shuAuth.status === "ready" ? "default" : "primary",
                 icon: icon(LoginOutlined),
                 loading: authLaunching || Boolean(shuAuth.login_running),
                 onClick: launchShuAuth,

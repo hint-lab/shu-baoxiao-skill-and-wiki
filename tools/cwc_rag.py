@@ -7,6 +7,7 @@ import sqlite3
 from collections import Counter
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from tools.build_cwc_index import DOMAIN_KEYWORDS, INDEX_PATH, extract_keywords, tokenize
 from tools.rag_llm import generate_rag_answer
@@ -271,6 +272,55 @@ def snippet(text: str, query: str, max_len: int = 360) -> str:
     return ("..." if start else "") + text[start:end] + ("..." if end < len(text) else "")
 
 
+def normalize_source_title(title: str) -> str:
+    return re.sub(r"\s+", "", str(title or "")).strip().lower()
+
+
+def normalize_source_url(url: str) -> str:
+    value = str(url or "").strip()
+    if not value:
+        return ""
+    parsed = urlparse(value)
+    query_items = [
+        (key, val)
+        for key, val in parse_qsl(parsed.query, keep_blank_values=True)
+        if key.lower() not in {"wbfileid", "fileid", "owner", "_t", "t", "timestamp"}
+    ]
+    return urlunparse(
+        (
+            parsed.scheme.lower(),
+            parsed.netloc.lower(),
+            parsed.path.rstrip("/"),
+            "",
+            urlencode(query_items, doseq=True),
+            "",
+        )
+    )
+
+
+def dedupe_ranked_hits(hits: list[dict[str, Any]], top_k: int) -> list[dict[str, Any]]:
+    deduped: list[dict[str, Any]] = []
+    seen_source_keys: set[tuple[str, str]] = set()
+    seen_titles: set[str] = set()
+    for hit in hits:
+        title_key = normalize_source_title(hit.get("title", ""))
+        url_key = normalize_source_url(hit.get("url", ""))
+        source_key = (title_key, url_key)
+        if source_key in seen_source_keys:
+            continue
+        if title_key and title_key in seen_titles:
+            continue
+        seen_source_keys.add(source_key)
+        if title_key:
+            seen_titles.add(title_key)
+        next_hit = dict(hit)
+        next_hit["rank"] = len(deduped) + 1
+        deduped.append(next_hit)
+        if len(deduped) >= top_k:
+            break
+    return deduped
+
+
 def query_policy(query: str, top_k: int = 5, index_path: Path = INDEX_PATH, source_type: str = "") -> dict[str, Any]:
     query = query.strip()
     source_type = source_type.strip()
@@ -294,7 +344,7 @@ def query_policy(query: str, top_k: int = 5, index_path: Path = INDEX_PATH, sour
             "source_count": 0,
             "source_type": source_type,
         }
-    raw_hits = hybrid_scores(index, query, top_k, source_type)
+    raw_hits = hybrid_scores(index, query, max(top_k * 3, top_k), source_type)
     hits = []
     for rank, item in enumerate(raw_hits, 1):
         chunk = item["chunk"]
@@ -314,6 +364,7 @@ def query_policy(query: str, top_k: int = 5, index_path: Path = INDEX_PATH, sour
                 "snippet": snippet(chunk["text"], query),
             }
         )
+    hits = dedupe_ranked_hits(hits, top_k)
 
     llm_result = generate_rag_answer(query, hits)
     if llm_result.get("answer"):

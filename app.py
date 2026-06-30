@@ -772,6 +772,34 @@ def stream_text_chunks(text: str, size: int = 12) -> list[str]:
     return chunks
 
 
+async def home_assistant_payload_with_heartbeat(
+    title: str,
+    note: str,
+    files: list[UploadFile] | None,
+    history: str,
+):
+    task = asyncio.create_task(asyncio.to_thread(create_home_assistant_payload, title, note, files, history))
+    messages = [
+        "正在分析报销意图",
+        "正在检索财务处资料库",
+        "正在整理材料和依据",
+        "正在生成答复",
+    ]
+    index = 0
+    while not task.done():
+        await asyncio.sleep(1.0)
+        if task.done():
+            break
+        yield sse_event("status", {"message": messages[index % len(messages)]})
+        index += 1
+    try:
+        payload, status_code = await task
+    except Exception as exc:
+        yield sse_event("error", {"error": f"处理失败：{type(exc).__name__}"})
+        return
+    yield payload, status_code
+
+
 @app.post("/api/home/assistant/stream")
 async def home_assistant_stream(
     title: str = Form(""),
@@ -781,8 +809,16 @@ async def home_assistant_stream(
 ) -> StreamingResponse:
     async def generate():
         yield sse_event("status", {"message": "正在判断报销意图"})
-        await asyncio.sleep(0.05)
-        payload, status_code = create_home_assistant_payload(title, note, files, history)
+        payload = None
+        status_code = 500
+        async for item in home_assistant_payload_with_heartbeat(title, note, files, history):
+            if isinstance(item, str):
+                yield item
+            else:
+                payload, status_code = item
+        if payload is None:
+            yield sse_event("error", {"error": "处理失败"})
+            return
         if status_code >= 400 or not payload.get("ok"):
             yield sse_event("error", {"error": payload.get("error") or "处理失败"})
             return
