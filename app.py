@@ -5,6 +5,7 @@ import hashlib
 import subprocess
 import sys
 import uuid
+import re
 from dataclasses import asdict
 import os
 import json
@@ -553,6 +554,214 @@ def load_package(package_id: str) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def missing_required_items(package: dict) -> list[dict]:
+    return [item for item in package.get("checklist", []) if item.get("required") and item.get("status") == "missing"]
+
+
+def package_amount_total(package: dict) -> float:
+    docs = package.get("documents", [])
+    preferred = [doc for doc in docs if doc.get("document_type") == "invoice"] or [doc for doc in docs if doc.get("document_type") == "payment_record"]
+    total = 0.0
+    for doc in preferred:
+        fields = doc.get("extracted_fields") if isinstance(doc.get("extracted_fields"), dict) else {}
+        amount = fields.get("amount_total") or fields.get("max_amount")
+        if isinstance(amount, (int, float)):
+            total += float(amount)
+    return total
+
+
+def latest_reimbursement_package_from_context(context_text: str) -> dict | None:
+    for path in package_dirs():
+        package = load_package(path.name)
+        if not package or is_validation_package(package):
+            continue
+        package_id = package.get("id") or ""
+        title = package.get("title") or ""
+        if package_id and package_id in context_text:
+            return package
+        if title and title in context_text:
+            return package
+    if not re.search(r"餐饮|餐费|接待|招待|工作用餐", context_text):
+        return None
+    for path in package_dirs():
+        package = load_package(path.name)
+        if not package or is_validation_package(package):
+            continue
+        if package.get("reimbursement_type") == "official_reception":
+            return package
+    return None
+
+
+def looks_like_project_confirmation(note: str, context_text: str) -> bool:
+    combined = f"{context_text}\n{note}"
+    if not re.search(r"餐饮|餐费|接待|招待|报销包", combined):
+        return False
+    return bool(re.search(r"项目|余额|经费|横向|维持性|工作用餐|够|不足|要报销|确认报销", note))
+
+
+def chat_guidance_for_package(package: dict) -> tuple[str, list[dict[str, str]]]:
+    package_type = package.get("reimbursement_type")
+    missing = missing_required_items(package)
+    missing_names = [item.get("name") for item in missing]
+    amount = package_amount_total(package)
+    title = package.get("title") or package.get("id") or "这笔报销"
+    if package_type == "official_reception":
+        lines = [
+            f"我识别这笔是餐饮接待/工作用餐类报销，金额 {amount:,.2f} 元。" if amount else "我识别这笔是餐饮接待/工作用餐类报销。",
+            "",
+            f"我已经先建好工作单：{title}。",
+            "接下来你不用打开财务系统，我会在聊天里把材料和项目确认清楚；材料齐后我再打开统一登录和财务系统代填。",
+            "",
+            "请确认三件事：",
+            "1. 这笔餐饮费是否现在要报销？",
+            "2. 走哪个经费项目？请发项目名称或项目号。",
+            "3. 余额是否足够？如果你知道余额，直接说“余额够/余额不足”。",
+            "",
+            "经费类型也要确认：如果是横向科研经费且单笔 1000 元以下，通常先补正式发票即可继续；如果是维持性经费工作用餐，还需要公务接待清单或工作用餐审批表，以及邀请函或派出公函。",
+        ]
+        if missing_names:
+            lines.extend(["", "当前系统已知还差：", *[f"- {name}" for name in missing_names]])
+        actions = [
+            {
+                "type": "ask",
+                "label": "走横向项目",
+                "query": f"确认报销这笔餐饮费，走横向科研经费，项目：，余额足够。",
+            },
+            {
+                "type": "ask",
+                "label": "走维持性经费",
+                "query": f"确认报销这笔餐饮费，走维持性经费工作用餐，项目：，余额足够。",
+            },
+            {
+                "type": "href",
+                "label": "继续补发票",
+                "href": f"/packages/{package.get('id')}/view",
+            },
+        ]
+        return "\n".join(lines), actions
+
+    message = f"我已按报销材料生成工作单，材料 {len(package.get('documents', []))} 份，待补 {len(missing)} 项。"
+    return message, [{"type": "href", "label": "查看工作单", "href": f"/packages/{package.get('id')}/view"}]
+
+
+def handle_project_confirmation_from_chat(note: str, context_text: str) -> dict[str, object] | None:
+    if not looks_like_project_confirmation(note, context_text):
+        return None
+    package = latest_reimbursement_package_from_context(context_text)
+    if not package:
+        return None
+    input_dir = Path(package.get("input_dir") or "")
+    if not input_dir.exists():
+        return None
+    combined_note = "\n\n".join(
+        part
+        for part in [
+            str(package.get("user_note") or "").strip(),
+            f"用户在聊天中确认：{note.strip()}",
+        ]
+        if part
+    )
+    rebuilt = build_package(input_dir, combined_note, package.get("title") or None)
+    out_dir = OUTPUT_ROOT / rebuilt.id
+    export_package(rebuilt, out_dir)
+    package_payload = asdict(rebuilt)
+    status = reset_package_status_from_materials(package_payload, "由聊天确认经费项目和余额后重新检查")
+    missing = missing_required_items(package_payload)
+    actions = [
+        {
+            "type": "href",
+            "label": "上传剩余材料",
+            "href": f"/packages/{rebuilt.id}/view",
+        }
+    ]
+    if missing:
+        missing_names = [item.get("name") for item in missing]
+        message = (
+            "我已记录你的项目/余额确认，并重新检查这笔餐饮报销。\n\n"
+            + "现在还不能进财务系统提交，因为材料还没齐。\n\n"
+            + "当前还差：\n"
+            + "\n".join(f"- {name}" for name in missing_names)
+            + "\n\n补齐后我会继续在聊天里处理；你不需要自己打开财务系统。"
+        )
+    else:
+        message = (
+            "我已记录你的项目/余额确认，并重新检查这笔餐饮报销。\n\n"
+            "材料已经通过本地完整性检查。下一步我会打开统一登录，登录完成后进入学校财务系统代填；提交前仍会停下让你最终确认。"
+        )
+    return {
+        "ok": True,
+        "action": "project_confirmation",
+        "message": message,
+        "actions": actions,
+        "package": {
+            "id": rebuilt.id,
+            "title": rebuilt.title,
+            "url": f"/packages/{rebuilt.id}/view",
+            "document_count": len(package_payload.get("documents", [])),
+            "missing_count": len(missing),
+            "status": status.get("status"),
+        },
+    }
+
+
+def handle_chat_supplement_upload(note: str, uploads: list[UploadFile], context_text: str) -> dict[str, object] | None:
+    package = latest_reimbursement_package_from_context(context_text)
+    if not package:
+        return None
+    package_id = package.get("id")
+    package_dir = OUTPUT_ROOT / str(package_id)
+    if not package_id or not package_dir.exists():
+        return None
+    upload_id = uuid.uuid4().hex[:12]
+    upload_dir = UPLOAD_ROOT / "chat_supplements" / upload_id
+    saved_files, note_parts = save_uploaded_files(uploads, upload_dir)
+    supplement_paths = [ROOT / item["path"] for item in saved_files]
+    supplement_note = "\n".join(part for part in [note.strip(), *note_parts] if part)
+    rebuild_with_supplements(package_dir, supplement_paths, supplement_note)
+    updated = load_package(str(package_id))
+    if not updated:
+        return None
+    status = reset_package_status_from_materials(updated, "由聊天补传材料后重新检查")
+    missing = missing_required_items(updated)
+    if missing:
+        message = (
+            f"我已把新材料合并到「{updated.get('title') or package_id}」，并重新检查。\n\n"
+            "当前还差：\n"
+            + "\n".join(f"- {item.get('name')}" for item in missing)
+            + "\n\n补齐后我会继续代你推进，不需要你自己打开财务系统。"
+        )
+    else:
+        message = (
+            f"我已把新材料合并到「{updated.get('title') or package_id}」，并重新检查。\n\n"
+            "材料已经通过本地完整性检查。下一步在聊天里确认经费项目和余额后，我会打开统一登录并进入学校财务系统代填。"
+        )
+    return {
+        "ok": True,
+        "action": "supplement_package",
+        "message": message,
+        "actions": [
+            {
+                "type": "ask",
+                "label": "确认项目余额",
+                "query": "确认报销这笔餐饮费，项目：，余额足够。",
+            },
+            {
+                "type": "href",
+                "label": "查看工作单",
+                "href": f"/packages/{package_id}/view",
+            },
+        ],
+        "package": {
+            "id": package_id,
+            "title": updated.get("title") or package_id,
+            "url": f"/packages/{package_id}/view",
+            "document_count": len(updated.get("documents", [])),
+            "missing_count": len(missing),
+            "status": status.get("status"),
+        },
+    }
+
+
 def load_return_diagnosis(package_id: str) -> dict | None:
     path = OUTPUT_ROOT / package_id / "return_diagnosis.json"
     if not path.exists():
@@ -676,6 +885,14 @@ def create_home_assistant_payload(
     chat_history = parse_chat_history(history)
     context_text = conversation_context_text(chat_history)
     note_for_reasoning = note_with_context(clean_note, context_text)
+    if uploads and context_text:
+        supplement_payload = handle_chat_supplement_upload(clean_note, uploads, context_text)
+        if supplement_payload:
+            return supplement_payload, 200
+    if not uploads:
+        project_confirmation = handle_project_confirmation_from_chat(clean_note, context_text)
+        if project_confirmation:
+            return project_confirmation, 200
     intent = analyze_home_intent(clean_note, clean_title, file_names, conversation_context=context_text)
     action = intent.get("action") or "ask_clarification"
     if uploads and action in {"create_inbox", "ask_clarification"}:
@@ -705,12 +922,14 @@ def create_home_assistant_payload(
         export_package(package, out_dir)
         package_payload = asdict(package)
         reset_package_status_from_materials(package_payload)
+        guided_message, guided_actions = chat_guidance_for_package(package_payload)
         return {
             "ok": True,
             "action": "create_package",
             "intent": intent,
             "used_context": bool(context_text),
-            "message": intent.get("reply") or "我已按报销材料生成报销包，下一步由你复核。",
+            "message": guided_message or intent.get("reply") or "我已按报销材料生成报销包，下一步由你复核。",
+            "actions": guided_actions,
             "package": {
                 "id": package.id,
                 "title": package.title,
@@ -746,12 +965,12 @@ def assistant_text_from_payload(payload: dict[str, object]) -> str:
         policy = payload.get("policy") if isinstance(payload.get("policy"), dict) else {}
         answer = policy.get("answer") if isinstance(policy, dict) else ""
         return f"{payload.get('message') or '我先查了财务处资料库。'}\n\n{answer or '没有检索到足够可靠的依据。'}"
-    if action == "create_package":
+    if action in {"create_package", "project_confirmation"}:
         package = payload.get("package") if isinstance(payload.get("package"), dict) else {}
-        return (
-            f"{payload.get('message') or '已生成报销包。'}\n\n"
-            f"材料 {package.get('document_count') or 0} 份；待补 {package.get('missing_count') or 0} 项。"
-        )
+        message = str(payload.get("message") or "已生成报销工作单。")
+        if "材料 " not in message and package:
+            message += f"\n\n材料 {package.get('document_count') or 0} 份；待补 {package.get('missing_count') or 0} 项。"
+        return message
     return str(payload.get("message") or "你是想查政策依据、记录一个待报销事项，还是整理已有发票？")
 
 

@@ -290,6 +290,10 @@ def extract_fields(text: str, document_type: str = "") -> dict[str, Any]:
                     fields["currency"] = "CNY" if currency in {"¥", "￥", "元"} else currency.upper()
             else:
                 amount_matches.append(match)
+    if document_type == "payment_record":
+        for match in re.findall(r"(?:^|\n)\s*[-−－]\s*([0-9]{1,7}(?:\.[0-9]{1,2})?)\s*(?:\n|$)", text):
+            amount_matches.append(match)
+            fields.setdefault("currency", "CNY")
     normalized: list[float] = []
     if amount_matches:
         for match in amount_matches[:20]:
@@ -440,6 +444,44 @@ def evidence_for_query(index: dict[str, Any], query: str) -> SourceEvidence | No
     )
 
 
+def amount_total_from_documents(docs: list[ImportedDocument]) -> float:
+    total = 0.0
+    preferred = [doc for doc in docs if doc.document_type == "invoice"] or [doc for doc in docs if doc.document_type == "payment_record"]
+    for doc in preferred:
+        amount = doc.extracted_fields.get("amount_total")
+        if isinstance(amount, (int, float)):
+            total += float(amount)
+    return total
+
+
+def infer_reception_fund_context(user_note: str, docs: list[ImportedDocument]) -> str:
+    combined = "\n".join([user_note] + [doc.file_name + "\n" + doc.text_preview for doc in docs])
+    if re.search(r"横向|横向科研|横向项目", combined):
+        return "horizontal_research"
+    if re.search(r"维持性|基本运行|工作用餐审批", combined):
+        return "maintenance_meal"
+    return "unknown"
+
+
+def adjusted_reception_item(item: dict[str, Any], context: str, amount_total: float) -> dict[str, Any]:
+    item = dict(item)
+    if item["id"] == "reception_list":
+        if context == "horizontal_research" and amount_total and amount_total < 1000:
+            item["required"] = False
+            item["why"] = "横向科研经费单笔 1000 元以下餐费通常可凭票实报；如经费负责人或学校系统要求，仍需补业务接待清单。"
+        elif context == "unknown":
+            item["required"] = False
+            item["why"] = "需先确认经费类型。维持性经费工作用餐通常需要公务接待清单或工作用餐审批表；横向科研经费单笔 1000 元以下餐费通常可凭票实报。"
+    if item["id"] == "reception_invitation":
+        if context == "horizontal_research":
+            item["required"] = False
+            item["why"] = "横向科研经费内宾接待公开口径未把邀请函或派出公函列为单笔 1000 元以下餐费的固定必需项；如学校系统或项目负责人要求，应补充。"
+        elif context == "unknown":
+            item["required"] = False
+            item["why"] = "需先确认经费类型。维持性经费工作用餐通常需要邀请函或外来人员单位派出公函；横向科研经费单笔 1000 元以下餐费按具体经费口径核对。"
+    return item
+
+
 def doc_matches_item(doc: ImportedDocument, item: dict[str, Any]) -> bool:
     if doc.document_type in item.get("accepted_document_types", []):
         keywords = item.get("keywords") or []
@@ -450,9 +492,33 @@ def doc_matches_item(doc: ImportedDocument, item: dict[str, Any]) -> bool:
     return False
 
 
-def build_checklist(rule: dict[str, Any], docs: list[ImportedDocument], index: dict[str, Any]) -> list[ChecklistItem]:
+def build_checklist(rule: dict[str, Any], docs: list[ImportedDocument], index: dict[str, Any], user_note: str = "") -> list[ChecklistItem]:
     checklist = []
+    reception_context = ""
+    amount_total = 0.0
+    if rule.get("id") == "official_reception":
+        reception_context = infer_reception_fund_context(user_note, docs)
+        amount_total = amount_total_from_documents(docs)
+        context_docs = []
+        for context_item in rule["checklist"]:
+            if context_item.get("id") in {"reception_list", "reception_invitation"}:
+                context_docs.extend(doc.id for doc in docs if doc_matches_item(doc, context_item))
+        if reception_context == "unknown" and not context_docs:
+            evidence = evidence_for_query(index, "公务接待费 维持性经费 横向科研经费 1000 元 工作用餐")
+            checklist.append(
+                ChecklistItem(
+                    id="reception_fund_context",
+                    name="确认经费类型和接待场景",
+                    required=True,
+                    status="missing",
+                    matched_documents=[],
+                    why="餐饮接待费材料要求取决于经费类型。需确认是维持性经费工作用餐，还是横向科研经费内宾接待。",
+                    evidence=evidence,
+                )
+            )
     for item in rule["checklist"]:
+        if rule.get("id") == "official_reception":
+            item = adjusted_reception_item(item, reception_context, amount_total)
         matched = [doc.id for doc in docs if doc_matches_item(doc, item)]
         if matched:
             status = "ready"
@@ -897,7 +963,7 @@ def build_package(input_dir: Path, user_note: str, title: str | None = None) -> 
     index = load_index(INDEX_PATH)
     docs = import_documents(input_dir)
     rule, confidence, _scores = classify_case(rules, docs, user_note)
-    checklist = build_checklist(rule, docs, index)
+    checklist = build_checklist(rule, docs, index, user_note)
     policy = build_policy_evidence(rule, index)
     package_title = title or f"{rule['name']}报销包"
     return ReimbursementPackage(

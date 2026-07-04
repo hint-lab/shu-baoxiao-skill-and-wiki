@@ -939,8 +939,25 @@ const App = AntdApp;
       if (payload.action === "create_package" && payload.package) {
         return {
           role: "assistant",
-          text: `${payload.message || "已生成报销包。"}\n\n材料 ${payload.package.document_count || 0} 份；待补 ${payload.package.missing_count || 0} 项。`,
-          link: { href: payload.package.url, label: "打开报销包" },
+          text: payload.message || `已生成报销工作单。\n\n材料 ${payload.package.document_count || 0} 份；待补 ${payload.package.missing_count || 0} 项。`,
+          link: payload.package.url ? { href: payload.package.url, label: "查看工作单" } : null,
+          actions: payload.actions || [],
+        };
+      }
+      if (payload.action === "project_confirmation" && payload.package) {
+        return {
+          role: "assistant",
+          text: payload.message || "我已记录项目和余额确认。",
+          link: payload.package.url ? { href: payload.package.url, label: "查看工作单" } : null,
+          actions: payload.actions || [],
+        };
+      }
+      if (payload.action === "supplement_package" && payload.package) {
+        return {
+          role: "assistant",
+          text: payload.message || "我已合并补充材料并重新检查。",
+          link: payload.package.url ? { href: payload.package.url, label: "查看工作单" } : null,
+          actions: payload.actions || [],
         };
       }
       if (payload.action === "create_inbox" && payload.item) {
@@ -953,6 +970,7 @@ const App = AntdApp;
       return {
         role: "assistant",
         text: payload.message || "你是想查政策依据、记录一个待报销事项，还是整理已有发票？",
+        actions: payload.actions || [],
       };
     }
 
