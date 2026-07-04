@@ -588,6 +588,30 @@ const App = AntdApp;
                   e(Text, { type: "secondary" }, "先补正式发票，拿到后直接发回聊天。")
                 )
               : null,
+            project.status !== "confirmed_by_user" || project.balance_status !== "confirmed_sufficient"
+              ? e(
+                  "form",
+                  { action: `/packages/${encodeURIComponent(data.package_id)}/project-confirmation`, method: "post" },
+                  e(
+                    Space,
+                    { wrap: true },
+                    e(
+                      "select",
+                      { name: "fund_context", defaultValue: "horizontal_research", "aria-label": "经费类型" },
+                      e("option", { value: "horizontal_research" }, "横向科研经费"),
+                      e("option", { value: "maintenance_meal" }, "维持性经费工作用餐")
+                    ),
+                    e(Input, { name: "project", placeholder: "项目号或项目名称", required: true, style: { width: 220 } }),
+                    e(
+                      "select",
+                      { name: "balance_status", defaultValue: "sufficient", "aria-label": "余额状态" },
+                      e("option", { value: "sufficient" }, "余额足够"),
+                      e("option", { value: "insufficient" }, "余额不足")
+                    ),
+                    e(Button, { type: "primary", htmlType: "submit" }, "记录项目与余额")
+                  )
+                )
+              : null,
             fill.official_reception
               ? e(Alert, { type: "info", showIcon: true, message: "餐饮接待规则判断", description: fill.official_reception.known_rule_hint })
               : null,

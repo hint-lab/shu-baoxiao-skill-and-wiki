@@ -1537,6 +1537,39 @@ async def update_package_status(
     return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
 
 
+@app.post("/packages/{package_id}/project-confirmation", response_class=HTMLResponse)
+async def confirm_package_project(
+    package_id: str,
+    fund_context: str = Form("horizontal_research"),
+    project: str = Form(""),
+    balance_status: str = Form("sufficient"),
+) -> RedirectResponse:
+    package = load_package(package_id)
+    if package is None:
+        return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+    input_dir = Path(package.get("input_dir") or "")
+    if not input_dir.exists():
+        return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+    fund_text = "维持性经费工作用餐" if fund_context == "maintenance_meal" else "横向科研经费"
+    balance_text = "余额不足" if balance_status == "insufficient" else "余额足够"
+    project_text = project.strip()
+    project_clause = f"项目：{project_text}" if project_text else "项目待在学校系统中选择"
+    confirmation = f"用户在工作单中确认：确认报销这笔餐饮费，走{fund_text}，{project_clause}，{balance_text}。"
+    combined_note = "\n\n".join(
+        part
+        for part in [
+            str(package.get("user_note") or "").strip(),
+            confirmation,
+        ]
+        if part
+    )
+    rebuilt = build_package(input_dir, combined_note, package.get("title") or None)
+    out_dir = OUTPUT_ROOT / rebuilt.id
+    export_package(rebuilt, out_dir)
+    reset_package_status_from_materials(asdict(rebuilt), "由工作单确认经费项目和余额后重新检查")
+    return RedirectResponse(url=f"/packages/{rebuilt.id}/view", status_code=303)
+
+
 @app.post("/packages/{package_id}/fill-demo", response_class=HTMLResponse)
 def run_package_fill_demo(package_id: str) -> RedirectResponse:
     package = load_package(package_id)
