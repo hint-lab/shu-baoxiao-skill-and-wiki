@@ -30,6 +30,7 @@ ROOT = Path("/Users/hao/Documents/自助报销Agent")
 RULES_PATH = ROOT / "data/rules/reimbursement_rules.json"
 INDEX_PATH = ROOT / "data/cwc/index.json"
 OUTPUT_ROOT = ROOT / "output/packages"
+IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp"}
 
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -111,6 +112,11 @@ DOCUMENT_TYPE_KEYWORDS = {
         "消费记录",
         "银行卡",
         "汇款",
+        "支付成功",
+        "交易单号",
+        "商户全称",
+        "支付方式",
+        "美团",
     ],
     "approval": [
         "审批",
@@ -207,12 +213,22 @@ def extract_text(path: Path) -> str:
         return clean_text("\n".join(p.text for p in doc.paragraphs))
     if suffix in {".txt", ".md", ".csv", ".json", ".xml", ".html", ".htm"}:
         return clean_text(path.read_text(encoding="utf-8", errors="ignore"))
-    if suffix in {".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp"} and Image is not None and pytesseract is not None:
+    if suffix in IMAGE_SUFFIXES:
+        sidecar = path.with_suffix(".txt")
+        if sidecar.exists():
+            return clean_text(sidecar.read_text(encoding="utf-8", errors="ignore"))
+    if suffix in IMAGE_SUFFIXES and Image is not None and pytesseract is not None:
         try:
             return clean_text(pytesseract.image_to_string(Image.open(path), lang="chi_sim+eng"))
         except Exception:
             return clean_text(path.name)
     return clean_text(path.name)
+
+
+def is_image_text_sidecar(path: Path) -> bool:
+    if path.suffix.lower() != ".txt":
+        return False
+    return any(path.with_suffix(suffix).exists() for suffix in IMAGE_SUFFIXES)
 
 
 def file_id(path: Path) -> str:
@@ -252,7 +268,7 @@ def first_match(text: str, patterns: list[str], flags: int = 0) -> str:
 
 def normalized_amount(value: str) -> float | None:
     try:
-        return float(value.replace(",", ""))
+        return abs(float(value.replace(",", "")))
     except ValueError:
         return None
 
@@ -261,9 +277,9 @@ def extract_fields(text: str, document_type: str = "") -> dict[str, Any]:
     fields: dict[str, Any] = {}
     amount_matches: list[str] = []
     amount_patterns = [
-        r"(?:价税合计|金额|合计|小计|Amount|Total)[:：]?\s*(USD|CNY|RMB|¥|￥)?\s*([0-9]+(?:,[0-9]{3})*(?:\.[0-9]{1,2})?)\s*(元|USD|CNY|RMB)?",
-        r"(?:¥|￥|USD|CNY|RMB)\s*([0-9]+(?:,[0-9]{3})*(?:\.[0-9]{1,2})?)",
-        r"([0-9]+(?:,[0-9]{3})*(?:\.[0-9]{1,2})?)\s*(?:元|USD|CNY|RMB)",
+        r"(?:价税合计|金额|合计|小计|Amount|Total)[:：]?\s*(USD|CNY|RMB|¥|￥)?\s*([-+]?[0-9]+(?:,[0-9]{3})*(?:\.[0-9]{1,2})?)\s*(元|USD|CNY|RMB)?",
+        r"(?:¥|￥|USD|CNY|RMB)\s*([-+]?[0-9]+(?:,[0-9]{3})*(?:\.[0-9]{1,2})?)",
+        r"([-+]?[0-9]+(?:,[0-9]{3})*(?:\.[0-9]{1,2})?)\s*(?:元|USD|CNY|RMB)",
     ]
     for pattern in amount_patterns:
         for match in re.findall(pattern, text, flags=re.I):
@@ -292,14 +308,16 @@ def extract_fields(text: str, document_type: str = "") -> dict[str, Any]:
     buyer_name = first_match(text, [r"(?:购买方名称|购买方|买方|付款方|客户名称)[:：]\s*([^\n]+)"])
     seller_name = first_match(text, [r"(?:销售方名称|销售方|卖方|收款方|供应商)[:：]\s*([^\n]+)"])
     item_name = first_match(text, [r"(?:项目名称|货物或应税劳务、服务名称|品名|商品名称|Item|Description)[:：]\s*([^\n]+)"], re.I)
-    invoice_no = first_match(
-        text,
-        [
-            r"(?:发票号码|发票号|票据号码|No\.?|Invoice\s*No\.?)[:：#]?\s*([A-Za-z0-9-]{6,})",
-            r"\b([0-9]{16,24})\b",
-        ],
-        re.I,
-    )
+    invoice_no = ""
+    if document_type == "invoice":
+        invoice_no = first_match(
+            text,
+            [
+                r"(?:发票号码|发票号|票据号码|No\.?|Invoice\s*No\.?)[:：#]?\s*([A-Za-z0-9-]{6,})",
+                r"\b([0-9]{16,24})\b",
+            ],
+            re.I,
+        )
     if buyer_name:
         fields["buyer_name"] = buyer_name
     if seller_name:
@@ -309,6 +327,39 @@ def extract_fields(text: str, document_type: str = "") -> dict[str, Any]:
     if invoice_no:
         fields["invoice_no"] = invoice_no
         fields["invoice_no_detected"] = True
+    if document_type == "payment_record":
+        transaction_no = first_match(
+            text,
+            [
+                r"(?:交易单号|流水号|订单号)[:：]\s*([A-Za-z0-9-]{8,})",
+                r"\b([0-9]{20,40})\b",
+            ],
+            re.I,
+        )
+        merchant_name = first_match(text, [r"(?:商户全称|商户名称|商户)[:：]\s*([^\n]+)"])
+        product_name = first_match(text, [r"(?:商品|商品名称)[:：]\s*([^\n]+)"])
+        payment_method = first_match(text, [r"(?:支付方式)[:：]\s*([^\n]+)"])
+        transaction_time = first_match(
+            text,
+            [
+                r"(?:支付时间|交易时间)[:：]\s*(20\d{2}年\d{1,2}月\d{1,2}日\s*\d{1,2}:\d{2}(?::\d{2})?)",
+                r"(?:支付时间|交易时间)[:：]\s*(20\d{2}[-./]\d{1,2}[-./]\d{1,2}\s*\d{1,2}:\d{2}(?::\d{2})?)",
+            ],
+        )
+        if transaction_no:
+            fields["transaction_no"] = transaction_no
+        if transaction_time:
+            fields["transaction_time"] = transaction_time
+            fields.setdefault("transaction_date", fields.get("date_candidates", [""])[0])
+        elif fields.get("date_candidates"):
+            fields["transaction_date"] = fields["date_candidates"][0]
+        if merchant_name:
+            fields["merchant_name"] = merchant_name
+            fields.setdefault("seller_name", merchant_name)
+        if product_name:
+            fields["product_name"] = product_name
+        if payment_method:
+            fields["payment_method"] = payment_method
     if "上海大学" in text:
         fields["mentions_shu"] = True
     if document_type == "invoice":
@@ -324,10 +375,13 @@ def import_documents(input_dir: Path) -> list[ImportedDocument]:
     if not input_dir.exists():
         raise FileNotFoundError(f"Input directory does not exist: {input_dir}")
     docs: list[ImportedDocument] = []
+    seen_ids: Counter[str] = Counter()
     for path in sorted(p for p in input_dir.rglob("*") if p.is_file()):
         if path.name.startswith("."):
             continue
         if "raw_emails" in path.parts or path.name == "email_metadata.json":
+            continue
+        if is_image_text_sidecar(path):
             continue
         text = extract_text(path)
         doc_type, confidence = classify_document(path, text)
@@ -338,9 +392,12 @@ def import_documents(input_dir: Path) -> list[ImportedDocument]:
         else:
             for key, value in model_fields.items():
                 fields.setdefault(key, value)
+        base_id = file_id(path)
+        seen_ids[base_id] += 1
+        doc_id = base_id if seen_ids[base_id] == 1 else f"{base_id}-{seen_ids[base_id]}"
         docs.append(
             ImportedDocument(
-                id=file_id(path),
+                id=doc_id,
                 file_name=path.name,
                 source_path=str(path.resolve()),
                 document_type=doc_type,
