@@ -106,6 +106,15 @@ const App = AntdApp;
     return e(IconComponent);
   }
 
+  async function startShuAuthLogin() {
+    const response = await fetch("/api/shu-auth/login", { method: "POST" });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.ok) {
+      throw new Error(payload.error || "启动扫码登录窗口失败");
+    }
+    return payload;
+  }
+
   function authTone(status) {
     if (status === "ready") return "ready";
     if (status === "needs_scan" || status === "needs_renew") return "warn";
@@ -515,6 +524,7 @@ const App = AntdApp;
   }
 
   function FillPlanPanel() {
+    const [authLaunching, setAuthLaunching] = React.useState(false);
     const plan = data.playwright_plan || {};
     const fill = plan.school_fill || {};
     const readiness = fill.readiness || {};
@@ -522,6 +532,22 @@ const App = AntdApp;
     const invoice = fill.invoice_state || {};
     const lines = fill.expense_lines || [];
     const blockers = readiness.blockers || [];
+    const user = data.user || {};
+    async function openSchoolLogin() {
+      setAuthLaunching(true);
+      try {
+        const payload = await startShuAuthLogin();
+        if (payload.started) {
+          message.success(payload.message || "已打开统一登录窗口");
+        } else {
+          message.info(payload.message || "登录窗口已在运行");
+        }
+      } catch (error) {
+        message.error(error && error.message ? error.message : "启动统一登录窗口失败");
+      } finally {
+        setAuthLaunching(false);
+      }
+    }
     const columns = [
       { title: "费用类型", dataIndex: "school_fee_item", width: 120 },
       { title: "金额", dataIndex: "amount", width: 130, render: (value, record) => formatAmount(value, record.currency || "CNY") },
@@ -548,6 +574,7 @@ const App = AntdApp;
               e(Tag, { color: invoice.status === "ready" ? "green" : "red" }, invoice.status === "ready" ? "发票已就绪" : "发票待补"),
               e(Tag, { color: project.status === "confirmed_by_user" ? "green" : "gold" }, project.status === "confirmed_by_user" ? `项目 ${project.name_or_code || "已确认"}` : "项目待确认"),
               e(Tag, { color: project.balance_status === "confirmed_sufficient" ? "green" : "gold" }, project.balance_status === "confirmed_sufficient" ? "余额已确认" : "余额待确认"),
+              e(Tag, { color: user.auth_status === "ready" ? "green" : "gold" }, user.auth_status === "ready" ? "学校登录已连接" : "学校登录待续登"),
               fill.amount_total ? e(Tag, { color: "blue" }, `合计 ${formatAmount(fill.amount_total, fill.currency || "CNY")}`) : null
             ),
             lines.length
@@ -564,7 +591,14 @@ const App = AntdApp;
             fill.official_reception
               ? e(Alert, { type: "info", showIcon: true, message: "餐饮接待规则判断", description: fill.official_reception.known_rule_hint })
               : null,
-            e(Button, { href: data.playwright_plan_url }, "查看完整计划 JSON")
+            e(
+              Space,
+              { wrap: true },
+              user.auth_status === "ready"
+                ? null
+                : e(Button, { icon: icon(LoginOutlined), loading: authLaunching, onClick: openSchoolLogin }, "打开统一登录"),
+              e(Button, { href: data.playwright_plan_url }, "查看完整计划 JSON")
+            )
           )
         : e(Text, { type: "secondary" }, "尚未生成代填计划。")
     );
