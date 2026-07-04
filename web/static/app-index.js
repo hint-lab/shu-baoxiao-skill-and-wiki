@@ -529,6 +529,8 @@
           "school_flow_confirm",
           "school_login_required",
           "school_fill_ready",
+          "invoice_help",
+          "invoice_upload_prompt",
         ].includes(payload.action) &&
         payload.package
       ) {

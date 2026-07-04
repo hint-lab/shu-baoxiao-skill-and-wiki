@@ -558,6 +558,80 @@ def missing_required_items(package: dict) -> list[dict]:
     return [item for item in package.get("checklist", []) if item.get("required") and item.get("status") == "missing"]
 
 
+SHU_INVOICE_INFO = {
+    "unit_name": "上海大学",
+    "tax_id": "1231000042502637XE",
+    "address_phone": "上海市上大路99号 021-66136210",
+    "bank_account": "农行上海大场支行 03327000801210489",
+    "invoice_code": "TQ4HXQ",
+    "source_url": "https://cwc.shu.edu.cn/info/1014/4911.htm",
+}
+
+
+def missing_item_names(package: dict) -> list[str]:
+    return [str(item.get("name") or "") for item in missing_required_items(package)]
+
+
+def has_missing_catering_invoice(package: dict) -> bool:
+    return any("发票" in name or "内转单" in name for name in missing_item_names(package))
+
+
+def payment_record_fields(package: dict) -> dict[str, object]:
+    for doc in package.get("documents", []):
+        if doc.get("document_type") != "payment_record":
+            continue
+        fields = doc.get("extracted_fields")
+        if isinstance(fields, dict):
+            return fields
+    return {}
+
+
+def invoice_request_message(package: dict) -> str:
+    fields = payment_record_fields(package)
+    amount = fields.get("amount_total") or fields.get("max_amount") or package_amount_total(package)
+    amount_text = f"{float(amount):,.2f} 元" if isinstance(amount, (int, float)) else "按实际消费金额"
+    merchant = fields.get("merchant_name") or fields.get("seller_name") or "餐饮商户"
+    date = fields.get("transaction_date") or fields.get("invoice_date") or fields.get("transaction_time") or "消费当日"
+    transaction_no = fields.get("transaction_no") or "见支付记录"
+    product_name = fields.get("product_name") or "餐饮消费"
+    return "\n".join(
+        [
+            "这张图是支付记录，不能替代正式发票。当前要继续报销，必须先补到餐费/食品发票或内转单。",
+            "",
+            "你可以在美团订单里申请开发票，或者联系商家补开。开票时按下面信息填：",
+            f"- 抬头：{SHU_INVOICE_INFO['unit_name']}",
+            f"- 纳税人识别号：{SHU_INVOICE_INFO['tax_id']}",
+            f"- 地址电话：{SHU_INVOICE_INFO['address_phone']}",
+            f"- 开户行及账号：{SHU_INVOICE_INFO['bank_account']}",
+            f"- 上海大学开票代码：{SHU_INVOICE_INFO['invoice_code']}",
+            "",
+            "给商家的索票信息：",
+            f"- 商户：{merchant}",
+            f"- 金额：{amount_text}",
+            f"- 消费日期：{date}",
+            f"- 交易单号：{transaction_no}",
+            f"- 消费内容：{product_name}",
+            "",
+            "拿到电子发票 PDF/OFD/图片后，直接发回这个聊天。我会自动并入这笔报销包，再继续检查项目和余额，不需要你自己打开财务系统。",
+        ]
+    )
+
+
+def invoice_help_actions(package_id: str) -> list[dict[str, str]]:
+    return [
+        {
+            "type": "href",
+            "label": "查看缺项",
+            "href": f"/packages/{package_id}/view",
+        },
+        {
+            "type": "ask",
+            "label": "如何上传发票",
+            "query": "我已经拿到发票，怎么上传？",
+        },
+    ]
+
+
 def package_amount_total(package: dict) -> float:
     docs = package.get("documents", [])
     preferred = [doc for doc in docs if doc.get("document_type") == "invoice"] or [doc for doc in docs if doc.get("document_type") == "payment_record"]
@@ -603,6 +677,10 @@ def looks_like_school_flow_request(note: str) -> bool:
     return bool(re.search(r"统一登录|登录好了|完成登录|继续代填|开始代填|打开财务系统|进入财务系统|继续这笔报销|开始填写|帮我报", note))
 
 
+def looks_like_invoice_help_request(note: str) -> bool:
+    return bool(re.search(r"没有发票|没发票|发票怎么办|怎么开票|补开发票|开发票|索票|补发票|正式发票|上传发票|怎么上传", note))
+
+
 def looks_like_responsibility_confirmation(note: str) -> bool:
     checks = [
         r"票据.*真实|发票.*真实|材料.*真实",
@@ -632,6 +710,24 @@ def school_flow_payload_for_package(package: dict, note: str = "") -> dict[str, 
     package_id = package.get("id") or ""
     missing = missing_required_items(package)
     if missing:
+        invoice_hint = ""
+        actions = [
+            {
+                "type": "href",
+                "label": "查看缺项",
+                "href": f"/packages/{package_id}/view",
+            }
+        ]
+        if has_missing_catering_invoice(package):
+            invoice_hint = "\n\n其中最关键的是正式发票：支付截图只能证明付款，不能替代餐费/食品发票或内转单。你可以点“怎么补发票”，我会把商户、金额、交易号和学校开票信息整理给你。"
+            actions.insert(
+                0,
+                {
+                    "type": "ask",
+                    "label": "怎么补发票",
+                    "query": "没有发票，怎么补开发票？",
+                },
+            )
         return {
             "ok": True,
             "action": "school_flow_blocked",
@@ -639,15 +735,10 @@ def school_flow_payload_for_package(package: dict, note: str = "") -> dict[str, 
                 "现在还不能进入学校财务系统，因为材料没有齐。\n\n"
                 "当前还差：\n"
                 + "\n".join(f"- {item.get('name')}" for item in missing)
+                + invoice_hint
                 + "\n\n你继续把缺的材料发到聊天里，我会自动合并到这笔报销。"
             ),
-            "actions": [
-                {
-                    "type": "href",
-                    "label": "查看缺项",
-                    "href": f"/packages/{package_id}/view",
-                }
-            ],
+            "actions": actions,
             "package": {
                 "id": package_id,
                 "title": package.get("title") or package_id,
@@ -750,6 +841,52 @@ def handle_school_flow_from_chat(note: str, context_text: str) -> dict[str, obje
     return school_flow_payload_for_package(package, note)
 
 
+def handle_invoice_help_from_chat(note: str, context_text: str) -> dict[str, object] | None:
+    if not looks_like_invoice_help_request(note):
+        return None
+    package = latest_reimbursement_package_from_context(context_text)
+    if not package or not has_missing_catering_invoice(package):
+        return None
+    package_id = str(package.get("id") or "")
+    if re.search(r"已经拿到.*发票|已拿到.*发票|拿到了.*发票|已有.*发票|有了.*发票|上传发票|怎么上传", note):
+        return {
+            "ok": True,
+            "action": "invoice_upload_prompt",
+            "message": (
+                "直接把电子发票 PDF、OFD 或图片拖进这个聊天框发送即可。\n\n"
+                "我会把它合并进当前报销包，重新识别抬头、税号、金额和发票号；如果通过检查，再继续进入项目余额确认和学校财务系统代填。"
+            ),
+            "actions": [
+                {
+                    "type": "href",
+                    "label": "查看工作单",
+                    "href": f"/packages/{package_id}/view",
+                }
+            ],
+            "package": {
+                "id": package_id,
+                "title": package.get("title") or package_id,
+                "url": f"/packages/{package_id}/view",
+                "document_count": len(package.get("documents", [])),
+                "missing_count": len(missing_required_items(package)),
+            },
+        }
+    return {
+        "ok": True,
+        "action": "invoice_help",
+        "message": invoice_request_message(package),
+        "actions": invoice_help_actions(package_id),
+        "package": {
+            "id": package_id,
+            "title": package.get("title") or package_id,
+            "url": f"/packages/{package_id}/view",
+            "document_count": len(package.get("documents", [])),
+            "missing_count": len(missing_required_items(package)),
+        },
+        "invoice_info_source": SHU_INVOICE_INFO["source_url"],
+    }
+
+
 def chat_guidance_for_package(package: dict) -> tuple[str, list[dict[str, str]]]:
     package_type = package.get("reimbursement_type")
     missing = missing_required_items(package)
@@ -785,10 +922,19 @@ def chat_guidance_for_package(package: dict) -> tuple[str, list[dict[str, str]]]
             },
             {
                 "type": "href",
-                "label": "继续补发票",
+                "label": "查看工作单",
                 "href": f"/packages/{package.get('id')}/view",
             },
         ]
+        if has_missing_catering_invoice(package):
+            actions.insert(
+                2,
+                {
+                    "type": "ask",
+                    "label": "怎么补发票",
+                    "query": "没有发票，怎么补开发票？",
+                },
+            )
         return "\n".join(lines), actions
 
     message = f"我已按报销材料生成工作单，材料 {len(package.get('documents', []))} 份，待补 {len(missing)} 项。"
@@ -827,11 +973,30 @@ def handle_project_confirmation_from_chat(note: str, context_text: str) -> dict[
     ]
     if missing:
         missing_names = [item.get("name") for item in missing]
+        actions = [
+            {
+                "type": "href",
+                "label": "上传剩余材料",
+                "href": f"/packages/{rebuilt.id}/view",
+            }
+        ]
+        invoice_hint = ""
+        if has_missing_catering_invoice(package_payload):
+            invoice_hint = "\n\n这笔现在卡在正式发票：支付截图不能替代餐费/食品发票或内转单。你可以点“怎么补发票”，我会把商户、金额、交易号和学校开票信息整理出来。"
+            actions.insert(
+                0,
+                {
+                    "type": "ask",
+                    "label": "怎么补发票",
+                    "query": "没有发票，怎么补开发票？",
+                },
+            )
         message = (
             "我已记录你的项目/余额确认，并重新检查这笔餐饮报销。\n\n"
             + "现在还不能进财务系统提交，因为材料还没齐。\n\n"
             + "当前还差：\n"
             + "\n".join(f"- {name}" for name in missing_names)
+            + invoice_hint
             + "\n\n补齐后我会继续在聊天里处理；你不需要自己打开财务系统。"
         )
     else:
@@ -1048,6 +1213,9 @@ def create_home_assistant_payload(
         if supplement_payload:
             return supplement_payload, 200
     if not uploads:
+        invoice_help = handle_invoice_help_from_chat(clean_note, context_text)
+        if invoice_help:
+            return invoice_help, 200
         school_flow = handle_school_flow_from_chat(clean_note, context_text)
         if school_flow:
             return school_flow, 200
