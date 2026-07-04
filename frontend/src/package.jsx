@@ -510,6 +510,58 @@ const App = AntdApp;
     );
   }
 
+  function formatAmount(value, currency = "CNY") {
+    return typeof value === "number" ? `${currency} ${value.toFixed(2)}` : "待识别";
+  }
+
+  function FillPlanPanel() {
+    const plan = data.playwright_plan || {};
+    const fill = plan.school_fill || {};
+    const readiness = fill.readiness || {};
+    const project = fill.project || {};
+    const invoice = fill.invoice_state || {};
+    const lines = fill.expense_lines || [];
+    const blockers = readiness.blockers || [];
+    const columns = [
+      { title: "费用类型", dataIndex: "school_fee_item", width: 120 },
+      { title: "金额", dataIndex: "amount", width: 130, render: (value, record) => formatAmount(value, record.currency || "CNY") },
+      { title: "商户", dataIndex: "merchant", ellipsis: true },
+      { title: "日期", dataIndex: "occurred_on", width: 120 },
+      { title: "凭据", dataIndex: "source_file_name", ellipsis: true },
+    ];
+    return e(
+      Card,
+      { className: "work-card", title: "学校代填计划" },
+      plan.package_id
+        ? e(
+            Space,
+            { direction: "vertical", size: 12, className: "full" },
+            e(Alert, {
+              type: readiness.can_start_school_fill ? "info" : "warning",
+              showIcon: true,
+              message: readiness.can_start_school_fill ? "材料和项目已具备代填条件" : "还不能进入学校系统代填",
+              description: blockers.length ? `当前还差：${blockers.join("、")}` : "进入学校系统后仍会在提交前停下，等待本人复核。",
+            }),
+            e(
+              Space,
+              { wrap: true },
+              e(Tag, { color: invoice.status === "ready" ? "green" : "red" }, invoice.status === "ready" ? "发票已就绪" : "发票待补"),
+              e(Tag, { color: project.status === "confirmed_by_user" ? "green" : "gold" }, project.status === "confirmed_by_user" ? `项目 ${project.name_or_code || "已确认"}` : "项目待确认"),
+              e(Tag, { color: project.balance_status === "confirmed_sufficient" ? "green" : "gold" }, project.balance_status === "confirmed_sufficient" ? "余额已确认" : "余额待确认"),
+              fill.amount_total ? e(Tag, { color: "blue" }, `合计 ${formatAmount(fill.amount_total, fill.currency || "CNY")}`) : null
+            ),
+            lines.length
+              ? e(Table, { rowKey: "source_document_id", size: "small", pagination: false, columns, dataSource: lines })
+              : e(Text, { type: "secondary" }, "暂无可代填费用明细。"),
+            fill.official_reception
+              ? e(Alert, { type: "info", showIcon: true, message: "餐饮接待规则判断", description: fill.official_reception.known_rule_hint })
+              : null,
+            e(Button, { href: data.playwright_plan_url }, "查看完整计划 JSON")
+          )
+        : e(Text, { type: "secondary" }, "尚未生成代填计划。")
+    );
+  }
+
   function fieldTags(fields) {
     const items = [];
     if (fields.buyer_name) items.push(["购买方", fields.buyer_name, "blue"]);
@@ -828,6 +880,7 @@ const App = AntdApp;
             e(WorkflowAlert, { missing }),
             e(SupplementForm),
             e(StatusPanel, { missing }),
+            e(FillPlanPanel),
             e(FillAgentPanel, { missing }),
             e(
               Card,

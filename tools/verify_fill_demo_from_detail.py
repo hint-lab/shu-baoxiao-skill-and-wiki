@@ -67,8 +67,13 @@ def main() -> None:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page(viewport={"width": 1360, "height": 940})
+            page.add_init_script(
+                "localStorage.setItem('shu-reimbursement-agent.agreement.2026-06-30', 'accepted')"
+            )
             page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
             page.goto(f"{BASE_URL}/packages/{PACKAGE_URL_ID}/view", wait_until="networkidle")
+            page.get_by_text("学校代填计划").wait_for(timeout=10000)
+            page.get_by_text("CNY 420.00").first.wait_for(timeout=10000)
             page.get_by_text("受控代填 Agent").wait_for(timeout=10000)
             page.get_by_text("待本人复核").first.wait_for(timeout=10000)
             if not page.get_by_role("button", name="启动本地代填演示").is_disabled():

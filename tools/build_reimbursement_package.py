@@ -611,6 +611,146 @@ def risk_flags(docs: list[ImportedDocument], checklist: list[ChecklistItem]) -> 
     return flags
 
 
+def first_document(docs: list[ImportedDocument], document_type: str) -> ImportedDocument | None:
+    for doc in docs:
+        if doc.document_type == document_type:
+            return doc
+    return None
+
+
+def document_amount(doc: ImportedDocument | None) -> float | None:
+    if doc is None:
+        return None
+    amount = doc.extracted_fields.get("amount_total") or doc.extracted_fields.get("max_amount")
+    return float(amount) if isinstance(amount, (int, float)) else None
+
+
+def project_confirmation(user_note: str) -> dict[str, Any]:
+    project = first_match(
+        user_note,
+        [
+            r"项目(?:名称|号)?\s*[:：]\s*([^，。；;\n]+)",
+            r"走\s*([^，。；;\n]+?项目)",
+        ],
+    )
+    balance_confirmed = bool(re.search(r"余额\s*(?:足够|够|充足)|余额.*(?:足够|够|充足)", user_note))
+    balance_insufficient = bool(re.search(r"余额\s*(?:不足|不够)|余额.*(?:不足|不够)", user_note))
+    return {
+        "status": "confirmed_by_user" if project else "needs_user_selection",
+        "name_or_code": project,
+        "balance_status": "confirmed_sufficient" if balance_confirmed else "insufficient" if balance_insufficient else "needs_user_confirmation",
+    }
+
+
+def invoice_state(package: ReimbursementPackage, missing_required: list[dict[str, Any]]) -> dict[str, Any]:
+    invoice_docs = [doc for doc in package.documents if doc.document_type == "invoice"]
+    missing_invoice = [
+        item
+        for item in missing_required
+        if "发票" in item["name"] or "票据" in item["name"] or "内转单" in item["name"]
+    ]
+    return {
+        "status": "missing" if missing_invoice else "ready" if invoice_docs else "not_required_or_unidentified",
+        "missing_items": [item["name"] for item in missing_invoice],
+        "documents": [
+            {
+                "id": doc.id,
+                "file_name": doc.file_name,
+                "invoice_no": doc.extracted_fields.get("invoice_no", ""),
+                "invoice_date": doc.extracted_fields.get("invoice_date", ""),
+                "seller_name": doc.extracted_fields.get("seller_name", ""),
+                "buyer_name": doc.extracted_fields.get("buyer_name", ""),
+                "amount_total": document_amount(doc),
+                "title_valid": doc.extracted_fields.get("title_valid", None),
+            }
+            for doc in invoice_docs
+        ],
+    }
+
+
+def expense_lines(package: ReimbursementPackage) -> list[dict[str, Any]]:
+    invoice_docs = [doc for doc in package.documents if doc.document_type == "invoice"]
+    payment_docs = [doc for doc in package.documents if doc.document_type == "payment_record"]
+    source_docs = invoice_docs or payment_docs
+    if not source_docs and package.documents:
+        source_docs = package.documents[:1]
+    lines = []
+    for doc in source_docs:
+        fields = doc.extracted_fields
+        amount = document_amount(doc)
+        merchant = fields.get("seller_name") or fields.get("merchant_name") or fields.get("buyer_name") or ""
+        occurred_on = fields.get("invoice_date") or fields.get("transaction_date") or ""
+        description = fields.get("item_name") or fields.get("product_name") or package.reimbursement_type_name
+        line: dict[str, Any] = {
+            "expense_type": package.reimbursement_type_name,
+            "school_fee_item": "餐费" if package.reimbursement_type == "official_reception" else package.reimbursement_type_name,
+            "description": description,
+            "amount": amount,
+            "currency": fields.get("currency", "CNY") or "CNY",
+            "occurred_on": occurred_on,
+            "merchant": merchant,
+            "source_document_id": doc.id,
+            "source_document_type": doc.document_type,
+            "source_file_name": doc.file_name,
+            "transaction_no": fields.get("transaction_no", ""),
+            "needs_invoice_before_submission": doc.document_type == "payment_record",
+        }
+        lines.append(line)
+    return lines
+
+
+def attachment_strategy(package: ReimbursementPackage) -> dict[str, Any]:
+    recognition_types = {"invoice", "payment_record", "itinerary"}
+    recognition_uploads = []
+    ordinary_attachments = []
+    for doc in package.documents:
+        item = {
+            "id": doc.id,
+            "file_name": doc.file_name,
+            "document_type": doc.document_type,
+            "source_path": doc.source_path,
+        }
+        if doc.document_type in recognition_types:
+            recognition_uploads.append(item)
+        else:
+            ordinary_attachments.append(item)
+    return {
+        "ticket_recognition_uploads": recognition_uploads,
+        "supporting_attachments": ordinary_attachments,
+    }
+
+
+def school_fill_draft(package: ReimbursementPackage, missing_required: list[dict[str, Any]]) -> dict[str, Any]:
+    amount_total = amount_total_from_documents(package.documents)
+    project = project_confirmation(package.user_note)
+    draft: dict[str, Any] = {
+        "entry": package.school_form_hint,
+        "business_type": package.reimbursement_type_name,
+        "reason": package.reason_draft,
+        "amount_total": amount_total or None,
+        "currency": "CNY",
+        "expense_lines": expense_lines(package),
+        "invoice_state": invoice_state(package, missing_required),
+        "project": project,
+        "attachments": attachment_strategy(package),
+        "readiness": {
+            "can_start_school_fill": not missing_required and project["status"] == "confirmed_by_user",
+            "missing_required_count": len(missing_required),
+            "blockers": [item["name"] for item in missing_required],
+            "requires_login": True,
+            "requires_human_submit": True,
+        },
+    }
+    if package.reimbursement_type == "official_reception":
+        context = infer_reception_fund_context(package.user_note, package.documents)
+        draft["official_reception"] = {
+            "fund_context": context,
+            "single_meal_amount_under_1000": bool(amount_total and amount_total < 1000),
+            "known_rule_hint": "横向科研经费单笔 1000 元以下餐费通常先凭正式发票和支付记录实报；维持性经费工作用餐仍需公务接待清单或工作用餐审批表等材料。",
+        }
+    return draft
+
+
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9\u4e00-\u9fff]+", "-", value).strip("-")
     return slug[:80] or "reimbursement-package"
@@ -945,6 +1085,7 @@ def playwright_plan(package: ReimbursementPackage) -> dict[str, Any]:
         },
         "upload_documents": ready_documents,
         "missing_required": missing_required,
+        "school_fill": school_fill_draft(package, missing_required),
         "must_pause_for_confirmation": [
             "登录、验证码和二次认证",
             "选择经费项目",

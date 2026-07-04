@@ -1103,6 +1103,15 @@ def load_fill_report(package_id: str) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def load_playwright_plan(package_id: str) -> dict | None:
+    path = OUTPUT_ROOT / package_id / "playwright_plan.json"
+    if not path.exists():
+        return None
+    import json
+
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def is_validation_package(package: dict) -> bool:
     title = package.get("title") or package.get("id") or ""
     return any(marker in title for marker in ["验证", "测试", "demo", "Demo"])
@@ -1494,6 +1503,7 @@ async def view_package(request: Request, package_id: str) -> HTMLResponse:
             "markdown_url": f"/package-output/{package_id}/package.md",
             "json_url": f"/package-output/{package_id}/package.json",
             "playwright_plan_url": f"/package-output/{package_id}/playwright_plan.json",
+            "playwright_plan": load_playwright_plan(package_id),
             "fill_demo_url": f"/packages/{package_id}/fill-demo",
             "fill_report": load_fill_report(package_id),
             "fill_report_url": f"/playwright-output/{package_id}-fill_report.json",
