@@ -6,6 +6,7 @@ import subprocess
 import sys
 import uuid
 import re
+from datetime import datetime, timezone
 from dataclasses import asdict
 import os
 import json
@@ -78,6 +79,72 @@ PLAYWRIGHT_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 SHU_AUTH_LOGIN_LOG = ROOT / "data/auth_sessions/shu_auth_login.log"
 SHU_AUTH_LOGIN_PROCESS: subprocess.Popen | None = None
 USER_PROFILE_PATH = ROOT / "data/settings/user_profile.json"
+SHU_ADAPTER_PATH = ROOT / "data/adapters/shu_finance.json"
+SHU_ADAPTER_TEMPLATE_PATH = ROOT / "data/adapters/shu_finance.template.json"
+SHU_AUTH_PROFILE_DIR = ROOT / "data/browser_profiles/shu-finance"
+
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def read_json_dict(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def has_placeholder_text(value: object) -> bool:
+    if isinstance(value, str):
+        return "填入" in value or "模板" in value
+    if isinstance(value, dict):
+        return any(has_placeholder_text(item) for item in value.values())
+    if isinstance(value, list):
+        return any(has_placeholder_text(item) for item in value)
+    return False
+
+
+def adapter_has_executable_fields(adapter: dict) -> bool:
+    fields = adapter.get("fields")
+    if not isinstance(fields, dict) or not fields:
+        return False
+    for spec in fields.values():
+        if not isinstance(spec, dict):
+            continue
+        if (spec.get("selector") or spec.get("test_id") or spec.get("text")) and spec.get("value_path"):
+            return True
+    return False
+
+
+def shu_adapter_state() -> dict[str, object]:
+    path = SHU_ADAPTER_PATH if SHU_ADAPTER_PATH.exists() else SHU_ADAPTER_TEMPLATE_PATH
+    adapter = read_json_dict(path)
+    exists = path.exists()
+    configured = (
+        path == SHU_ADAPTER_PATH
+        and exists
+        and bool(adapter.get("start_url"))
+        and isinstance(adapter.get("form_ready"), dict)
+        and adapter_has_executable_fields(adapter)
+        and not has_placeholder_text(adapter)
+    )
+    if configured:
+        message = "学校财务系统字段适配已配置，可以在材料、项目、余额和登录态齐备后启动代填。"
+    elif SHU_ADAPTER_PATH.exists():
+        message = "真实学校系统适配文件存在，但字段定位还不完整，不能启动真实代填。"
+    else:
+        message = "真实学校系统字段适配尚未配置，只能生成代填计划和本地演示。"
+    return {
+        "exists": exists,
+        "configured": configured,
+        "path": str(path.relative_to(ROOT)) if exists else "",
+        "absolute_path": str(path) if exists else "",
+        "message": message,
+    }
 
 RESPONSIBILITY_CONFIRMATIONS = {
     "funding_project",
@@ -291,8 +358,7 @@ async def icon_source() -> FileResponse:
 
 @app.get("/api/settings/status")
 async def settings_status() -> JSONResponse:
-    adapter_path = ROOT / "data/adapters/shu_finance.template.json"
-    adapter_text = adapter_path.read_text(encoding="utf-8") if adapter_path.exists() else ""
+    adapter_state = shu_adapter_state()
     index_path = ROOT / "data/cwc/index.json"
     documents_path = ROOT / "data/cwc/documents.jsonl"
     shu_auth = shu_auth_saved_status()
@@ -316,8 +382,10 @@ async def settings_status() -> JSONResponse:
         },
         "playwright": {
             "mock_adapter_exists": (ROOT / "data/adapters/mock_school.json").exists(),
-            "shu_adapter_exists": adapter_path.exists(),
-            "shu_adapter_configured": adapter_path.exists() and "填入" not in adapter_text,
+            "shu_adapter_exists": bool(adapter_state["exists"]),
+            "shu_adapter_configured": bool(adapter_state["configured"]),
+            "shu_adapter_path": adapter_state["path"],
+            "shu_adapter_message": adapter_state["message"],
         },
         "shu_auth": shu_auth,
         "user": app_user_profile(),
@@ -673,6 +741,15 @@ def looks_like_project_confirmation(note: str, context_text: str) -> bool:
     return bool(re.search(r"项目|余额|经费|横向|维持性|工作用餐|够|不足|要报销|确认报销", note))
 
 
+def looks_like_catering_reimbursement_confirmation(note: str, context_text: str) -> bool:
+    combined = f"{context_text}\n{note}"
+    if not re.search(r"餐饮|餐费|接待|招待", combined):
+        return False
+    if re.search(r"项目|余额|经费|横向|维持性|工作用餐|够|不足", note):
+        return False
+    return bool(re.search(r"要报销|确认报销|可以报|帮我报|报这笔|报销这笔", note))
+
+
 def looks_like_school_flow_request(note: str) -> bool:
     return bool(re.search(r"统一登录|登录好了|完成登录|继续代填|开始代填|打开财务系统|进入财务系统|继续这笔报销|开始填写|帮我报", note))
 
@@ -807,19 +884,55 @@ def school_flow_payload_for_package(package: dict, note: str = "") -> dict[str, 
             "shu_auth": auth,
         }
 
+    gate = school_fill_gate_for_package(package, auth)
+    if not gate["can_start"]:
+        blockers = [item.get("message", "") for item in gate.get("blockers", []) if item.get("message")]
+        return {
+            "ok": True,
+            "action": "school_fill_blocked",
+            "message": (
+                "材料、项目和登录流程已经推进到学校代填前检查，但现在还不能启动真实财务系统代填。\n\n"
+                "当前还差：\n"
+                + "\n".join(f"- {item}" for item in blockers)
+                + "\n\n我会继续把报销包、字段计划和补材料状态维护好；条件齐了以后再由 Agent 进入学校系统代填，不需要你自己去财务系统找入口。"
+            ),
+            "actions": [
+                {
+                    "type": "href",
+                    "label": "查看代填状态",
+                    "href": f"/packages/{package_id}/view",
+                }
+            ],
+            "package": {
+                "id": package_id,
+                "title": package.get("title") or package_id,
+                "url": f"/packages/{package_id}/view",
+                "document_count": len(package.get("documents", [])),
+                "missing_count": 0,
+            },
+            "shu_auth": auth,
+            "school_fill_gate": gate,
+        }
+
     return {
         "ok": True,
         "action": "school_fill_ready",
         "message": (
-            "学校财务系统会话可用，材料也已通过本地检查。\n\n"
-            "下一步应由 Agent 进入日常报销页面，填写事由、上传票据和附件，并在提交前停下。当前真实系统字段适配还需要继续补齐，因此我不会假装已经提交成功。"
+            "学校财务系统会话可用，材料、项目和余额也已通过本地检查。\n\n"
+            "下一步由 Agent 进入日常报销页面，填写事由、上传票据和附件，并在提交前停下等你复核。"
         ),
         "actions": [
+            {
+                "type": "school_fill",
+                "label": "开始学校代填",
+                "package_id": str(package_id),
+                "primary": True,
+            },
             {
                 "type": "href",
                 "label": "查看代填计划",
                 "href": f"/packages/{package_id}/view",
-            }
+            },
         ],
         "package": {
             "id": package_id,
@@ -829,6 +942,60 @@ def school_flow_payload_for_package(package: dict, note: str = "") -> dict[str, 
             "missing_count": 0,
         },
         "shu_auth": auth,
+        "school_fill_gate": gate,
+    }
+
+
+def handle_catering_reimbursement_confirmation_from_chat(note: str, context_text: str) -> dict[str, object] | None:
+    if not looks_like_catering_reimbursement_confirmation(note, context_text):
+        return None
+    package = latest_reimbursement_package_from_context(context_text)
+    if not package or package.get("reimbursement_type") != "official_reception":
+        return None
+    package_id = str(package.get("id") or "")
+    missing = missing_required_items(package)
+    actions = [
+        {
+            "type": "ask",
+            "label": "走横向项目",
+            "query": "确认报销这笔餐饮费，走横向科研经费，项目：，余额足够。",
+        },
+        {
+            "type": "ask",
+            "label": "走维持性经费",
+            "query": "确认报销这笔餐饮费，走维持性经费工作用餐，项目：，余额足够。",
+        },
+    ]
+    if has_missing_catering_invoice(package):
+        actions.append(
+            {
+                "type": "ask",
+                "label": "怎么补发票",
+                "query": "没有发票，怎么补开发票？",
+            }
+        )
+    return {
+        "ok": True,
+        "action": "catering_reimbursement_confirmed",
+        "message": (
+            "可以，我按餐饮费报销继续处理。\n\n"
+            "为了后面由 Agent 代填学校系统，还需要你在聊天里确认两个信息：\n"
+            "1. 走哪个项目或项目号。\n"
+            "2. 这个项目余额是否足够。\n\n"
+            + (
+                "另外这笔还缺正式餐费/食品发票或内转单；支付截图不能替代发票。"
+                if has_missing_catering_invoice(package)
+                else "项目和余额确认后，我会继续检查登录态并准备进入学校系统代填。"
+            )
+        ),
+        "actions": actions,
+        "package": {
+            "id": package_id,
+            "title": package.get("title") or package_id,
+            "url": f"/packages/{package_id}/view",
+            "document_count": len(package.get("documents", [])),
+            "missing_count": len(missing),
+        },
     }
 
 
@@ -912,6 +1079,12 @@ def chat_guidance_for_package(package: dict) -> tuple[str, list[dict[str, str]]]
         actions = [
             {
                 "type": "ask",
+                "label": "确认要报销",
+                "query": "确认报销这笔餐饮费。",
+                "primary": True,
+            },
+            {
+                "type": "ask",
                 "label": "走横向项目",
                 "query": f"确认报销这笔餐饮费，走横向科研经费，项目：，余额足够。",
             },
@@ -928,7 +1101,7 @@ def chat_guidance_for_package(package: dict) -> tuple[str, list[dict[str, str]]]
         ]
         if has_missing_catering_invoice(package):
             actions.insert(
-                2,
+                3,
                 {
                     "type": "ask",
                     "label": "怎么补发票",
@@ -1103,6 +1276,29 @@ def load_fill_report(package_id: str) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def school_fill_report_path(package_id: str) -> Path:
+    return PLAYWRIGHT_ARTIFACT_DIR / f"{package_id}-school_fill_report.json"
+
+
+def school_fill_screenshot_path(package_id: str) -> Path:
+    return PLAYWRIGHT_ARTIFACT_DIR / f"{package_id}-school_fill.png"
+
+
+def load_school_fill_report(package_id: str) -> dict | None:
+    path = school_fill_report_path(package_id)
+    if not path.exists():
+        return None
+    import json
+
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_school_fill_report(package_id: str, report: dict[str, object]) -> None:
+    PLAYWRIGHT_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
+    payload = {"package_id": package_id, "created_at": utc_now_iso(), **report}
+    school_fill_report_path(package_id).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def load_playwright_plan(package_id: str) -> dict | None:
     path = OUTPUT_ROOT / package_id / "playwright_plan.json"
     if not path.exists():
@@ -1110,6 +1306,40 @@ def load_playwright_plan(package_id: str) -> dict | None:
     import json
 
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def school_fill_gate_for_package(package: dict, auth_status: dict[str, object] | None = None) -> dict[str, object]:
+    package_id = str(package.get("id") or "")
+    plan = load_playwright_plan(package_id) or {}
+    fill = plan.get("school_fill") if isinstance(plan.get("school_fill"), dict) else {}
+    project = fill.get("project") if isinstance(fill.get("project"), dict) else {}
+    readiness = fill.get("readiness") if isinstance(fill.get("readiness"), dict) else {}
+    missing = missing_required_items(package)
+    workflow = (get_package_status(package_id) or {}).get("status") or package.get("workflow_status") or ""
+    adapter = shu_adapter_state()
+    auth = auth_status or shu_auth_saved_status()
+    blockers: list[dict[str, str]] = []
+    if missing:
+        blockers.append({"key": "materials", "message": "补齐必需材料：" + "、".join(str(item.get("name") or "") for item in missing)})
+    if project.get("status") != "confirmed_by_user":
+        blockers.append({"key": "project", "message": "确认报销项目或项目号"})
+    if project.get("balance_status") != "confirmed_sufficient":
+        blockers.append({"key": "balance", "message": "确认项目余额足够"})
+    if workflow != "ready_for_school":
+        blockers.append({"key": "responsibility", "message": "确认票据真实、项目无误，并同意提交前本人复核"})
+    if not adapter.get("configured"):
+        blockers.append({"key": "adapter", "message": str(adapter.get("message") or "真实学校系统字段适配尚未配置")})
+    if auth.get("status") != "ready":
+        blockers.append({"key": "login", "message": "完成一次上海大学统一登录"})
+    return {
+        "can_start": not blockers and bool(readiness.get("can_start_school_fill", True)),
+        "blockers": blockers,
+        "adapter": adapter,
+        "auth": auth,
+        "workflow_status": workflow,
+        "plan_status": plan.get("status") or "",
+        "readiness": readiness,
+    }
 
 
 def is_validation_package(package: dict) -> bool:
@@ -1225,12 +1455,15 @@ def create_home_assistant_payload(
         invoice_help = handle_invoice_help_from_chat(clean_note, context_text)
         if invoice_help:
             return invoice_help, 200
-        school_flow = handle_school_flow_from_chat(clean_note, context_text)
-        if school_flow:
-            return school_flow, 200
+        reimbursement_confirmation = handle_catering_reimbursement_confirmation_from_chat(clean_note, context_text)
+        if reimbursement_confirmation:
+            return reimbursement_confirmation, 200
         project_confirmation = handle_project_confirmation_from_chat(clean_note, context_text)
         if project_confirmation:
             return project_confirmation, 200
+        school_flow = handle_school_flow_from_chat(clean_note, context_text)
+        if school_flow:
+            return school_flow, 200
     intent = analyze_home_intent(clean_note, clean_title, file_names, conversation_context=context_text)
     action = intent.get("action") or "ask_clarification"
     if uploads and action in {"create_inbox", "ask_clarification"}:
@@ -1494,6 +1727,7 @@ async def view_package(request: Request, package_id: str) -> HTMLResponse:
         return templates.TemplateResponse("not_found.html", {"request": request, "package_id": package_id}, status_code=404)
     package = attach_status(package)
     package_path = OUTPUT_ROOT / package_id
+    school_fill_gate = school_fill_gate_for_package(package)
     return templates.TemplateResponse(
         "package.html",
         {
@@ -1510,6 +1744,11 @@ async def view_package(request: Request, package_id: str) -> HTMLResponse:
             "fill_report": load_fill_report(package_id),
             "fill_report_url": f"/playwright-output/{package_id}-fill_report.json",
             "fill_screenshot_url": f"/playwright-output/{package_id}-fill_demo.png",
+            "school_fill_url": f"/packages/{package_id}/school-fill",
+            "school_fill_gate": school_fill_gate,
+            "school_fill_report": load_school_fill_report(package_id),
+            "school_fill_report_url": f"/playwright-output/{package_id}-school_fill_report.json",
+            "school_fill_screenshot_url": f"/playwright-output/{package_id}-school_fill.png",
             "return_diagnosis": load_return_diagnosis(package_id),
             "return_diagnosis_url": f"/packages/{package_id}/return-diagnosis",
             "status_events": package_status_events(package_id),
@@ -1590,6 +1829,61 @@ def run_package_fill_demo(package_id: str) -> RedirectResponse:
         out=PLAYWRIGHT_ARTIFACT_DIR / f"{package_id}-fill_report.json",
         screenshot=PLAYWRIGHT_ARTIFACT_DIR / f"{package_id}-fill_demo.png",
     )
+    return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+
+
+@app.post("/packages/{package_id}/school-fill", response_class=HTMLResponse)
+def run_package_school_fill(package_id: str) -> RedirectResponse:
+    package = load_package(package_id)
+    if package is None:
+        return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+    gate = school_fill_gate_for_package(package)
+    non_login_blockers = [item for item in gate["blockers"] if item.get("key") != "login"]
+    if not non_login_blockers:
+        try:
+            auth = asdict(check_business_session(headed=False, timeout_ms=20000))
+        except Exception as exc:
+            auth = {"status": "error", "message": f"财务系统会话检查失败：{exc.__class__.__name__}"}
+        gate = school_fill_gate_for_package(package, auth)
+    if not gate["can_start"]:
+        write_school_fill_report(
+            package_id,
+            {
+                "ok": False,
+                "status": "blocked",
+                "message": "真实学校系统代填尚未启动，先按门禁补齐条件。",
+                "gate": gate,
+            },
+        )
+        return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
+
+    adapter_path = Path(str(gate["adapter"].get("absolute_path") or ""))
+    plan_path = OUTPUT_ROOT / package_id / "playwright_plan.json"
+    try:
+        report = run_fill(
+            plan_path=plan_path,
+            adapter_path=adapter_path,
+            allow_auto_login=False,
+            headed=False,
+            out=school_fill_report_path(package_id),
+            screenshot=school_fill_screenshot_path(package_id),
+            profile_dir=SHU_AUTH_PROFILE_DIR,
+        )
+        report["ok"] = True
+        report["status"] = "draft_filled"
+        report["mode"] = "school_finance"
+        report["message"] = "Agent 已进入学校财务系统代填草稿，并在提交前停止。"
+        school_fill_report_path(package_id).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception as exc:
+        write_school_fill_report(
+            package_id,
+            {
+                "ok": False,
+                "status": "error",
+                "message": f"学校系统代填失败：{exc.__class__.__name__}",
+                "gate": gate,
+            },
+        )
     return RedirectResponse(url=f"/packages/{package_id}/view", status_code=303)
 
 

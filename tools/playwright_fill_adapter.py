@@ -31,6 +31,8 @@ def locator(page: Page, spec: dict[str, Any]):
         return page.get_by_test_id(spec["test_id"])
     if spec.get("selector"):
         return page.locator(spec["selector"])
+    if spec.get("text"):
+        return page.get_by_text(spec["text"])
     raise ValueError(f"Adapter locator is missing test_id or selector: {spec}")
 
 
@@ -115,32 +117,57 @@ def verify_submission_guard(page: Page, adapter: dict[str, Any]) -> bool:
     return True
 
 
-def run_fill(plan_path: Path, adapter_path: Path, allow_auto_login: bool, headed: bool, out: Path, screenshot: Path) -> dict[str, Any]:
+def run_fill(
+    plan_path: Path,
+    adapter_path: Path,
+    allow_auto_login: bool,
+    headed: bool,
+    out: Path,
+    screenshot: Path,
+    profile_dir: Path | None = None,
+) -> dict[str, Any]:
     plan = load_json(plan_path)
     adapter = load_json(adapter_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     screenshot.parent.mkdir(parents=True, exist_ok=True)
+    target_url = adapter.get("target_after_login_url") or adapter["start_url"]
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=not headed)
-        page = browser.new_page(viewport={"width": 1280, "height": 900})
-        page.goto(adapter["start_url"])
-        maybe_complete_mock_login(page, adapter, allow_auto_login)
-        wait_form_ready(page, adapter)
-        filled = {}
-        for name, spec in adapter.get("fields", {}).items():
-            filled[name] = fill_field(page, spec, plan)
-        list_counts = inject_mock_lists(page, adapter, plan)
-        stop_ok = verify_submission_guard(page, adapter)
-        page.screenshot(path=str(screenshot), full_page=True)
-        current_url = page.url
-        browser.close()
+        browser = None
+        if profile_dir:
+            profile_dir.mkdir(parents=True, exist_ok=True)
+            context = p.chromium.launch_persistent_context(
+                str(profile_dir),
+                headless=not headed,
+                viewport={"width": 1280, "height": 900},
+                ignore_https_errors=True,
+                accept_downloads=True,
+            )
+        else:
+            browser = p.chromium.launch(headless=not headed)
+            context = browser.new_context(viewport={"width": 1280, "height": 900}, ignore_https_errors=True)
+        page = context.pages[0] if context.pages else context.new_page()
+        try:
+            page.goto(target_url)
+            maybe_complete_mock_login(page, adapter, allow_auto_login)
+            wait_form_ready(page, adapter)
+            filled = {}
+            for name, spec in adapter.get("fields", {}).items():
+                filled[name] = fill_field(page, spec, plan)
+            list_counts = inject_mock_lists(page, adapter, plan)
+            stop_ok = verify_submission_guard(page, adapter)
+            page.screenshot(path=str(screenshot), full_page=True)
+            current_url = page.url
+        finally:
+            context.close()
+            if browser is not None:
+                browser.close()
 
     report = {
         "adapter": str(adapter_path.resolve()),
         "adapter_id": adapter["id"],
         "plan": str(plan_path.resolve()),
-        "target_url": adapter["start_url"],
+        "target_url": target_url,
         "current_url": current_url,
         "package_id": plan["package_id"],
         "package_status": plan["status"],
@@ -161,11 +188,12 @@ def main() -> None:
     parser.add_argument("--adapter", type=Path, default=DEFAULT_ADAPTER)
     parser.add_argument("--allow-auto-login", action="store_true", help="Only for local mock adapters. Real systems require manual login.")
     parser.add_argument("--headed", action="store_true")
+    parser.add_argument("--profile-dir", type=Path, default=None, help="Reuse a persistent browser profile, for example an already logged-in school session.")
     parser.add_argument("--out", type=Path, default=ARTIFACT_DIR / "fill_adapter_report.json")
     parser.add_argument("--screenshot", type=Path, default=ARTIFACT_DIR / "fill_adapter.png")
     args = parser.parse_args()
 
-    report = run_fill(args.plan, args.adapter, args.allow_auto_login, args.headed, args.out, args.screenshot)
+    report = run_fill(args.plan, args.adapter, args.allow_auto_login, args.headed, args.out, args.screenshot, args.profile_dir)
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
 

@@ -966,6 +966,8 @@ const App = AntdApp;
           "school_flow_confirm",
           "school_login_required",
           "school_fill_ready",
+          "school_fill_blocked",
+          "catering_reimbursement_confirmed",
           "invoice_help",
           "invoice_upload_prompt",
         ].includes(payload.action) &&
@@ -1168,6 +1170,16 @@ const App = AntdApp;
               text: `${errorText}。你不用去终端执行命令；可以稍后再点“打开统一登录”，或者到设置页检查登录状态。`,
             },
           ]);
+        }
+        return;
+      }
+      if (action.type === "school_fill" && action.package_id) {
+        try {
+          const response = await fetch(`/packages/${encodeURIComponent(action.package_id)}/school-fill`, { method: "POST", redirect: "follow" });
+          message.info("已检查学校代填条件");
+          window.location.href = response.url || `/packages/${encodeURIComponent(action.package_id)}/view`;
+        } catch (error) {
+          message.error("启动学校代填失败");
         }
         return;
       }
@@ -1995,6 +2007,7 @@ const App = AntdApp;
     const settingsUser = (status && status.user) || { display_name: "未绑定工号", work_id: "" };
     const imap = (status && status.imap) || { configured: false, mailbox: "INBOX", processed_count: 0 };
     const kb = (status && status.knowledge_base) || { index_exists: false, documents_exists: false, index_size_bytes: 0 };
+    const playwright = (status && status.playwright) || { shu_adapter_configured: false, shu_adapter_message: "" };
     const kbReport = (knowledgeStatus && knowledgeStatus.corpus_report) || {};
     const shuAuth = status && status.shu_auth;
     function authStatusLabel(auth) {
@@ -2084,6 +2097,30 @@ const App = AntdApp;
                     message: shuAuth.message,
                   })
                 : null
+            )
+          )
+        ),
+        e(
+          Col,
+          { xs: 24, lg: 12 },
+          e(
+            Card,
+            { className: "work-card", title: "学校系统代填" },
+            e(
+              Space,
+              { direction: "vertical", size: 12, className: "full" },
+              e(
+                Space,
+                { wrap: true },
+                e(Tag, { color: playwright.shu_adapter_configured ? "green" : "gold" }, playwright.shu_adapter_configured ? "真实适配已配置" : "真实适配待配置"),
+                e(Tag, { color: playwright.mock_adapter_exists ? "blue" : "default" }, playwright.mock_adapter_exists ? "本地演示可用" : "本地演示缺失")
+              ),
+              e(Text, { type: "secondary" }, "材料、项目、余额和一次统一登录都就绪后，Agent 才会进入学校财务系统代填草稿。"),
+              e(Alert, {
+                type: playwright.shu_adapter_configured ? "success" : "info",
+                showIcon: true,
+                message: playwright.shu_adapter_message || "真实学校系统字段适配尚未配置，只能生成代填计划和本地演示。",
+              })
             )
           )
         ),

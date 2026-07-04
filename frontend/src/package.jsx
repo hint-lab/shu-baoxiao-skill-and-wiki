@@ -431,6 +431,10 @@ const App = AntdApp;
     const current = pkg.workflow_status || (missing ? "needs_materials" : "ready_for_review");
     const canRun = current === "ready_for_school" && missing === 0;
     const report = data.fill_report;
+    const schoolGate = data.school_fill_gate || {};
+    const schoolBlockers = (schoolGate.blockers || []).map((item) => item.message || item).filter(Boolean);
+    const canRunSchool = Boolean(schoolGate.can_start);
+    const schoolReport = data.school_fill_report;
     const filledEntries = report ? Object.entries(report.filled || {}) : [];
     return e(
       Card,
@@ -439,9 +443,40 @@ const App = AntdApp;
         Space,
         { direction: "vertical", size: 12, className: "full" },
         e(Alert, {
+          type: canRunSchool ? "info" : "warning",
+          showIcon: true,
+          message: canRunSchool ? "可以启动学校系统代填" : "学校系统代填还未就绪",
+          description: canRunSchool
+            ? "Agent 会复用第一次统一登录后的专用浏览器会话，进入学校日常报销页面填写草稿，并在提交前停下。"
+            : schoolBlockers.length
+              ? `当前还差：${schoolBlockers.join("；")}`
+              : "需要材料、项目、余额、登录态和学校字段适配都就绪后才能启动。",
+        }),
+        e(
+          "form",
+          { action: data.school_fill_url, method: "post" },
+          e(Button, { type: "primary", htmlType: "submit", disabled: !canRunSchool }, "启动学校系统代填")
+        ),
+        schoolReport
+          ? e(Alert, {
+              type: schoolReport.ok ? "success" : schoolReport.status === "error" ? "error" : "warning",
+              showIcon: true,
+              message: schoolReport.ok ? "最近一次学校代填已生成草稿" : "最近一次学校代填未启动",
+              description: schoolReport.message || "可以查看报告了解具体门禁原因。",
+            })
+          : null,
+        schoolReport
+          ? e(
+              Space,
+              { wrap: true },
+              e(Button, { href: data.school_fill_report_url }, "查看学校代填报告"),
+              schoolReport.ok ? e(Button, { href: data.school_fill_screenshot_url }, "查看学校代填截图") : null
+            )
+          : null,
+        e(Alert, {
           type: canRun ? "info" : "warning",
           showIcon: true,
-          message: canRun ? "可以启动本地代填演示" : "启动前需要本人确认",
+          message: canRun ? "可以启动本地演示" : "本地演示启动前需要本人确认",
           description: canRun
             ? "本地演示会打开模拟上海大学财务系统，按代填计划填写草稿，并验证提交按钮仍被拦截。"
             : "必须先补齐必需材料，并在报销状态中点击“确认可代填”。真实系统登录、验证码、经费项目、账号和提交动作都必须人工处理。",
