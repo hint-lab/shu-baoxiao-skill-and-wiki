@@ -29,11 +29,17 @@ def get_value(payload: dict[str, Any], path: str) -> Any:
 def locator(page: Page, spec: dict[str, Any]):
     if spec.get("test_id"):
         return page.get_by_test_id(spec["test_id"])
+    if spec.get("label"):
+        return page.get_by_label(spec["label"], exact=bool(spec.get("exact", True)))
+    if spec.get("placeholder"):
+        return page.get_by_placeholder(spec["placeholder"], exact=bool(spec.get("exact", True)))
+    if spec.get("role"):
+        return page.get_by_role(spec["role"], name=spec.get("name"))
     if spec.get("selector"):
         return page.locator(spec["selector"])
     if spec.get("text"):
         return page.get_by_text(spec["text"])
-    raise ValueError(f"Adapter locator is missing test_id or selector: {spec}")
+    raise ValueError(f"Adapter locator is missing a supported locator: {spec}")
 
 
 def wait_form_ready(page: Page, adapter: dict[str, Any]) -> None:

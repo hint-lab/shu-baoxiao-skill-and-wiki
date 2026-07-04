@@ -66,6 +66,8 @@ from tools.poll_imap import poll_imap
 from tools.poll_imap import save_state as save_mail_state
 from tools.shu_auth_session import check_business_session
 from tools.shu_auth_session import saved_status as shu_auth_saved_status
+from tools.shu_finance_observer import observe_finance_form
+from tools.shu_finance_observer import saved_observation_status as shu_finance_observation_status
 from tools.supplement_package import rebuild_with_supplements
 
 
@@ -115,7 +117,14 @@ def adapter_has_executable_fields(adapter: dict) -> bool:
     for spec in fields.values():
         if not isinstance(spec, dict):
             continue
-        if (spec.get("selector") or spec.get("test_id") or spec.get("text")) and spec.get("value_path"):
+        if (
+            spec.get("selector")
+            or spec.get("test_id")
+            or spec.get("text")
+            or spec.get("label")
+            or spec.get("placeholder")
+            or spec.get("role")
+        ) and spec.get("value_path"):
             return True
     return False
 
@@ -130,12 +139,13 @@ def shu_adapter_state() -> dict[str, object]:
         and bool(adapter.get("start_url"))
         and isinstance(adapter.get("form_ready"), dict)
         and adapter_has_executable_fields(adapter)
+        and adapter.get("ready_for_school_fill") is True
         and not has_placeholder_text(adapter)
     )
     if configured:
         message = "学校财务系统字段适配已配置，可以在材料、项目、余额和登录态齐备后启动代填。"
     elif SHU_ADAPTER_PATH.exists():
-        message = "真实学校系统适配文件存在，但字段定位还不完整，不能启动真实代填。"
+        message = "真实学校系统适配文件存在，但字段定位还不完整，或未标记为可执行，不能启动真实代填。"
     else:
         message = "真实学校系统字段适配尚未配置，只能生成代填计划和本地演示。"
     return {
@@ -386,6 +396,7 @@ async def settings_status() -> JSONResponse:
             "shu_adapter_configured": bool(adapter_state["configured"]),
             "shu_adapter_path": adapter_state["path"],
             "shu_adapter_message": adapter_state["message"],
+            "shu_observation": shu_finance_observation_status(),
         },
         "shu_auth": shu_auth,
         "user": app_user_profile(),
@@ -453,6 +464,29 @@ async def check_shu_auth_session() -> JSONResponse:
     status["login_running"] = False
     status["login_pids"] = []
     return JSONResponse({"ok": True, "checked": True, "shu_auth": status})
+
+
+@app.post("/api/shu-finance/observe")
+async def observe_shu_finance(dry_run: bool = False) -> JSONResponse:
+    if dry_run:
+        return JSONResponse({"ok": True, "dry_run": True, "observation": shu_finance_observation_status()})
+    if shu_auth_login_running():
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": "登录窗口已打开，请先完成统一登录后再观察学校表单。",
+                "observation": shu_finance_observation_status(),
+            },
+            status_code=409,
+        )
+    try:
+        report = await asyncio.to_thread(observe_finance_form, headed=False, timeout_ms=60000)
+    except Exception as exc:
+        return JSONResponse(
+            {"ok": False, "error": f"观察学校财务系统表单失败：{exc.__class__.__name__}", "observation": shu_finance_observation_status()},
+            status_code=502,
+        )
+    return JSONResponse({"ok": True, "observation": report, "saved": shu_finance_observation_status()})
 
 
 @app.post("/api/settings/rag-llm")

@@ -1788,6 +1788,7 @@ const App = AntdApp;
     const [imapClearPassword, setImapClearPassword] = React.useState(false);
     const [authLaunching, setAuthLaunching] = React.useState(false);
     const [authChecking, setAuthChecking] = React.useState(false);
+    const [financeObserving, setFinanceObserving] = React.useState(false);
     const [userWorkId, setUserWorkId] = React.useState("");
     const [userSaving, setUserSaving] = React.useState(false);
     const [llmSaving, setLlmSaving] = React.useState(false);
@@ -1925,6 +1926,28 @@ const App = AntdApp;
       }
     }
 
+    async function observeFinanceForm() {
+      setFinanceObserving(true);
+      try {
+        const response = await fetch("/api/shu-finance/observe", { method: "POST" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || "观察学校表单失败");
+        }
+        const saved = payload.saved || {};
+        if (saved.status === "form_ready") {
+          message.success("已生成学校表单观察草稿");
+        } else {
+          message.info(saved.message || "未观察到日常报销单，请先完成统一登录");
+        }
+        refreshStatus(() => true);
+      } catch (observeError) {
+        message.error(observeError.message || "观察学校表单失败");
+      } finally {
+        setFinanceObserving(false);
+      }
+    }
+
     async function saveUserProfile() {
       setUserSaving(true);
       try {
@@ -2008,6 +2031,7 @@ const App = AntdApp;
     const imap = (status && status.imap) || { configured: false, mailbox: "INBOX", processed_count: 0 };
     const kb = (status && status.knowledge_base) || { index_exists: false, documents_exists: false, index_size_bytes: 0 };
     const playwright = (status && status.playwright) || { shu_adapter_configured: false, shu_adapter_message: "" };
+    const financeObservation = playwright.shu_observation || {};
     const kbReport = (knowledgeStatus && knowledgeStatus.corpus_report) || {};
     const shuAuth = status && status.shu_auth;
     function authStatusLabel(auth) {
@@ -2120,7 +2144,27 @@ const App = AntdApp;
                 type: playwright.shu_adapter_configured ? "success" : "info",
                 showIcon: true,
                 message: playwright.shu_adapter_message || "真实学校系统字段适配尚未配置，只能生成代填计划和本地演示。",
-              })
+              }),
+              e(
+                Space,
+                { wrap: true },
+                e(
+                  Button,
+                  {
+                    icon: icon(SearchOutlined),
+                    loading: financeObserving,
+                    disabled: Boolean(shuAuth && shuAuth.login_running),
+                    onClick: observeFinanceForm,
+                  },
+                  "观察学校表单"
+                ),
+                financeObservation.adapter_draft_exists
+                  ? e(Button, { href: "/playwright-output/shu_finance_adapter_draft.json" }, "查看适配草稿")
+                  : null
+              ),
+              financeObservation.report_exists
+                ? e(Text, { type: "secondary" }, `最近观察：${financeObservation.message || financeObservation.status || "未识别"}；字段 ${financeObservation.field_count || 0} 个，人工暂停点 ${financeObservation.manual_action_count || 0} 个。`)
+                : e(Text, { type: "secondary" }, "登录后观察一次学校表单，系统会生成真实字段适配草稿。")
             )
           )
         ),
