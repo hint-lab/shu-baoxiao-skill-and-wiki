@@ -553,6 +553,14 @@ const App = AntdApp;
             lines.length
               ? e(Table, { rowKey: "source_document_id", size: "small", pagination: false, columns, dataSource: lines })
               : e(Text, { type: "secondary" }, "暂无可代填费用明细。"),
+            invoice.status === "missing" && data.invoice_request_exists
+              ? e(
+                  Space,
+                  { wrap: true },
+                  e(Button, { type: "primary", href: data.invoice_request_url }, "查看索票说明"),
+                  e(Text, { type: "secondary" }, "先补正式发票，拿到后直接发回聊天。")
+                )
+              : null,
             fill.official_reception
               ? e(Alert, { type: "info", showIcon: true, message: "餐饮接待规则判断", description: fill.official_reception.known_rule_hint })
               : null,

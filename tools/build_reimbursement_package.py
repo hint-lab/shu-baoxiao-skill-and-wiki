@@ -31,6 +31,14 @@ RULES_PATH = ROOT / "data/rules/reimbursement_rules.json"
 INDEX_PATH = ROOT / "data/cwc/index.json"
 OUTPUT_ROOT = ROOT / "output/packages"
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".bmp"}
+SHU_INVOICE_INFO = {
+    "unit_name": "上海大学",
+    "tax_id": "1231000042502637XE",
+    "address_phone": "上海市上大路99号 021-66136210",
+    "bank_account": "农行上海大场支行 03327000801210489",
+    "invoice_code": "TQ4HXQ",
+    "source_url": "https://cwc.shu.edu.cn/info/1014/4911.htm",
+}
 
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -751,6 +759,59 @@ def school_fill_draft(package: ReimbursementPackage, missing_required: list[dict
     return draft
 
 
+def invoice_request_markdown(package: ReimbursementPackage) -> str:
+    missing_invoice = any(
+        item.required
+        and item.status == "missing"
+        and ("发票" in item.name or "内转单" in item.name or "票据" in item.name)
+        for item in package.checklist
+    )
+    if not missing_invoice:
+        return ""
+    lines = [
+        "# 索票说明",
+        "",
+        "这份说明用于向商户或平台补开餐费、食品发票或内转单。支付截图只能证明付款，不能替代正式发票。",
+        "",
+        "## 开票信息",
+        "",
+        f"- 抬头：{SHU_INVOICE_INFO['unit_name']}",
+        f"- 纳税人识别号：{SHU_INVOICE_INFO['tax_id']}",
+        f"- 地址电话：{SHU_INVOICE_INFO['address_phone']}",
+        f"- 开户行及账号：{SHU_INVOICE_INFO['bank_account']}",
+        f"- 上海大学开票代码：{SHU_INVOICE_INFO['invoice_code']}",
+        f"- 来源：{SHU_INVOICE_INFO['source_url']}",
+        "",
+        "## 消费信息",
+        "",
+    ]
+    expenses = expense_lines(package)
+    if expenses:
+        for line in expenses:
+            lines.extend(
+                [
+                    f"- 商户：{line.get('merchant') or '待商户确认'}",
+                    f"- 金额：{format_amount({'amount_total': line.get('amount'), 'currency': line.get('currency') or 'CNY'})}",
+                    f"- 消费日期：{line.get('occurred_on') or '待商户确认'}",
+                    f"- 交易单号：{line.get('transaction_no') or '见支付记录'}",
+                    f"- 消费内容：{line.get('description') or '餐饮消费'}",
+                    f"- 对应材料：{line.get('source_file_name') or '-'}",
+                    "",
+                ]
+            )
+    else:
+        lines.append("- 尚未识别到可索票的支付记录，请人工补充商户、金额、日期和交易号。")
+        lines.append("")
+    lines.extend(
+        [
+            "## 补回方式",
+            "",
+            "拿到电子发票 PDF、OFD 或图片后，直接发回聊天或在工作单页面补充材料。本工具会合并到当前报销包，重新识别抬头、税号、金额和发票号。",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9\u4e00-\u9fff]+", "-", value).strip("-")
     return slug[:80] or "reimbursement-package"
@@ -1137,6 +1198,12 @@ def export_package(package: ReimbursementPackage, out_dir: Path) -> None:
             shutil.copy2(src, files_dir / src.name)
     (out_dir / "package.json").write_text(json.dumps(asdict(package), ensure_ascii=False, indent=2), encoding="utf-8")
     (out_dir / "package.md").write_text(markdown_report(package), encoding="utf-8")
+    invoice_request = invoice_request_markdown(package)
+    invoice_request_path = out_dir / "索票说明.md"
+    if invoice_request:
+        invoice_request_path.write_text(invoice_request, encoding="utf-8")
+    elif invoice_request_path.exists():
+        invoice_request_path.unlink()
     (out_dir / "playwright_plan.json").write_text(
         json.dumps(playwright_plan(package), ensure_ascii=False, indent=2),
         encoding="utf-8",

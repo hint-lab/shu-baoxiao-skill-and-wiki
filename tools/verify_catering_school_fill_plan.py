@@ -31,6 +31,13 @@ def build(title: str, note: str) -> dict:
     plan_path = ROOT / "output/packages" / title / "playwright_plan.json"
     if not plan_path.exists():
         raise AssertionError(f"Missing playwright plan: {plan_path}")
+    request_path = ROOT / "output/packages" / title / "索票说明.md"
+    if not request_path.exists():
+        raise AssertionError(f"Missing invoice request note: {request_path}")
+    request_text = request_path.read_text(encoding="utf-8")
+    for expected in ["上海大学", "1231000042502637XE", "上海京北涮餐饮管理有限公司", "4200003034202605223103168150"]:
+        if expected not in request_text:
+            raise AssertionError(f"Missing {expected!r} in invoice request note")
     return json.loads(plan_path.read_text(encoding="utf-8"))
 
 

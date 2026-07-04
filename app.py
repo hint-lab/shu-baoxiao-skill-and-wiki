@@ -1504,6 +1504,8 @@ async def view_package(request: Request, package_id: str) -> HTMLResponse:
             "json_url": f"/package-output/{package_id}/package.json",
             "playwright_plan_url": f"/package-output/{package_id}/playwright_plan.json",
             "playwright_plan": load_playwright_plan(package_id),
+            "invoice_request_url": f"/package-output/{package_id}/索票说明.md",
+            "invoice_request_exists": (package_path / "索票说明.md").exists(),
             "fill_demo_url": f"/packages/{package_id}/fill-demo",
             "fill_report": load_fill_report(package_id),
             "fill_report_url": f"/playwright-output/{package_id}-fill_report.json",
