@@ -599,6 +599,157 @@ def looks_like_project_confirmation(note: str, context_text: str) -> bool:
     return bool(re.search(r"项目|余额|经费|横向|维持性|工作用餐|够|不足|要报销|确认报销", note))
 
 
+def looks_like_school_flow_request(note: str) -> bool:
+    return bool(re.search(r"统一登录|登录好了|完成登录|继续代填|开始代填|打开财务系统|进入财务系统|继续这笔报销|开始填写|帮我报", note))
+
+
+def looks_like_responsibility_confirmation(note: str) -> bool:
+    checks = [
+        r"票据.*真实|发票.*真实|材料.*真实",
+        r"项目.*无误|项目.*确认|经费.*确认|余额.*足够|余额.*够",
+        r"提交前.*复核|最终.*确认|我会.*复核",
+        r"开始代填|继续代填|帮我报",
+    ]
+    return sum(1 for pattern in checks if re.search(pattern, note)) >= 2
+
+
+def school_login_actions(package_id: str) -> list[dict[str, str]]:
+    return [
+        {
+            "type": "login",
+            "label": "打开统一登录",
+            "package_id": package_id,
+        },
+        {
+            "type": "ask",
+            "label": "我已完成登录",
+            "query": "我已完成统一登录，继续这笔报销。",
+        },
+    ]
+
+
+def school_flow_payload_for_package(package: dict, note: str = "") -> dict[str, object]:
+    package_id = package.get("id") or ""
+    missing = missing_required_items(package)
+    if missing:
+        return {
+            "ok": True,
+            "action": "school_flow_blocked",
+            "message": (
+                "现在还不能进入学校财务系统，因为材料没有齐。\n\n"
+                "当前还差：\n"
+                + "\n".join(f"- {item.get('name')}" for item in missing)
+                + "\n\n你继续把缺的材料发到聊天里，我会自动合并到这笔报销。"
+            ),
+            "actions": [
+                {
+                    "type": "href",
+                    "label": "查看缺项",
+                    "href": f"/packages/{package_id}/view",
+                }
+            ],
+            "package": {
+                "id": package_id,
+                "title": package.get("title") or package_id,
+                "url": f"/packages/{package_id}/view",
+                "document_count": len(package.get("documents", [])),
+                "missing_count": len(missing),
+            },
+        }
+
+    status = get_package_status(str(package_id)) or {}
+    if status.get("status") != "ready_for_school":
+        if looks_like_responsibility_confirmation(note):
+            set_package_status(
+                str(package_id),
+                "ready_for_school",
+                "聊天中确认票据真实、经费项目/余额无误，并确认提交前人工复核",
+            )
+        else:
+            return {
+                "ok": True,
+                "action": "school_flow_confirm",
+                "message": (
+                    "材料已经齐了。进入学校财务系统前，还需要你在聊天里明确确认责任边界：\n\n"
+                    "- 票据和附件真实、合法、与业务相关。\n"
+                    "- 经费项目和余额无误。\n"
+                    "- Agent 只代填和上传，提交前仍由你最终复核。\n\n"
+                    "确认后我会打开统一登录窗口，登录完成后继续代填。"
+                ),
+                "actions": [
+                    {
+                        "type": "ask",
+                        "label": "确认并开始代填",
+                        "query": "确认票据和附件真实，项目和余额无误，提交前我会最终复核，开始代填。",
+                    }
+                ],
+                "package": {
+                    "id": package_id,
+                    "title": package.get("title") or package_id,
+                    "url": f"/packages/{package_id}/view",
+                    "document_count": len(package.get("documents", [])),
+                    "missing_count": 0,
+                },
+            }
+
+    try:
+        auth = asdict(check_business_session(headed=False, timeout_ms=20000))
+    except Exception as exc:
+        auth = {"status": "unknown", "message": f"财务系统会话检查失败：{exc.__class__.__name__}"}
+
+    if auth.get("status") != "ready":
+        return {
+            "ok": True,
+            "action": "school_login_required",
+            "message": (
+                "材料和责任确认已经完成，但学校财务系统需要重新登录。\n\n"
+                "我可以现在打开统一登录窗口。你只需要完成学校扫码/验证码/二次认证；登录完成后回到聊天点“我已完成登录”，我会继续检查并推进代填。"
+            ),
+            "actions": school_login_actions(str(package_id)),
+            "package": {
+                "id": package_id,
+                "title": package.get("title") or package_id,
+                "url": f"/packages/{package_id}/view",
+                "document_count": len(package.get("documents", [])),
+                "missing_count": 0,
+            },
+            "shu_auth": auth,
+        }
+
+    return {
+        "ok": True,
+        "action": "school_fill_ready",
+        "message": (
+            "学校财务系统会话可用，材料也已通过本地检查。\n\n"
+            "下一步应由 Agent 进入日常报销页面，填写事由、上传票据和附件，并在提交前停下。当前真实系统字段适配还需要继续补齐，因此我不会假装已经提交成功。"
+        ),
+        "actions": [
+            {
+                "type": "href",
+                "label": "查看代填计划",
+                "href": f"/packages/{package_id}/view",
+            }
+        ],
+        "package": {
+            "id": package_id,
+            "title": package.get("title") or package_id,
+            "url": f"/packages/{package_id}/view",
+            "document_count": len(package.get("documents", [])),
+            "missing_count": 0,
+        },
+        "shu_auth": auth,
+    }
+
+
+def handle_school_flow_from_chat(note: str, context_text: str) -> dict[str, object] | None:
+    if not looks_like_school_flow_request(note):
+        return None
+    package = latest_reimbursement_package_from_context(context_text)
+    if not package:
+        return None
+    return school_flow_payload_for_package(package, note)
+
+
 def chat_guidance_for_package(package: dict) -> tuple[str, list[dict[str, str]]]:
     package_type = package.get("reimbursement_type")
     missing = missing_required_items(package)
@@ -684,9 +835,16 @@ def handle_project_confirmation_from_chat(note: str, context_text: str) -> dict[
             + "\n\n补齐后我会继续在聊天里处理；你不需要自己打开财务系统。"
         )
     else:
+        actions = [
+            {
+                "type": "ask",
+                "label": "确认并开始代填",
+                "query": "确认票据和附件真实，项目和余额无误，提交前我会最终复核，开始代填。",
+            }
+        ]
         message = (
             "我已记录你的项目/余额确认，并重新检查这笔餐饮报销。\n\n"
-            "材料已经通过本地完整性检查。下一步我会打开统一登录，登录完成后进入学校财务系统代填；提交前仍会停下让你最终确认。"
+            "材料已经通过本地完整性检查。下一步在聊天里确认票据真实和提交前复核后，我会打开统一登录并继续代填。"
         )
     return {
         "ok": True,
@@ -890,6 +1048,9 @@ def create_home_assistant_payload(
         if supplement_payload:
             return supplement_payload, 200
     if not uploads:
+        school_flow = handle_school_flow_from_chat(clean_note, context_text)
+        if school_flow:
+            return school_flow, 200
         project_confirmation = handle_project_confirmation_from_chat(clean_note, context_text)
         if project_confirmation:
             return project_confirmation, 200

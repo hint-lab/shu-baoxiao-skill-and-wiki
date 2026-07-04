@@ -523,6 +523,22 @@
           actions: payload.actions || [],
         };
       }
+      if (
+        [
+          "school_flow_blocked",
+          "school_flow_confirm",
+          "school_login_required",
+          "school_fill_ready",
+        ].includes(payload.action) &&
+        payload.package
+      ) {
+        return {
+          role: "assistant",
+          text: payload.message || "我会继续处理这笔报销。",
+          link: payload.package.url ? { href: payload.package.url, label: "查看工作单" } : null,
+          actions: payload.actions || [],
+        };
+      }
       if (payload.action === "create_inbox" && payload.item) {
         return {
           role: "assistant",
@@ -582,10 +598,41 @@
       }
     }
 
-    function handleMessageAction(action) {
+    async function handleMessageAction(action) {
       if (!action) return;
       if (action.href) {
         window.location.href = action.href;
+        return;
+      }
+      if (action.type === "login") {
+        try {
+          const payload = await startShuAuthLogin();
+          message.success(payload.message || "已打开统一登录窗口");
+          setMessages((current) => [
+            ...current,
+            {
+              role: "assistant",
+              text: "我已打开统一登录窗口。你只需要在窗口里完成学校登录；完成后回到这里点“我已完成登录”，我会继续检查并推进代填。",
+              actions: [
+                {
+                  type: "ask",
+                  label: "我已完成登录",
+                  query: "我已完成统一登录，继续这笔报销。",
+                },
+              ],
+            },
+          ]);
+        } catch (error) {
+          const errorText = error && error.message ? error.message : "启动统一登录窗口失败";
+          message.error(errorText);
+          setMessages((current) => [
+            ...current,
+            {
+              role: "assistant",
+              text: `${errorText}。你不用去终端执行命令；可以稍后再点“打开统一登录”，或者到设置页检查登录状态。`,
+            },
+          ]);
+        }
         return;
       }
       if (action.query) {
