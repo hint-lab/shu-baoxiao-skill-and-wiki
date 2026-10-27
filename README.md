@@ -39,6 +39,8 @@ python3 skills/shu-reimbursement/scripts/knowledge.py status
 
 检索结果带有文档 ID。用 `read 文档ID` 阅读全文，或者加 `--query 关键词` 定位段落。`--json` 返回结构化证据。检索本身不联网、不调用其他大模型。
 
+需要核对本机 Word 时，可运行 `python3 skills/shu-reimbursement/scripts/word_to_markdown.py 文件.docx --json`，保留表格合并关系。旧版 `.doc` 需要本机 LibreOffice；解析警告会明确列出无法提取的对象。
+
 ## 维护与发布
 
 ```bash
@@ -47,6 +49,9 @@ python3 tools/maintain.py refresh https://cwc.shu.edu.cn/info/1113/4276.htm
 
 # 将人工核对、提取的附件文字关联回官方入口。
 python3 tools/maintain.py import-text --url '<官方附件URL>' --title '<资料标题>' --text '<UTF-8文本文件>'
+
+# 维护者可调用自己授权的 P330 MinerU 网关；凭据留在服务器。
+python3 tools/mineru_p330.py '<文件.pdf>' --ssh-host '<SSH别名>' --output tmp/mineru-result --tier basic
 
 # 重建 Wiki 阅读页、资料目录、技能包和普通聊天场景包。
 python3 tools/build.py

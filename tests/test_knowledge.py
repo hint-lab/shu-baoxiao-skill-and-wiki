@@ -159,6 +159,12 @@ class KnowledgeTests(unittest.TestCase):
 
 
 class MaintenanceTests(unittest.TestCase):
+    def test_markdown_import_allows_structured_tables_and_rejects_active_content(self):
+        maintain.validate_markdown('## 标题\n\n<table><tr><td rowspan="2">金额</td></tr></table>')
+        for bad in ('<script>alert(1)</script>', '<td onclick="bad()">数值</td>', '![私图](data:image/png;base64,abc)'):
+            with self.assertRaises(ValueError):
+                maintain.validate_markdown(bad)
+
     def test_only_public_official_urls(self):
         for bad in ("http://cwc.shu.edu.cn/x", "https://evil.example/x", "https://cwc.shu.edu.cn.evil.example/x", "https://user:pass@cwc.shu.edu.cn/x"):
             with self.assertRaises(ValueError):

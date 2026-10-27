@@ -76,6 +76,31 @@ class PageParser(HTMLParser):
         self.stack[-1].children.append(data)
 
 
+class MarkdownTableGuard(HTMLParser):
+    """Only the simple HTML table syntax emitted by our parsers is allowed."""
+    allowed = {"table", "thead", "tbody", "tfoot", "tr", "td", "th", "br"}
+
+    def handle_starttag(self, name, attrs):
+        if name not in self.allowed:
+            raise ValueError("Markdown 包含未允许的 HTML 标签：" + name)
+        for key, value in attrs:
+            if name not in {"td", "th"} or key not in {"rowspan", "colspan"} or not value or not value.isdigit() or not 1 <= int(value) <= 100:
+                raise ValueError("Markdown 表格包含未允许的属性。")
+
+    def handle_startendtag(self, name, attrs):
+        self.handle_starttag(name, attrs)
+
+    def handle_endtag(self, name):
+        if name not in self.allowed:
+            raise ValueError("Markdown 包含未允许的 HTML 结束标签：" + name)
+
+
+def validate_markdown(text: str) -> None:
+    if re.search(r"!\[[^]]*\]\(", text) or re.search(r"\]\(\s*(?:javascript|data):", text, re.I):
+        raise ValueError("Markdown 含图片或不安全链接；请先核对并移除。")
+    MarkdownTableGuard(convert_charrefs=True).feed(text)
+
+
 def clean(text: str) -> str:
     return "\n".join(line.strip() for line in text.replace("\xa0", " ").splitlines() if line.strip())
 
@@ -155,6 +180,7 @@ def main() -> None:
     import_text.add_argument("--title", required=True)
     import_text.add_argument("--text", type=Path, required=True)
     import_text.add_argument("--ocr", action="store_true", help="标记扫描件 OCR 未逐页核验，不能直接据此引用数字和表格")
+    import_text.add_argument("--format", choices=["plain", "markdown"], default="plain", help="解析工具生成的 Markdown 才选择 markdown")
     args = parser.parse_args()
     try:
         if args.command == "refresh":
@@ -164,10 +190,13 @@ def main() -> None:
             text = args.text.read_text(encoding="utf-8").strip()
             if len(text) < 65:
                 raise ValueError("文字过短，不足以作为可读正文。")
+            if args.format == "markdown":
+                validate_markdown(text)
             doc = {"id": hashlib.sha1(url.encode()).hexdigest()[:16], "title": args.title, "url": url,
                    "source_type": "attachment", "category": "policy", "published_date": "",
                    "fetched_at": datetime.now(timezone.utc).isoformat(), "effectivity": "unverified",
                    "availability": "text_available", "text": text, "attachments": [],
+                   "text_format": args.format,
                    "text_quality": "ocr_unverified" if args.ocr else "extracted_unverified",
                    "extraction_method": "manual_text_import",
                    "provenance": {"acquisition": "manual_text_import", "downloaded_at": "unknown"}}
