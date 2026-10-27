@@ -11,8 +11,8 @@
 
 ## 从这些学校资料开始
 
-- [【专家咨询意见表】上海大学专家咨询意见表（2024版）](../skills/shu-reimbursement/references/sources/265ba03d107d9a2e.md)：仅入口/短文本
-- [关于印发《中央财政科研项目专家咨询费管理办法》的通知  财科教〔2017〕128号](../skills/shu-reimbursement/references/sources/7a93aaa88805db08.md)：仅入口/短文本
+- [【专家咨询意见表】上海大学专家咨询意见表（2024版）](../skills/shu-baoxiao/references/sources/265ba03d107d9a2e.md)：仅入口/短文本
+- [关于印发《中央财政科研项目专家咨询费管理办法》的通知  财科教〔2017〕128号](../skills/shu-baoxiao/references/sources/7a93aaa88805db08.md)：仅入口/短文本
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。
 

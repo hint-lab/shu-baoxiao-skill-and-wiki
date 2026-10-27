@@ -14,7 +14,7 @@ from urllib.parse import urldefrag, urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "skills/shu-reimbursement/references/knowledge/documents.jsonl"
+DATA = ROOT / "skills/shu-baoxiao/references/knowledge/documents.jsonl"
 MAX_BYTES = 5 * 1024 * 1024
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 
@@ -140,7 +140,7 @@ def parse_page(url: str, html: str, fetched_at: str) -> dict:
 
 def fetch(url: str) -> dict:
     url = official_url(url)
-    request = Request(url, headers={"User-Agent": "SHU-Reimbursement-Knowledge/1.0 (public documentation maintenance)"})
+    request = Request(url, headers={"User-Agent": "SHU-Baoxiao-Knowledge/1.0 (public documentation maintenance)"})
     with build_opener(OfficialRedirect()).open(request, timeout=20) as response:
         official_url(response.url)
         if response.headers.get_content_type() not in {"text/html", "application/xhtml+xml"}:

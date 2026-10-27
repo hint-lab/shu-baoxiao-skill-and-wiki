@@ -11,7 +11,7 @@
 
 ## 从这些学校资料开始
 
-- [2018年新版常见业务费报销指南(文字版).pdf](../skills/shu-reimbursement/references/sources/c3b16291ce284acb.md)：有提取正文
+- [2018年新版常见业务费报销指南(文字版).pdf](../skills/shu-baoxiao/references/sources/c3b16291ce284acb.md)：有提取正文
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。
 

@@ -9,7 +9,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("word_markdown", ROOT / "skills/shu-reimbursement/scripts/word_to_markdown.py")
+spec = importlib.util.spec_from_file_location("word_markdown", ROOT / "skills/shu-baoxiao/scripts/word_to_markdown.py")
 word = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(word)
 

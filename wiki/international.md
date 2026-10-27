@@ -11,8 +11,8 @@
 
 ## 从这些学校资料开始
 
-- [【国际合作交流费】外汇相关业务报销指南（2024版）](../skills/shu-reimbursement/references/sources/2bdbbf4acb033866.md)：仅入口/短文本
-- [出国（境）费用报销指南手册（教师&外籍教师&学生）20240617.pdf](../skills/shu-reimbursement/references/sources/3ecccf68d1f676b1.md)：有提取正文
+- [【国际合作交流费】外汇相关业务报销指南（2024版）](../skills/shu-baoxiao/references/sources/2bdbbf4acb033866.md)：仅入口/短文本
+- [出国（境）费用报销指南手册（教师&外籍教师&学生）20240617.pdf](../skills/shu-baoxiao/references/sources/3ecccf68d1f676b1.md)：有提取正文
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。
 

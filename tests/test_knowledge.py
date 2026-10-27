@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "skills/shu-reimbursement"
+SKILL = ROOT / "skills/shu-baoxiao"
 
 
 def module(name, path):
@@ -137,12 +137,12 @@ class KnowledgeTests(unittest.TestCase):
             for path in packages[:2]:
                 with zipfile.ZipFile(path) as archive:
                     names = archive.namelist()
-                    self.assertIn("shu-reimbursement/SKILL.md", names)
-                    self.assertIn("shu-reimbursement/references/knowledge/documents.jsonl", names)
-                    self.assertIn("shu-reimbursement/LICENSE", names)
+                    self.assertIn("shu-baoxiao/SKILL.md", names)
+                    self.assertIn("shu-baoxiao/references/knowledge/documents.jsonl", names)
+                    self.assertIn("shu-baoxiao/LICENSE", names)
                     self.assertFalse(any("__pycache__" in name or "data/settings" in name for name in names))
                     if "workbuddy" in path.name:
-                        skill = archive.read("shu-reimbursement/SKILL.md").decode()
+                        skill = archive.read("shu-baoxiao/SKILL.md").decode()
                         for key in ("display_name:", "display_name_en:", "description_zh:", "description_en:", "version:", "author:"):
                             self.assertIn(key, skill)
             chat = Path(folder) / "chat/publication.txt"

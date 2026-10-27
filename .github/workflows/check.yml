@@ -18,7 +18,7 @@ jobs:
       - run: python3 tools/build.py
       - uses: actions/upload-artifact@v4
         with:
-          name: shu-reimbursement-packages
+          name: shu-baoxiao-packages
           path: |
             dist/*.zip
             dist/sha256.json

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "skill_version": "1.3.0",
+  "skill_version": "1.3.1",
   "migration_date": "2026-10-27",
   "document_count": 242,
   "availability_counts": {
@@ -9,11 +9,11 @@
     "downloaded_no_text": 3,
     "blocked_forbidden": 4
   },
-  "ocr_unverified_count": 20,
+  "ocr_unverified_count": 29,
   "linked_coverage_count": 38,
   "snapshot_earliest": "2026-06-30T07:40:31.326916+00:00",
   "snapshot_latest": "2026-10-27T13:03:00.404230+00:00",
-  "documents_sha256": "afa045a892f182cd7e865976f4d0b08c7c096f49312c3b6d01059fc29cdc654f",
+  "documents_sha256": "1780ea7223ea4b765d43dfdc5ed570cc2c603131a1f7f2615c5b770fd7424fc1",
   "effectivity": "unverified",
   "scope": "报销相关公开资料；未迁入个人名单、真实报销材料或登录状态"
 }

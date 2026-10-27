@@ -11,9 +11,9 @@
 
 ## 从这些学校资料开始
 
-- [非科研会议费报销指南（精简版）](../skills/shu-reimbursement/references/sources/6431ba44c9d6431e.md)：有提取正文
-- [上大内〔2019〕285号 关于印发《上海大学科研会议费管理办法》的通知](../skills/shu-reimbursement/references/sources/992e7a43b629c800.md)：有提取正文
-- [【科研业务会议费】上海大学国内业务会议审批表&上海大学会议费用报销决算表（2020年1月1日起 科研业务会议启用）](../skills/shu-reimbursement/references/sources/c109471b495fcc85.md)：仅入口/短文本
+- [非科研会议费报销指南（精简版）](../skills/shu-baoxiao/references/sources/6431ba44c9d6431e.md)：有提取正文
+- [上大内〔2019〕285号 关于印发《上海大学科研会议费管理办法》的通知](../skills/shu-baoxiao/references/sources/992e7a43b629c800.md)：有提取正文
+- [【科研业务会议费】上海大学国内业务会议审批表&上海大学会议费用报销决算表（2020年1月1日起 科研业务会议启用）](../skills/shu-baoxiao/references/sources/c109471b495fcc85.md)：仅入口/短文本
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。
 

@@ -5,120 +5,120 @@
 
 | 资料 | 场景标签 | 正文状态 |
 | --- | --- | --- |
-| [2021年新发布的科研经费相关管理办法](../skills/shu-reimbursement/references/sources/e193f5119b1da207.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
-| [2022科研项目与财务制度](../skills/shu-reimbursement/references/sources/3dd9fdf0ff88909d.md) | 跨场景/待归类 | 有提取正文 |
-| [2025年科研项目与经费管理办法](../skills/shu-reimbursement/references/sources/348f433a07e88f82.md) | 跨场景/待归类 | 有提取正文 |
-| [【国务院】国务院办公厅关于改革完善中央财政科研经费管理的若干意见](../skills/shu-reimbursement/references/sources/19a1da4ece748464.md) | 跨场景/待归类 | 有提取正文 |
-| [上大内（2020）120号-关于印发《上海大学因公临时出国使用科研经费管理办法》的通知](../skills/shu-reimbursement/references/sources/50185b93292554c2.md) | 出国境与外汇 | 仅入口/短文本；关联附件有文本 |
-| [上大内（2020）120号-关于印发《上海大学因公临时出国使用科研经费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/9e8b5445588cd398.md) | 出国境与外汇 | 有提取正文；OCR 待核 |
-| [上大内（2020）128号-关于印发《上海大学因公临时出国使用科研经费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/3e9c3ac7483ba2ab.md) | 出国境与外汇 | 有提取正文；OCR 待核 |
-| [上大内（2020）50号-关于印发《上海大学科研经费财务管理实施细则》的通知.pdf](../skills/shu-reimbursement/references/sources/de99e106293fb3cd.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [上大内〔2019〕284号 关于印发《上海大学科研国内差旅费管理办法》的通知](../skills/shu-reimbursement/references/sources/0476d71f3a3f81a2.md) | 国内差旅 | 有提取正文 |
-| [上大内〔2019〕284号-关于印发《上海大学科研国内差旅费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/5287d2a6893e0a00.md) | 国内差旅 | 有提取正文；OCR 待核 |
-| [上大内〔2019〕285号 关于印发《上海大学科研会议费管理办法》的通知](../skills/shu-reimbursement/references/sources/992e7a43b629c800.md) | 会议费 | 有提取正文 |
-| [上大内〔2019〕285号-关于印发《上海大学科研会议费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/f5f4923df61b6d9d.md) | 会议费 | 有提取正文；OCR 待核 |
-| [上大内〔2019〕286号 关于印发《上海大学国内差旅费管理办法》的通知](../skills/shu-reimbursement/references/sources/d355d376616ee249.md) | 国内差旅 | 仅入口/短文本；关联附件有文本 |
-| [上大内〔2019〕286号-关于印发《上海大学国内差旅费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/05ac7fea00fe876f.md) | 国内差旅 | 有提取正文；OCR 待核 |
-| [上大内〔2019〕295号-关于印发《上海大学理工科纵向民口科技项目经费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/dc5c06707d0d394e.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [上大内〔2019〕58号 关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-reimbursement/references/sources/0d8c225a3ff6e2a2.md) | 公务接待与工作用餐 | 有提取正文 |
-| [上大内〔2020〕225号-关于印发《上海大学国有资产管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/680cab66c4fcff81.md) | 办公耗材与设备采购 | 有提取正文 |
-| [上大内〔2020〕50号 关于印发《上海大学科研经费财务管理实施细则》的通知](../skills/shu-reimbursement/references/sources/e1f180acb3970745.md) | 跨场景/待归类 | 有提取正文 |
-| [上大内〔2020〕76号-关于印发《上海大学采购管理办法（试行）》的通知.pdf](../skills/shu-reimbursement/references/sources/78b41de9df7955fc.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
-| [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/0896bd1b6b3c84b8.md) | 跨场景/待归类 | 有提取正文 |
-| [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/c50d86d6a47cf681.md) | 跨场景/待归类 | 有提取正文 |
-| [上大内〔2022〕142号-关于印发《上海大学外事接待管理办法》的通知](../skills/shu-reimbursement/references/sources/aefb6fa0a3734716.md) | 公务接待与工作用餐 | 仅入口/短文本 |
-| [上大内〔2023〕176号-关于印发《上海大学合同管理办法》的通知](../skills/shu-reimbursement/references/sources/571cb909cfa90b5c.md) | 跨场景/待归类 | 仅入口/短文本 |
-| [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知](../skills/shu-reimbursement/references/sources/2b37225f9fdb95bd.md) | 跨场景/待归类 | 仅入口/短文本 |
-| [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/03976750f4d5654e.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/23e75212ee1f2860.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [上大制〔2018〕30号-关于印发《上海大学大额资金支付管理办法》的通知.pdf](../skills/shu-reimbursement/references/sources/1ee69d19eea241d2.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [上大委〔2024〕37号-关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-reimbursement/references/sources/d780fee4f46ca902.md) | 公务接待与工作用餐 | 仅入口/短文本 |
-| [上大委〔2025〕63号-关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-reimbursement/references/sources/6815831c89ec295a.md) | 公务接待与工作用餐 | 仅入口/短文本 |
-| [上海大学会议费使用管理办法 上大内(2016)208号.pdf](../skills/shu-reimbursement/references/sources/a07b41e75c948578.md) | 会议费 | 有提取正文；OCR 待核 |
-| [上海大学会议费使用管理办法-上大内2016-208号文.pdf](../skills/shu-reimbursement/references/sources/74dbe09ea2005378.md) | 会议费 | 有提取正文；OCR 待核 |
-| [上海大学会议费使用管理办法（上大内2016年第208号文）](../skills/shu-reimbursement/references/sources/72dbeb2727d3574a.md) | 会议费 | 仅入口/短文本；关联附件有文本 |
-| [上海大学因公出国(境)经费报销实施细则](../skills/shu-reimbursement/references/sources/643cd53a56ac9320.md) | 出国境与外汇 | 有提取正文 |
-| [上海大学因公出国（境）经费报销实施细则](../skills/shu-reimbursement/references/sources/a240d2c2e1cbf5bc.md) | 出国境与外汇 | 有提取正文 |
-| [上海大学国内差旅费管理办法 上大内(2016)209号.pdf](../skills/shu-reimbursement/references/sources/da5de69c3958b4c3.md) | 国内差旅 | 有提取正文；OCR 待核 |
-| [上海大学国内差旅费管理办法（上大内2016年第209号文）](../skills/shu-reimbursement/references/sources/1a66702d3426a25a.md) | 国内差旅 | 仅入口/短文本；关联附件有文本 |
-| [上海大学国内差旅费管理办法（试行）](../skills/shu-reimbursement/references/sources/9ac76962513d565f.md) | 国内差旅 | 有提取正文 |
-| [上海大学用汇申请报销管理办法上大内 (2016)207号.pdf](../skills/shu-reimbursement/references/sources/9e51d515d369a1b2.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [上海大学用汇申请报销管理办法（上大内2016年第207号文）](../skills/shu-reimbursement/references/sources/9687ca7856bcced7.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
-| [上海大学票据管理办法](../skills/shu-reimbursement/references/sources/d6f92c7aeadb7043.md) | 系统操作与通用问题 | 有提取正文 |
-| [上海大学科研项目结题财务制度汇总](../skills/shu-reimbursement/references/sources/a044e37916ef0028.md) | 跨场景/待归类 | 有提取正文 |
-| [上海市市级预算单位公务卡使用考核管理暂行办法](../skills/shu-reimbursement/references/sources/4e0cfb69799605cd.md) | 系统操作与通用问题 | 有提取正文 |
-| [上海市教委关于进一步加强上海高校科研经费管理的指导意见（沪教委科〔2017〕100号）.doc](../skills/shu-reimbursement/references/sources/3412e2cde06704a5.md) | 跨场景/待归类 | 有提取正文 |
-| [中办 国办印发关于进一步完善中央财政科研项目资金管理等政策的若干意见的通知（中办发（2016）50）.doc](../skills/shu-reimbursement/references/sources/b44070bad0ce4f10.md) | 跨场景/待归类 | 有提取正文 |
-| [中华人民共和国外汇管理条例](../skills/shu-reimbursement/references/sources/59b9a5db6958d2f6.md) | 出国境与外汇 | 有提取正文 |
-| [中央财政科研项目专家咨询费管理办法.docx](../skills/shu-reimbursement/references/sources/f06fd440d523e625.md) | 专家咨询费 | 有提取正文 |
-| [关于2012年7月起启用新版普通发票的相关通知](../skills/shu-reimbursement/references/sources/2019e1bb547a0d5e.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于2014年执行新会计制度财务报销及校本部业务大厅搬迁的通知](../skills/shu-reimbursement/references/sources/cc5d7a136060714a.md) | 跨场景/待归类 | 有提取正文 |
-| [关于2017年政府采购工作相关事宜的通知](../skills/shu-reimbursement/references/sources/af9e7ddfc66ff50f.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于上海大学经费报销的若干规定](../skills/shu-reimbursement/references/sources/3266d201f4e28fde.md) | 跨场景/待归类 | 有提取正文 |
-| [关于不再受理旧版普通发票报销业务的通知](../skills/shu-reimbursement/references/sources/19efa3f2b4260ce4.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于全面实行公务卡结算的通知](../skills/shu-reimbursement/references/sources/fdeaa7535550a567.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于出国外汇申请，核销的有关规定](../skills/shu-reimbursement/references/sources/614325e71db33893.md) | 出国境与外汇 | 有提取正文 |
-| [关于印发《上海大学国内公务接待管理办法》的通知.docx](../skills/shu-reimbursement/references/sources/5c9fcd80176f6ff4.md) | 公务接待与工作用餐 | 有提取正文 |
-| [关于印发《上海大学国内公务接待管理办法》的通知.docx](../skills/shu-reimbursement/references/sources/a87e4636f1c8bfc8.md) | 公务接待与工作用餐 | 有提取正文 |
-| [关于印发《上海大学国内公务接待管理办法》的通知.docx](../skills/shu-reimbursement/references/sources/be0a14da7b7d67b4.md) | 公务接待与工作用餐 | 有提取正文 |
-| [关于印发《上海大学工作用餐管理办法》的通知.docx](../skills/shu-reimbursement/references/sources/04a37a59feab5cd4.md) | 公务接待与工作用餐 | 有提取正文 |
-| [关于印发《上海大学工作用餐管理办法》的通知.docx](../skills/shu-reimbursement/references/sources/ebc74b9735c5e225.md) | 公务接待与工作用餐 | 有提取正文 |
-| [关于印发《上海市2011年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-reimbursement/references/sources/c318abc178bd8841.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于印发《上海市市级机关会议费管理办法》的通知（沪财行（2017）46号）](../skills/shu-reimbursement/references/sources/6c508e7259974417.md) | 会议费 | 仅入口/短文本；关联附件有文本 |
-| [关于印发《上海市市级机关会议费管理办法》的通知（沪财行（2017）46号）.pdf](../skills/shu-reimbursement/references/sources/e33df81465616fe9.md) | 会议费 | 有提取正文；OCR 待核 |
-| [关于印发《上海市政府集中采购目录及标准（2021年版）的通知》](../skills/shu-reimbursement/references/sources/171421f37699da44.md) | 办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
-| [关于印发《上海市政府集中采购目录及标准（2021年版）的通知》.pdf](../skills/shu-reimbursement/references/sources/2aba91d3cb39ce40.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
-| [关于印发《上海市科研计划项目（课题）专项经费管理办法》（沪财发〔2017〕9号）.docx](../skills/shu-reimbursement/references/sources/70c108694d2e0f79.md) | 跨场景/待归类 | 有提取正文 |
-| [关于印发《上海市科研计划项目（课题）财务验收管理办法》的通知（沪科合〔2017〕38号）.docx](../skills/shu-reimbursement/references/sources/f576bdac37803485.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于印发《中央和国家机关会议费管理办法》的通知](../skills/shu-reimbursement/references/sources/d9df2fe03f66ce79.md) | 会议费 | 有提取正文 |
-| [关于印发《中央和国家机关会议费管理办法》的通知-财行〔2016〕214号.docx](../skills/shu-reimbursement/references/sources/826fed04de09f0cd.md) | 会议费 | 有提取正文 |
-| [关于印发《中央国家机关和事业单位差旅费管理办法有关问题解答》的通知](../skills/shu-reimbursement/references/sources/8073f3d9b643a4f3.md) | 跨场景/待归类 | 有提取正文 |
-| [关于印发《中央国家机关和事业单位差旅费管理办法有关问题解答（二）》的通知](../skills/shu-reimbursement/references/sources/8d8b67da6bbd2d17.md) | 跨场景/待归类 | 有提取正文 |
-| [关于印发《中央财政科研项目专家咨询费管理办法》的通知  财科教〔2017〕128号](../skills/shu-reimbursement/references/sources/7a93aaa88805db08.md) | 专家咨询费 | 仅入口/短文本；关联附件有文本 |
-| [关于印发《国家自然科学基金资助项目资金管理办法》的通知（财教〔2021〕177 号）.pdf](../skills/shu-reimbursement/references/sources/fb0d4cc23724d78d.md) | 跨场景/待归类 | 有提取正文 |
-| [关于印发《行政事业单位资金往来结算票据使用管理暂行办法》的通知](../skills/shu-reimbursement/references/sources/b5fe9340980e718a.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于发布《上海市2014年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-reimbursement/references/sources/b3394966a2cc9138.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于发布《上海市2016年政府采购集中目录和采购限额标准》的通知](../skills/shu-reimbursement/references/sources/79fcfd9d22ef0966.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于发布《上海市2017-2018年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-reimbursement/references/sources/a731e4919da8ec8f.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于启用“无现金报销”系统的通知](../skills/shu-reimbursement/references/sources/6f8b22548d5f8f3e.md) | 跨场景/待归类 | 有提取正文 |
-| [关于国家科技重大专项（民口）资金管理有关事项的通知（财教〔2021〕262号）.pdf](../skills/shu-reimbursement/references/sources/80f8e6a95e05c483.md) | 跨场景/待归类 | 有提取正文 |
-| [关于国际客票使用《航空运输电子客票行程单》报销的通知](../skills/shu-reimbursement/references/sources/f8f24575ca819773.md) | 跨场景/待归类 | 有提取正文 |
-| [关于增值税电子发票报销事项的通知](../skills/shu-reimbursement/references/sources/18d228356b1174ab.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于增值税电子发票报销事项的通知](../skills/shu-reimbursement/references/sources/40bc692b116a4db7.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于市级财政科研项目使用公务卡结算有关事项的通知](../skills/shu-reimbursement/references/sources/69a459f9e789932e.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于执行财政部《政府采购进口产品管理办法》的通知](../skills/shu-reimbursement/references/sources/6bd627c54985fce9.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于横向科研项目增值税政策变化的通知](../skills/shu-reimbursement/references/sources/66bf9fdc34c7d41b.md) | 跨场景/待归类 | 有提取正文 |
-| [关于横向科研项目经费管理的通知](../skills/shu-reimbursement/references/sources/26001d072c430d68.md) | 跨场景/待归类 | 有提取正文 |
-| [关于规范横向科研项目增值税抵扣管理的通知](../skills/shu-reimbursement/references/sources/8d0c0b91760cc651.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
-| [关于规范横向科研项目增值税抵扣管理的通知](../skills/shu-reimbursement/references/sources/aecfa90073cd2b63.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
-| [关于试行“国库单一账务体系”和办理公务卡的通知](../skills/shu-reimbursement/references/sources/cd3cdb1a6c0346c0.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于调整《上海市2019-2020年政府采购集中采购目录和采购限额标准》内容的通知（沪财采（2020）15号）](../skills/shu-reimbursement/references/sources/0ef0c26050773162.md) | 办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
-| [关于调整校内（外）人员及学生酬金结算、发放周期的通知（2020年6月）](../skills/shu-reimbursement/references/sources/27b5928370a1b973.md) | 劳务费 | 有提取正文 |
-| [关于转发《财政部关于进一步加强政府采购需求和履约验收管理的指导意见》的通知](../skills/shu-reimbursement/references/sources/0c1b99d445570790.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于进一步严肃财经纪律、规范财务报销行为的通知](../skills/shu-reimbursement/references/sources/c4bc49e44c478fd5.md) | 跨场景/待归类 | 有提取正文 |
-| [关于进一步严肃财经纪律、规范财务报销行为的通知](../skills/shu-reimbursement/references/sources/f4a02d82a7883bc1.md) | 跨场景/待归类 | 有提取正文 |
-| [关于进一步加强本市非贸易非经营性外汇管理工作的通知](../skills/shu-reimbursement/references/sources/bc59af8768cc7283.md) | 出国境与外汇 | 有提取正文 |
-| [关于进一步规范增值税发票开具内容的通知](../skills/shu-reimbursement/references/sources/0feb2807f709c6da.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于进一步规范报销等业务支付方式的通知](../skills/shu-reimbursement/references/sources/25d91463aef998f7.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于进一步规范科研项目开具上海市行政事业单位资金往来结算票据的通知](../skills/shu-reimbursement/references/sources/cab6fd9cea4625c8.md) | 系统操作与通用问题 | 有提取正文 |
-| [关于进一步规范科研项目开具上海市行政事业单位资金往来结算票据的通知.pdf](../skills/shu-reimbursement/references/sources/65162c6eef124103.md) | 系统操作与通用问题 | 有提取正文；OCR 待核 |
-| [关于进口设备采购相关事务的通知](../skills/shu-reimbursement/references/sources/435a47209f5e23c3.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于集中办理中国农业银行公务卡的通知](../skills/shu-reimbursement/references/sources/00704be5eb48728f.md) | 系统操作与通用问题 | 有提取正文 |
-| [启用“网上报销填报系统”的相关通知](../skills/shu-reimbursement/references/sources/7d3ce1111536a736.md) | 跨场景/待归类 | 有提取正文 |
-| [国务院办公厅关于改革完善中央财政科研经费管理的若干意见国办发〔2021〕32号.pdf](../skills/shu-reimbursement/references/sources/afdec23243a95097.md) | 跨场景/待归类 | 有提取正文 |
-| [国家社会科学基金项目资金管理办法(财教〔2021〕237号).docx.pdf](../skills/shu-reimbursement/references/sources/6336fed08a340f5d.md) | 跨场景/待归类 | 有提取正文 |
-| [国家自然科学基金委员会关于国家自然科学基金项目经费管理相关事宜的通知（国科金财函〔2021〕23号）.pdf](../skills/shu-reimbursement/references/sources/1510b4dc81b58661.md) | 跨场景/待归类 | 有提取正文 |
-| [国家自然科学基金资助项目资金管理办法财教〔2015〕15号.docx](../skills/shu-reimbursement/references/sources/546732b113fea048.md) | 跨场景/待归类 | 有提取正文 |
-| [国家重点研发计划资金管理办法（财科教（2016）113号）.doc](../skills/shu-reimbursement/references/sources/6c1cda33bb64bbc5.md) | 跨场景/待归类 | 有提取正文 |
-| [政府采购附件-关于发布《上海市2017-2018年政府采购集中采购目录和采购限额标准》的通知（沪财采（2016）25号）.doc](../skills/shu-reimbursement/references/sources/b73152185f1e934c.md) | 办公耗材与设备采购 | 有提取正文 |
-| [教育部关于进一步加强高校科研项目管理的意见](../skills/shu-reimbursement/references/sources/782510a82b0f2920.md) | 跨场景/待归类 | 有提取正文 |
-| [科研经费相关管理办法](../skills/shu-reimbursement/references/sources/e92490aa4f8e8aa0.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
-| [财政部 科技部 发展改革委关于印发《国家科技重大专项（民口）资金管理办法》的通知（财科教〔2017〕74号）.docx](../skills/shu-reimbursement/references/sources/1204db969883c964.md) | 跨场景/待归类 | 有提取正文 |
-| [财政部 科技部关于中央财政科技计划（专项、基金等）经费管理新旧政策衔接有关事项的通知.pdf](../skills/shu-reimbursement/references/sources/70097ec797534841.md) | 跨场景/待归类 | 有提取正文 |
-| [财政部 科技部关于印发《国家重点研发计划资金管理办法》的通知（财教〔2021〕178号）.pdf](../skills/shu-reimbursement/references/sources/9c5c3539e17469a1.md) | 跨场景/待归类 | 有提取正文 |
-| [财政部关于印发《中央国家机关和事业单位差旅费管理办法》的通知](../skills/shu-reimbursement/references/sources/f58eb156b4a5889f.md) | 跨场景/待归类 | 有提取正文 |
-| [财政部关于印发《在华举办国际会议费用开支标准和财务管理办法》的通知](../skills/shu-reimbursement/references/sources/f148f75a0a1b1197.md) | 会议费 | 有提取正文 |
-| [财政部关于行政事业单位资金往来结算票据使用管理有关问题的补充通知](../skills/shu-reimbursement/references/sources/3ae702b6d843350a.md) | 系统操作与通用问题 | 有提取正文 |
-| [财行（2023）86号-财政部 国管局 中直管理局关于《中央和国家机关会议费管理办法》的补充通知](../skills/shu-reimbursement/references/sources/91e67e1fbee83352.md) | 会议费 | 仅入口/短文本 |
+| [2021年新发布的科研经费相关管理办法](../skills/shu-baoxiao/references/sources/e193f5119b1da207.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
+| [2022科研项目与财务制度](../skills/shu-baoxiao/references/sources/3dd9fdf0ff88909d.md) | 跨场景/待归类 | 有提取正文 |
+| [2025年科研项目与经费管理办法](../skills/shu-baoxiao/references/sources/348f433a07e88f82.md) | 跨场景/待归类 | 有提取正文 |
+| [【国务院】国务院办公厅关于改革完善中央财政科研经费管理的若干意见](../skills/shu-baoxiao/references/sources/19a1da4ece748464.md) | 跨场景/待归类 | 有提取正文 |
+| [上大内（2020）120号-关于印发《上海大学因公临时出国使用科研经费管理办法》的通知](../skills/shu-baoxiao/references/sources/50185b93292554c2.md) | 出国境与外汇 | 仅入口/短文本；关联附件有文本 |
+| [上大内（2020）120号-关于印发《上海大学因公临时出国使用科研经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/9e8b5445588cd398.md) | 出国境与外汇 | 有提取正文；OCR 待核 |
+| [上大内（2020）128号-关于印发《上海大学因公临时出国使用科研经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/3e9c3ac7483ba2ab.md) | 出国境与外汇 | 有提取正文；OCR 待核 |
+| [上大内（2020）50号-关于印发《上海大学科研经费财务管理实施细则》的通知.pdf](../skills/shu-baoxiao/references/sources/de99e106293fb3cd.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上大内〔2019〕284号 关于印发《上海大学科研国内差旅费管理办法》的通知](../skills/shu-baoxiao/references/sources/0476d71f3a3f81a2.md) | 国内差旅 | 有提取正文 |
+| [上大内〔2019〕284号-关于印发《上海大学科研国内差旅费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/5287d2a6893e0a00.md) | 国内差旅 | 有提取正文；OCR 待核 |
+| [上大内〔2019〕285号 关于印发《上海大学科研会议费管理办法》的通知](../skills/shu-baoxiao/references/sources/992e7a43b629c800.md) | 会议费 | 有提取正文 |
+| [上大内〔2019〕285号-关于印发《上海大学科研会议费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/f5f4923df61b6d9d.md) | 会议费 | 有提取正文；OCR 待核 |
+| [上大内〔2019〕286号 关于印发《上海大学国内差旅费管理办法》的通知](../skills/shu-baoxiao/references/sources/d355d376616ee249.md) | 国内差旅 | 仅入口/短文本；关联附件有文本 |
+| [上大内〔2019〕286号-关于印发《上海大学国内差旅费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/05ac7fea00fe876f.md) | 国内差旅 | 有提取正文；OCR 待核 |
+| [上大内〔2019〕295号-关于印发《上海大学理工科纵向民口科技项目经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/dc5c06707d0d394e.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上大内〔2019〕58号 关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-baoxiao/references/sources/0d8c225a3ff6e2a2.md) | 公务接待与工作用餐 | 有提取正文 |
+| [上大内〔2020〕225号-关于印发《上海大学国有资产管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/680cab66c4fcff81.md) | 办公耗材与设备采购 | 有提取正文 |
+| [上大内〔2020〕50号 关于印发《上海大学科研经费财务管理实施细则》的通知](../skills/shu-baoxiao/references/sources/e1f180acb3970745.md) | 跨场景/待归类 | 有提取正文 |
+| [上大内〔2020〕76号-关于印发《上海大学采购管理办法（试行）》的通知.pdf](../skills/shu-baoxiao/references/sources/78b41de9df7955fc.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
+| [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/0896bd1b6b3c84b8.md) | 跨场景/待归类 | 有提取正文 |
+| [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/c50d86d6a47cf681.md) | 跨场景/待归类 | 有提取正文 |
+| [上大内〔2022〕142号-关于印发《上海大学外事接待管理办法》的通知](../skills/shu-baoxiao/references/sources/aefb6fa0a3734716.md) | 公务接待与工作用餐 | 仅入口/短文本 |
+| [上大内〔2023〕176号-关于印发《上海大学合同管理办法》的通知](../skills/shu-baoxiao/references/sources/571cb909cfa90b5c.md) | 跨场景/待归类 | 仅入口/短文本 |
+| [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知](../skills/shu-baoxiao/references/sources/2b37225f9fdb95bd.md) | 跨场景/待归类 | 仅入口/短文本 |
+| [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/03976750f4d5654e.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/23e75212ee1f2860.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上大制〔2018〕30号-关于印发《上海大学大额资金支付管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/1ee69d19eea241d2.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上大委〔2024〕37号-关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-baoxiao/references/sources/d780fee4f46ca902.md) | 公务接待与工作用餐 | 仅入口/短文本 |
+| [上大委〔2025〕63号-关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-baoxiao/references/sources/6815831c89ec295a.md) | 公务接待与工作用餐 | 仅入口/短文本 |
+| [上海大学会议费使用管理办法 上大内(2016)208号.pdf](../skills/shu-baoxiao/references/sources/a07b41e75c948578.md) | 会议费 | 有提取正文；OCR 待核 |
+| [上海大学会议费使用管理办法-上大内2016-208号文.pdf](../skills/shu-baoxiao/references/sources/74dbe09ea2005378.md) | 会议费 | 有提取正文；OCR 待核 |
+| [上海大学会议费使用管理办法（上大内2016年第208号文）](../skills/shu-baoxiao/references/sources/72dbeb2727d3574a.md) | 会议费 | 仅入口/短文本；关联附件有文本 |
+| [上海大学因公出国(境)经费报销实施细则](../skills/shu-baoxiao/references/sources/643cd53a56ac9320.md) | 出国境与外汇 | 有提取正文 |
+| [上海大学因公出国（境）经费报销实施细则](../skills/shu-baoxiao/references/sources/a240d2c2e1cbf5bc.md) | 出国境与外汇 | 有提取正文 |
+| [上海大学国内差旅费管理办法 上大内(2016)209号.pdf](../skills/shu-baoxiao/references/sources/da5de69c3958b4c3.md) | 国内差旅 | 有提取正文；OCR 待核 |
+| [上海大学国内差旅费管理办法（上大内2016年第209号文）](../skills/shu-baoxiao/references/sources/1a66702d3426a25a.md) | 国内差旅 | 仅入口/短文本；关联附件有文本 |
+| [上海大学国内差旅费管理办法（试行）](../skills/shu-baoxiao/references/sources/9ac76962513d565f.md) | 国内差旅 | 有提取正文 |
+| [上海大学用汇申请报销管理办法上大内 (2016)207号.pdf](../skills/shu-baoxiao/references/sources/9e51d515d369a1b2.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上海大学用汇申请报销管理办法（上大内2016年第207号文）](../skills/shu-baoxiao/references/sources/9687ca7856bcced7.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
+| [上海大学票据管理办法](../skills/shu-baoxiao/references/sources/d6f92c7aeadb7043.md) | 系统操作与通用问题 | 有提取正文 |
+| [上海大学科研项目结题财务制度汇总](../skills/shu-baoxiao/references/sources/a044e37916ef0028.md) | 跨场景/待归类 | 有提取正文 |
+| [上海市市级预算单位公务卡使用考核管理暂行办法](../skills/shu-baoxiao/references/sources/4e0cfb69799605cd.md) | 系统操作与通用问题 | 有提取正文 |
+| [上海市教委关于进一步加强上海高校科研经费管理的指导意见（沪教委科〔2017〕100号）.doc](../skills/shu-baoxiao/references/sources/3412e2cde06704a5.md) | 跨场景/待归类 | 有提取正文 |
+| [中办 国办印发关于进一步完善中央财政科研项目资金管理等政策的若干意见的通知（中办发（2016）50）.doc](../skills/shu-baoxiao/references/sources/b44070bad0ce4f10.md) | 跨场景/待归类 | 有提取正文 |
+| [中华人民共和国外汇管理条例](../skills/shu-baoxiao/references/sources/59b9a5db6958d2f6.md) | 出国境与外汇 | 有提取正文 |
+| [中央财政科研项目专家咨询费管理办法.docx](../skills/shu-baoxiao/references/sources/f06fd440d523e625.md) | 专家咨询费 | 有提取正文 |
+| [关于2012年7月起启用新版普通发票的相关通知](../skills/shu-baoxiao/references/sources/2019e1bb547a0d5e.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于2014年执行新会计制度财务报销及校本部业务大厅搬迁的通知](../skills/shu-baoxiao/references/sources/cc5d7a136060714a.md) | 跨场景/待归类 | 有提取正文 |
+| [关于2017年政府采购工作相关事宜的通知](../skills/shu-baoxiao/references/sources/af9e7ddfc66ff50f.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于上海大学经费报销的若干规定](../skills/shu-baoxiao/references/sources/3266d201f4e28fde.md) | 跨场景/待归类 | 有提取正文 |
+| [关于不再受理旧版普通发票报销业务的通知](../skills/shu-baoxiao/references/sources/19efa3f2b4260ce4.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于全面实行公务卡结算的通知](../skills/shu-baoxiao/references/sources/fdeaa7535550a567.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于出国外汇申请，核销的有关规定](../skills/shu-baoxiao/references/sources/614325e71db33893.md) | 出国境与外汇 | 有提取正文 |
+| [关于印发《上海大学国内公务接待管理办法》的通知.docx](../skills/shu-baoxiao/references/sources/5c9fcd80176f6ff4.md) | 公务接待与工作用餐 | 有提取正文 |
+| [关于印发《上海大学国内公务接待管理办法》的通知.docx](../skills/shu-baoxiao/references/sources/a87e4636f1c8bfc8.md) | 公务接待与工作用餐 | 有提取正文 |
+| [关于印发《上海大学国内公务接待管理办法》的通知.docx](../skills/shu-baoxiao/references/sources/be0a14da7b7d67b4.md) | 公务接待与工作用餐 | 有提取正文 |
+| [关于印发《上海大学工作用餐管理办法》的通知.docx](../skills/shu-baoxiao/references/sources/04a37a59feab5cd4.md) | 公务接待与工作用餐 | 有提取正文 |
+| [关于印发《上海大学工作用餐管理办法》的通知.docx](../skills/shu-baoxiao/references/sources/ebc74b9735c5e225.md) | 公务接待与工作用餐 | 有提取正文 |
+| [关于印发《上海市2011年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/c318abc178bd8841.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于印发《上海市市级机关会议费管理办法》的通知（沪财行（2017）46号）](../skills/shu-baoxiao/references/sources/6c508e7259974417.md) | 会议费 | 仅入口/短文本；关联附件有文本 |
+| [关于印发《上海市市级机关会议费管理办法》的通知（沪财行（2017）46号）.pdf](../skills/shu-baoxiao/references/sources/e33df81465616fe9.md) | 会议费 | 有提取正文；OCR 待核 |
+| [关于印发《上海市政府集中采购目录及标准（2021年版）的通知》](../skills/shu-baoxiao/references/sources/171421f37699da44.md) | 办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
+| [关于印发《上海市政府集中采购目录及标准（2021年版）的通知》.pdf](../skills/shu-baoxiao/references/sources/2aba91d3cb39ce40.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
+| [关于印发《上海市科研计划项目（课题）专项经费管理办法》（沪财发〔2017〕9号）.docx](../skills/shu-baoxiao/references/sources/70c108694d2e0f79.md) | 跨场景/待归类 | 有提取正文 |
+| [关于印发《上海市科研计划项目（课题）财务验收管理办法》的通知（沪科合〔2017〕38号）.docx](../skills/shu-baoxiao/references/sources/f576bdac37803485.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于印发《中央和国家机关会议费管理办法》的通知](../skills/shu-baoxiao/references/sources/d9df2fe03f66ce79.md) | 会议费 | 有提取正文 |
+| [关于印发《中央和国家机关会议费管理办法》的通知-财行〔2016〕214号.docx](../skills/shu-baoxiao/references/sources/826fed04de09f0cd.md) | 会议费 | 有提取正文 |
+| [关于印发《中央国家机关和事业单位差旅费管理办法有关问题解答》的通知](../skills/shu-baoxiao/references/sources/8073f3d9b643a4f3.md) | 跨场景/待归类 | 有提取正文 |
+| [关于印发《中央国家机关和事业单位差旅费管理办法有关问题解答（二）》的通知](../skills/shu-baoxiao/references/sources/8d8b67da6bbd2d17.md) | 跨场景/待归类 | 有提取正文 |
+| [关于印发《中央财政科研项目专家咨询费管理办法》的通知  财科教〔2017〕128号](../skills/shu-baoxiao/references/sources/7a93aaa88805db08.md) | 专家咨询费 | 仅入口/短文本；关联附件有文本 |
+| [关于印发《国家自然科学基金资助项目资金管理办法》的通知（财教〔2021〕177 号）.pdf](../skills/shu-baoxiao/references/sources/fb0d4cc23724d78d.md) | 跨场景/待归类 | 有提取正文 |
+| [关于印发《行政事业单位资金往来结算票据使用管理暂行办法》的通知](../skills/shu-baoxiao/references/sources/b5fe9340980e718a.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于发布《上海市2014年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/b3394966a2cc9138.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于发布《上海市2016年政府采购集中目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/79fcfd9d22ef0966.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于发布《上海市2017-2018年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/a731e4919da8ec8f.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于启用“无现金报销”系统的通知](../skills/shu-baoxiao/references/sources/6f8b22548d5f8f3e.md) | 跨场景/待归类 | 有提取正文 |
+| [关于国家科技重大专项（民口）资金管理有关事项的通知（财教〔2021〕262号）.pdf](../skills/shu-baoxiao/references/sources/80f8e6a95e05c483.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [关于国际客票使用《航空运输电子客票行程单》报销的通知](../skills/shu-baoxiao/references/sources/f8f24575ca819773.md) | 跨场景/待归类 | 有提取正文 |
+| [关于增值税电子发票报销事项的通知](../skills/shu-baoxiao/references/sources/18d228356b1174ab.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于增值税电子发票报销事项的通知](../skills/shu-baoxiao/references/sources/40bc692b116a4db7.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于市级财政科研项目使用公务卡结算有关事项的通知](../skills/shu-baoxiao/references/sources/69a459f9e789932e.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于执行财政部《政府采购进口产品管理办法》的通知](../skills/shu-baoxiao/references/sources/6bd627c54985fce9.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于横向科研项目增值税政策变化的通知](../skills/shu-baoxiao/references/sources/66bf9fdc34c7d41b.md) | 跨场景/待归类 | 有提取正文 |
+| [关于横向科研项目经费管理的通知](../skills/shu-baoxiao/references/sources/26001d072c430d68.md) | 跨场景/待归类 | 有提取正文 |
+| [关于规范横向科研项目增值税抵扣管理的通知](../skills/shu-baoxiao/references/sources/8d0c0b91760cc651.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
+| [关于规范横向科研项目增值税抵扣管理的通知](../skills/shu-baoxiao/references/sources/aecfa90073cd2b63.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
+| [关于试行“国库单一账务体系”和办理公务卡的通知](../skills/shu-baoxiao/references/sources/cd3cdb1a6c0346c0.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于调整《上海市2019-2020年政府采购集中采购目录和采购限额标准》内容的通知（沪财采（2020）15号）](../skills/shu-baoxiao/references/sources/0ef0c26050773162.md) | 办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
+| [关于调整校内（外）人员及学生酬金结算、发放周期的通知（2020年6月）](../skills/shu-baoxiao/references/sources/27b5928370a1b973.md) | 劳务费 | 有提取正文 |
+| [关于转发《财政部关于进一步加强政府采购需求和履约验收管理的指导意见》的通知](../skills/shu-baoxiao/references/sources/0c1b99d445570790.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于进一步严肃财经纪律、规范财务报销行为的通知](../skills/shu-baoxiao/references/sources/c4bc49e44c478fd5.md) | 跨场景/待归类 | 有提取正文 |
+| [关于进一步严肃财经纪律、规范财务报销行为的通知](../skills/shu-baoxiao/references/sources/f4a02d82a7883bc1.md) | 跨场景/待归类 | 有提取正文 |
+| [关于进一步加强本市非贸易非经营性外汇管理工作的通知](../skills/shu-baoxiao/references/sources/bc59af8768cc7283.md) | 出国境与外汇 | 有提取正文 |
+| [关于进一步规范增值税发票开具内容的通知](../skills/shu-baoxiao/references/sources/0feb2807f709c6da.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于进一步规范报销等业务支付方式的通知](../skills/shu-baoxiao/references/sources/25d91463aef998f7.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于进一步规范科研项目开具上海市行政事业单位资金往来结算票据的通知](../skills/shu-baoxiao/references/sources/cab6fd9cea4625c8.md) | 系统操作与通用问题 | 有提取正文 |
+| [关于进一步规范科研项目开具上海市行政事业单位资金往来结算票据的通知.pdf](../skills/shu-baoxiao/references/sources/65162c6eef124103.md) | 系统操作与通用问题 | 有提取正文；OCR 待核 |
+| [关于进口设备采购相关事务的通知](../skills/shu-baoxiao/references/sources/435a47209f5e23c3.md) | 办公耗材与设备采购 | 有提取正文 |
+| [关于集中办理中国农业银行公务卡的通知](../skills/shu-baoxiao/references/sources/00704be5eb48728f.md) | 系统操作与通用问题 | 有提取正文 |
+| [启用“网上报销填报系统”的相关通知](../skills/shu-baoxiao/references/sources/7d3ce1111536a736.md) | 跨场景/待归类 | 有提取正文 |
+| [国务院办公厅关于改革完善中央财政科研经费管理的若干意见国办发〔2021〕32号.pdf](../skills/shu-baoxiao/references/sources/afdec23243a95097.md) | 跨场景/待归类 | 有提取正文 |
+| [国家社会科学基金项目资金管理办法(财教〔2021〕237号).docx.pdf](../skills/shu-baoxiao/references/sources/6336fed08a340f5d.md) | 跨场景/待归类 | 有提取正文 |
+| [国家自然科学基金委员会关于国家自然科学基金项目经费管理相关事宜的通知（国科金财函〔2021〕23号）.pdf](../skills/shu-baoxiao/references/sources/1510b4dc81b58661.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [国家自然科学基金资助项目资金管理办法财教〔2015〕15号.docx](../skills/shu-baoxiao/references/sources/546732b113fea048.md) | 跨场景/待归类 | 有提取正文 |
+| [国家重点研发计划资金管理办法（财科教（2016）113号）.doc](../skills/shu-baoxiao/references/sources/6c1cda33bb64bbc5.md) | 跨场景/待归类 | 有提取正文 |
+| [政府采购附件-关于发布《上海市2017-2018年政府采购集中采购目录和采购限额标准》的通知（沪财采（2016）25号）.doc](../skills/shu-baoxiao/references/sources/b73152185f1e934c.md) | 办公耗材与设备采购 | 有提取正文 |
+| [教育部关于进一步加强高校科研项目管理的意见](../skills/shu-baoxiao/references/sources/782510a82b0f2920.md) | 跨场景/待归类 | 有提取正文 |
+| [科研经费相关管理办法](../skills/shu-baoxiao/references/sources/e92490aa4f8e8aa0.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
+| [财政部 科技部 发展改革委关于印发《国家科技重大专项（民口）资金管理办法》的通知（财科教〔2017〕74号）.docx](../skills/shu-baoxiao/references/sources/1204db969883c964.md) | 跨场景/待归类 | 有提取正文 |
+| [财政部 科技部关于中央财政科技计划（专项、基金等）经费管理新旧政策衔接有关事项的通知.pdf](../skills/shu-baoxiao/references/sources/70097ec797534841.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [财政部 科技部关于印发《国家重点研发计划资金管理办法》的通知（财教〔2021〕178号）.pdf](../skills/shu-baoxiao/references/sources/9c5c3539e17469a1.md) | 跨场景/待归类 | 有提取正文 |
+| [财政部关于印发《中央国家机关和事业单位差旅费管理办法》的通知](../skills/shu-baoxiao/references/sources/f58eb156b4a5889f.md) | 跨场景/待归类 | 有提取正文 |
+| [财政部关于印发《在华举办国际会议费用开支标准和财务管理办法》的通知](../skills/shu-baoxiao/references/sources/f148f75a0a1b1197.md) | 会议费 | 有提取正文 |
+| [财政部关于行政事业单位资金往来结算票据使用管理有关问题的补充通知](../skills/shu-baoxiao/references/sources/3ae702b6d843350a.md) | 系统操作与通用问题 | 有提取正文 |
+| [财行（2023）86号-财政部 国管局 中直管理局关于《中央和国家机关会议费管理办法》的补充通知](../skills/shu-baoxiao/references/sources/91e67e1fbee83352.md) | 会议费 | 仅入口/短文本 |
 
 [返回材料总览](材料整理.md)

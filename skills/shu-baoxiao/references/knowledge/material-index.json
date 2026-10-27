@@ -294,7 +294,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -320,7 +320,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -612,7 +612,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -899,7 +899,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -1124,7 +1124,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -1159,7 +1159,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -1535,7 +1535,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -1728,7 +1728,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -2845,7 +2845,7 @@
       "needs_text": false,
       "linked_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {

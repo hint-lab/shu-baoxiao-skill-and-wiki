@@ -11,8 +11,8 @@
 
 ## 从这些学校资料开始
 
-- [国内差旅费报销指南（2024版）](../skills/shu-reimbursement/references/sources/974131a888750e5f.md)：有提取正文
-- [国内差旅费报销指南——《出差，怎么报销？》](../skills/shu-reimbursement/references/sources/64fe6cda23557d1a.md)：有提取正文
+- [国内差旅费报销指南（2024版）](../skills/shu-baoxiao/references/sources/974131a888750e5f.md)：有提取正文
+- [国内差旅费报销指南——《出差，怎么报销？》](../skills/shu-baoxiao/references/sources/64fe6cda23557d1a.md)：有提取正文
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。
 

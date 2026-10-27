@@ -10,9 +10,9 @@
 
 ## 从这些学校资料开始
 
-- [智能报销系统操作演示PPT（202606）](../skills/shu-reimbursement/references/sources/885ca15da191b2fc.md)：仅入口/短文本
-- [智能报销系统操作演示.pdf](../skills/shu-reimbursement/references/sources/344f4c10c302f024.md)：有提取正文
-- [2025年上海大学财务与资产业务百问百答](../skills/shu-reimbursement/references/sources/e9b6caf240d26ec7.md)：仅入口/短文本
+- [智能报销系统操作演示PPT（202606）](../skills/shu-baoxiao/references/sources/885ca15da191b2fc.md)：仅入口/短文本
+- [智能报销系统操作演示.pdf](../skills/shu-baoxiao/references/sources/344f4c10c302f024.md)：有提取正文
+- [2025年上海大学财务与资产业务百问百答](../skills/shu-baoxiao/references/sources/e9b6caf240d26ec7.md)：仅入口/短文本
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。
 

@@ -3,7 +3,7 @@
 本仓库只维护上海大学报销 Wiki、可安装 Skill 和轻量资料检索/打包工具。
 
 - 不恢复独立聊天网页、桌面壳、数据库、邮箱收票、学校登录或自动代填。
-- 知识源位于 `skills/shu-reimbursement/references/knowledge/documents.jsonl`；Wiki 目录和原文阅读页由 `python3 tools/build.py` 生成。修改知识源后重新构建，不手工改生成页。
+- 知识源位于 `skills/shu-baoxiao/references/knowledge/documents.jsonl`；Wiki 目录和原文阅读页由 `python3 tools/build.py` 生成。修改知识源后重新构建，不手工改生成页。
 - 区分原文、解释、待确认条件。网页发布日期、文件版本年份和规则生效日期是不同字段；未经核验不能宣称某份资料目前有效。
 - 只有附件入口时，保留入口和未解析状态，不假装读过附件。旧版启发式材料规则不作为学校正式规定。
 - 检索在本地运行，只返回证据，由宿主 AI 回答；不要求额外大模型 API Key。

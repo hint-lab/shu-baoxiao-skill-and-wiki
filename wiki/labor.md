@@ -11,9 +11,9 @@
 
 ## 从这些学校资料开始
 
-- [【劳务费支取表（原临聘劳务合同）】上海大学劳务费支取表2025版](../skills/shu-reimbursement/references/sources/5bbd93c691e4a52a.md)：有提取正文
-- [学生劳务登记与申报发放操作手册（2026年5月版本）](../skills/shu-reimbursement/references/sources/61a3f8e0420155b2.md)：仅入口/短文本
-- [临聘劳务合同登记及申报发放手册（填报人）](../skills/shu-reimbursement/references/sources/f490d8d4c717b8a9.md)：仅入口/短文本
+- [【劳务费支取表（原临聘劳务合同）】上海大学劳务费支取表2025版](../skills/shu-baoxiao/references/sources/5bbd93c691e4a52a.md)：有提取正文
+- [学生劳务登记与申报发放操作手册（2026年5月版本）](../skills/shu-baoxiao/references/sources/61a3f8e0420155b2.md)：仅入口/短文本
+- [临聘劳务合同登记及申报发放手册（填报人）](../skills/shu-baoxiao/references/sources/f490d8d4c717b8a9.md)：仅入口/短文本
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。
 
