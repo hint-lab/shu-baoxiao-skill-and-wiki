@@ -11,8 +11,12 @@ from pathlib import Path
 
 
 def escape_text(value: str) -> str:
+    # MinerU emits presentation tags in otherwise textual blocks. Keep their
+    # words, but never trust arbitrary HTML or tag attributes as executable.
+    value = re.sub(r"</?(?:strong|b|em|i|u|span|sub|sup)(?:\s+[^>]*)?>", "", value, flags=re.I)
     value = html.escape(value, quote=False).replace("\\", "\\\\")
-    return re.sub(r"([\[\]_*`#])", r"\\\1", value)
+    value = re.sub(r"([\[\]_*`#])", r"\\\1", value)
+    return re.sub(r"\\\*\\\*(.+?)\\\*\\\*", r"**\1**", value)
 
 
 class SafeTable(HTMLParser):

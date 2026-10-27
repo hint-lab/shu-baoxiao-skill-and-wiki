@@ -1,6 +1,8 @@
 <!-- Generated from scenarios.json; no binding checklist. -->
 # 会议费
 
+**版本提示：学校 2026 年普通及科研会议费文件已取得文学院公开转发的同文号原件。请按业务日期、经费来源和适用条件阅读原文并对照页图；不得直接沿用旧版标准。**
+
 先提供事项与已有材料。下面是会影响判断的条件，不是要求你额外准备的材料清单。
 
 ## 先确认
@@ -11,6 +13,10 @@
 
 ## 从这些学校资料开始
 
+- [上大内〔2026〕137号-关于印发《上海大学会议费管理办法》的通知（文学院公开转发的 PDF）](../skills/shu-baoxiao/references/sources/16069b8f0612f96e.md)：有提取正文
+- [上大内〔2026〕138号-关于印发《上海大学科研会议费管理办法》的通知（文学院公开转发的 PDF）](../skills/shu-baoxiao/references/sources/b94532550cea3953.md)：有提取正文
+- [上大内〔2026〕137号-关于印发《上海大学会议费管理办法》的通知](../skills/shu-baoxiao/references/sources/0632eeafc9651f9d.md)：仅入口/短文本
+- [上大内〔2026〕138号-关于印发《上海大学科研会议费管理办法》的通知](../skills/shu-baoxiao/references/sources/f0bbb03fb34a0274.md)：仅入口/短文本
 - [非科研会议费报销指南（精简版）](../skills/shu-baoxiao/references/sources/6431ba44c9d6431e.md)：有提取正文
 - [上大内〔2019〕285号 关于印发《上海大学科研会议费管理办法》的通知](../skills/shu-baoxiao/references/sources/992e7a43b629c800.md)：有提取正文
 - [【科研业务会议费】上海大学国内业务会议审批表&上海大学会议费用报销决算表（2020年1月1日起 科研业务会议启用）](../skills/shu-baoxiao/references/sources/c109471b495fcc85.md)：仅入口/短文本

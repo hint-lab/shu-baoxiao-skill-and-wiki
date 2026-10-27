@@ -1,6 +1,8 @@
 <!-- Generated from scenarios.json; no binding checklist. -->
 # 国内差旅
 
+**版本提示：学校 2026 年普通及科研国内差旅费文件已取得文学院公开转发的同文号原件。请按业务日期、经费来源和适用条件阅读原文并对照页图；不得直接沿用旧版标准。**
+
 先提供事项与已有材料。下面是会影响判断的条件，不是要求你额外准备的材料清单。
 
 ## 先确认
@@ -11,6 +13,10 @@
 
 ## 从这些学校资料开始
 
+- [上大内〔2026〕127号-关于印发《上海大学国内差旅费管理办法》的通知（文学院公开转发的 PDF）](../skills/shu-baoxiao/references/sources/49ffae5f9e086dbe.md)：有提取正文
+- [上大内〔2026〕128号-关于印发《上海大学科研国内差旅费管理办法》的通知（文学院公开转发的 PDF）](../skills/shu-baoxiao/references/sources/92e53de8292208f4.md)：有提取正文
+- [上大内〔2026〕127号-关于印发《上海大学国内差旅费管理办法》的通知](../skills/shu-baoxiao/references/sources/3c7bc0b1a632ff93.md)：仅入口/短文本
+- [上大内〔2026〕128号-关于印发《上海大学科研国内差旅费管理办法》的通知](../skills/shu-baoxiao/references/sources/8d44bc096df21a70.md)：仅入口/短文本
 - [国内差旅费报销指南（2024版）](../skills/shu-baoxiao/references/sources/974131a888750e5f.md)：有提取正文
 - [国内差旅费报销指南——《出差，怎么报销？》](../skills/shu-baoxiao/references/sources/64fe6cda23557d1a.md)：有提取正文
 

@@ -12,7 +12,7 @@
 ## 从这些学校资料开始
 
 - [公务（内宾）接待费（2024版）](../skills/shu-baoxiao/references/sources/71bce3108b3458d5.md)：有提取正文
-- [上大委〔2025〕63号-关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-baoxiao/references/sources/6815831c89ec295a.md)：仅入口/短文本
+- [上大委〔2025〕63号-关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-baoxiao/references/sources/6815831c89ec295a.md)：有提取正文
 - [【公务接待】上海大学国内公务接待清单](../skills/shu-baoxiao/references/sources/35960a68088aa8e3.md)：仅入口/短文本
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。

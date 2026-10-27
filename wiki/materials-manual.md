@@ -5,26 +5,26 @@
 
 | 资料 | 场景标签 | 正文状态 |
 | --- | --- | --- |
-| [上海大学智能报销操作手册2025年3月.pdf](../skills/shu-baoxiao/references/sources/8e31ffd3692da6b1.md) | 系统操作与通用问题 | 有提取正文 |
-| [上海大学智能报销操作手册2025年3月.pdf](../skills/shu-baoxiao/references/sources/961bdf4478743125.md) | 系统操作与通用问题 | 有提取正文 |
-| [上海大学智能报销操作手册（2025年3月）](../skills/shu-baoxiao/references/sources/a66f085be6cb13a9.md) | 系统操作与通用问题 | 仅入口/短文本；关联附件有文本 |
+| [上海大学智能报销操作手册2025年3月.pdf](../skills/shu-baoxiao/references/sources/8e31ffd3692da6b1.md) | 系统操作与通用问题 | 有部分文字，待补或核对；OCR 待核 |
+| [上海大学智能报销操作手册2025年3月.pdf](../skills/shu-baoxiao/references/sources/961bdf4478743125.md) | 系统操作与通用问题 | 有部分文字，待补或核对；OCR 待核 |
+| [上海大学智能报销操作手册（2025年3月）](../skills/shu-baoxiao/references/sources/a66f085be6cb13a9.md) | 系统操作与通用问题 | 仅入口/短文本 |
 | [临聘劳务合同登记及申报发放手册（填报人）](../skills/shu-baoxiao/references/sources/f490d8d4c717b8a9.md) | 劳务费 | 仅入口/短文本；关联附件有文本 |
 | [临聘劳务合同登记及申报发放手册（填报人）.pdf](../skills/shu-baoxiao/references/sources/e76e8770d60f3c7f.md) | 劳务费 | 有提取正文；OCR 待核 |
 | [关于劳务费填报流程变动的说明(2020年）](../skills/shu-baoxiao/references/sources/1a877bdd560da67f.md) | 劳务费 | 有提取正文 |
 | [关于劳务费填报流程变动的说明(2020年）](../skills/shu-baoxiao/references/sources/4fa4a22d6f2a21ad.md) | 劳务费 | 有提取正文 |
 | [关于劳务费填报流程变动的说明(2020年）](../skills/shu-baoxiao/references/sources/9eeba1a69b860ef6.md) | 劳务费 | 有提取正文 |
-| [学生劳务登记与申报发放操作手册（2026年5月版本）](../skills/shu-baoxiao/references/sources/61a3f8e0420155b2.md) | 劳务费 | 仅入口/短文本 |
-| [授权演示.mp4](../skills/shu-baoxiao/references/sources/0cdb09a803bb26ce.md) | 跨场景/待归类 | 已有原件，尚无文本 |
-| [智能报销系统操作演示.pdf](../skills/shu-baoxiao/references/sources/344f4c10c302f024.md) | 系统操作与通用问题 | 有提取正文 |
-| [智能报销系统操作演示PPT（202606）](../skills/shu-baoxiao/references/sources/1c595a6b0163aadc.md) | 系统操作与通用问题 | 仅入口/短文本；关联附件有文本 |
-| [智能报销系统操作演示PPT（202606）](../skills/shu-baoxiao/references/sources/877faa137e5801b7.md) | 系统操作与通用问题 | 仅入口/短文本；关联附件有文本 |
-| [智能报销系统操作演示PPT（202606）](../skills/shu-baoxiao/references/sources/885ca15da191b2fc.md) | 系统操作与通用问题 | 仅入口/短文本；关联附件有文本 |
+| [学生劳务登记与申报发放操作手册（2026年5月版本）](../skills/shu-baoxiao/references/sources/61a3f8e0420155b2.md) | 劳务费 | 有部分文字，待补或核对；OCR 待核 |
+| [授权演示.mp4](../skills/shu-baoxiao/references/sources/0cdb09a803bb26ce.md) | 跨场景/待归类 | 有部分文字，待补或核对 |
+| [智能报销系统操作演示.pdf](../skills/shu-baoxiao/references/sources/344f4c10c302f024.md) | 系统操作与通用问题 | 有部分文字，待补或核对；OCR 待核 |
+| [智能报销系统操作演示PPT（202606）](../skills/shu-baoxiao/references/sources/1c595a6b0163aadc.md) | 系统操作与通用问题 | 仅入口/短文本 |
+| [智能报销系统操作演示PPT（202606）](../skills/shu-baoxiao/references/sources/877faa137e5801b7.md) | 系统操作与通用问题 | 仅入口/短文本 |
+| [智能报销系统操作演示PPT（202606）](../skills/shu-baoxiao/references/sources/885ca15da191b2fc.md) | 系统操作与通用问题 | 仅入口/短文本 |
 | [经费项目网上报销（薪资申报）授权演示](../skills/shu-baoxiao/references/sources/0796b0a607ea55cb.md) | 跨场景/待归类 | 仅入口/短文本 |
 | [网上报销系统2020操作指南](../skills/shu-baoxiao/references/sources/2e1d3f1c220a254a.md) | 跨场景/待归类 | 有提取正文 |
 | [资产验收入库单打印及网上报销操作讲解](../skills/shu-baoxiao/references/sources/8d5dbf9e4ff1e36d.md) | 办公耗材与设备采购 | 仅入口/短文本 |
 | [资产验收入库单打印及网上报销操作讲解](../skills/shu-baoxiao/references/sources/969925f8ff984113.md) | 办公耗材与设备采购 | 仅入口/短文本 |
 | [资产验收入库单打印及网上报销操作讲解](../skills/shu-baoxiao/references/sources/b4b7fe2a2f9024ec.md) | 办公耗材与设备采购 | 仅入口/短文本 |
-| [资产验收入库单打印及网上报销操作讲解.mp4](../skills/shu-baoxiao/references/sources/65f9123d2d79b2ea.md) | 办公耗材与设备采购 | 已有原件，尚无文本 |
-| [资产验收入库单打印及网上报销操作讲解.mp4](../skills/shu-baoxiao/references/sources/a312d92155c63eca.md) | 办公耗材与设备采购 | 已有原件，尚无文本 |
+| [资产验收入库单打印及网上报销操作讲解.mp4](../skills/shu-baoxiao/references/sources/65f9123d2d79b2ea.md) | 办公耗材与设备采购 | 有部分文字，待补或核对 |
+| [资产验收入库单打印及网上报销操作讲解.mp4](../skills/shu-baoxiao/references/sources/a312d92155c63eca.md) | 办公耗材与设备采购 | 有部分文字，待补或核对 |
 
 [返回材料总览](材料整理.md)

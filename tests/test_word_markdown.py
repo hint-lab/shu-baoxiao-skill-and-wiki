@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import zipfile
 import json
+import sys
 from unittest.mock import patch
 from pathlib import Path
 
@@ -80,7 +81,7 @@ class WordMarkdownTests(unittest.TestCase):
         mineru = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mineru)
         payload = {"pages": [{"page_idx": 0, "blocks": [
-            {"type": "text", "content": "条款 <不执行>"},
+            {"type": "text", "content": "条款 <不执行> **重点** <strong>说明</strong>"},
             {"type": "table", "content": '<table><tr><td rowspan="2" onclick="bad()">金额<script>bad()</script></td></tr></table>',
              "captions": [{"content": "表一标题"}], "footnotes": [{"content": "重要适用条件"}]},
             {"type": "image", "content": "data:image/png;base64,private"},
@@ -94,6 +95,29 @@ class WordMarkdownTests(unittest.TestCase):
         self.assertIn("images_omitted", result["warnings"])
         self.assertIn("表一标题", result["markdown"])
         self.assertIn("重要适用条件", result["markdown"])
+        self.assertIn("**重点** 说明", result["markdown"])
+        self.assertNotIn("&lt;strong&gt;", result["markdown"])
+
+    def test_manual_screenshot_overlap_is_withheld_from_public_text(self):
+        sys.path.insert(0, str(ROOT / "tools"))
+        try:
+            import sanitize_manual
+            payload = {1: {"blocks": [
+                {"type": "text", "bbox": [0.1, 0.1, 0.8, 0.2], "content": "安全的流程说明"},
+                {"type": "text", "bbox": [0.2, 0.4, 0.5, 0.5], "content": "截图中的私人字段"},
+                {"type": "text", "bbox": [0.1, 0.8, 0.9, 0.9], "content": "联系电话：13812345678"},
+            ]}}
+            with tempfile.TemporaryDirectory() as folder:
+                layout = Path(folder) / "layout.xml"
+                layout.write_text('<pdf2xml><page number="1" width="100" height="100"><image left="15" top="35" width="50" height="25"/></page></pdf2xml>')
+                result = sanitize_manual.sanitize(payload, layout)
+            self.assertIn("安全的流程说明", result["markdown"])
+            self.assertNotIn("截图中的私人字段", result["markdown"])
+            self.assertNotIn("13812345678", result["markdown"])
+            self.assertEqual(result["privacy_redacted_regions"], [1])
+            self.assertEqual(result["removed_blocks"], 1)
+        finally:
+            sys.path.remove(str(ROOT / "tools"))
 
     def test_mineru_reuses_known_job_and_never_retries_uncertain_submission(self):
         spec = importlib.util.spec_from_file_location("mineru_p330", ROOT / "tools/mineru_p330.py")

@@ -8,7 +8,7 @@
 | [2018年新版常见业务费报销指南(文字版)](../skills/shu-baoxiao/references/sources/3200e53366d96d2e.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
 | [2018年新版常见业务费报销指南(文字版)](../skills/shu-baoxiao/references/sources/ef3ee2f17b01e3ae.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
 | [2018年新版常见业务费报销指南(文字版).pdf](../skills/shu-baoxiao/references/sources/c3b16291ce284acb.md) | 办公耗材与设备采购、测试化验加工费 | 有提取正文；OCR 待核 |
-| [2024资产入库指南（重大优化见第11页）.pdf](../skills/shu-baoxiao/references/sources/848097df4d434789.md) | 办公耗材与设备采购 | 有提取正文 |
+| [2024资产入库指南（重大优化见第11页）.pdf](../skills/shu-baoxiao/references/sources/848097df4d434789.md) | 办公耗材与设备采购 | 有部分文字，待补或核对；OCR 待核 |
 | [2025上海大学财务与资产业务百问百答（公布版）.pdf](../skills/shu-baoxiao/references/sources/1e88716b10c71712.md) | 系统操作与通用问题、办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [2025年上海大学财务与资产业务百问百答](../skills/shu-baoxiao/references/sources/09b85d0c18957a6a.md) | 系统操作与通用问题、办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
 | [2025年上海大学财务与资产业务百问百答](../skills/shu-baoxiao/references/sources/e9b6caf240d26ec7.md) | 系统操作与通用问题、办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
@@ -25,7 +25,7 @@
 | [国内差旅费报销指南——《出差，怎么报销？》](../skills/shu-baoxiao/references/sources/f76762fd0707e612.md) | 国内差旅 | 有提取正文 |
 | [国内差旅费报销指南（2024版）](../skills/shu-baoxiao/references/sources/974131a888750e5f.md) | 国内差旅 | 有提取正文 |
 | [版面费、出版费报销指南（2024版）](../skills/shu-baoxiao/references/sources/a2b744cda8112604.md) | 版面费与出版费 | 有提取正文 |
-| [资产采购-入库-报销指南（2024版）](../skills/shu-baoxiao/references/sources/c32a4ea2a98f71e6.md) | 办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
+| [资产采购-入库-报销指南（2024版）](../skills/shu-baoxiao/references/sources/c32a4ea2a98f71e6.md) | 办公耗材与设备采购 | 仅入口/短文本 |
 | [非科研会议费报销指南（精简版）](../skills/shu-baoxiao/references/sources/6431ba44c9d6431e.md) | 会议费 | 有提取正文 |
 
 [返回材料总览](材料整理.md)

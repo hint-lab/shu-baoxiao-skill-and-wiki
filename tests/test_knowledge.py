@@ -38,12 +38,12 @@ class KnowledgeTests(unittest.TestCase):
     def test_public_sources_and_no_local_runtime_data(self):
         self.assertEqual(len({doc["id"] for doc in self.docs}), len(self.docs))
         for doc in self.docs:
-            self.assertEqual(urlparse(doc["url"]).netloc, "cwc.shu.edu.cn")
+            self.assertIn(urlparse(doc["url"]).netloc, maintain.OFFICIAL_HOSTS)
             self.assertEqual(doc["effectivity"], "unverified")
             self.assertNotIn("/Users/", json.dumps(doc, ensure_ascii=False))
             self.assertNotRegex(doc["title"], "退回名单|供应商|中标")
             for attachment in doc["attachments"]:
-                self.assertEqual(urlparse(attachment["url"]).netloc, "cwc.shu.edu.cn")
+                self.assertIn(urlparse(attachment["url"]).netloc, maintain.OFFICIAL_HOSTS)
         self.assertTrue(knowledge.status()["integrity_ok"])
 
     def test_retrieval_finds_relevant_originals(self):
@@ -68,9 +68,12 @@ class KnowledgeTests(unittest.TestCase):
             self.assertIn(record["kind"], build.KINDS)
             if not record["needs_text"] and doc["availability"] != "text_available":
                 self.assertEqual(doc["source_type"], "page")
-                self.assertTrue(record["linked_readable"])
-                self.assertEqual(len(doc["attachments"]), len(record["linked_readable"]))
-                self.assertTrue(all(by_id[source_id]["availability"] == "text_available" for source_id in record["linked_readable"]))
+                if record["same_document_readable"]:
+                    self.assertTrue(all(by_id[source_id]["availability"] == "text_available" for source_id in record["same_document_readable"]))
+                else:
+                    self.assertTrue(record["linked_readable"])
+                    self.assertEqual(len(doc["attachments"]), len(record["linked_readable"]))
+                    self.assertTrue(all(by_id[source_id]["availability"] == "text_available" for source_id in record["linked_readable"]))
         for scene in build.scenarios():
             for source_id in scene["source_ids"]:
                 self.assertIn(scene["id"], records[source_id]["scenarios"])
@@ -116,6 +119,60 @@ class KnowledgeTests(unittest.TestCase):
         page = re.search(r"(?ms)^### 原件第 8 页\n(.*?)(?=^### 原件第 9 页)", doc["text"])
         self.assertIsNotNone(page)
         self.assertEqual(page.group(1).strip(), "[该页含具体业务和个人信息示例，未公开；请查看学校原件。]")
+
+    def test_original_page_images_are_complete_and_locally_resolvable(self):
+        for source_id, expected in (("74dbe09ea2005378", 7), ("03976750f4d5654e", 52)):
+            doc = next(doc for doc in self.docs if doc["id"] == source_id)
+            pages = doc["original_page_images"]
+            self.assertEqual([page["page"] for page in pages], list(range(1, expected + 1)))
+            rendered = build.source_page(doc)
+            for page in pages:
+                path = SKILL / page["path"]
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), page["sha256"])
+                self.assertIn(f'![原件第 {page["page"]} 页](../../{page["path"]})', rendered)
+
+    def test_new_school_policies_are_marked_as_unread_entries(self):
+        by_id = {doc["id"]: doc for doc in self.docs}
+        for source_id in ("f0bbb03fb34a0274", "0632eeafc9651f9d", "8d44bc096df21a70", "3c7bc0b1a632ff93"):
+            self.assertEqual(by_id[source_id]["availability"], "entry_only")
+            self.assertTrue(by_id[source_id]["attachments"])
+        for scene in build.scenarios():
+            if scene["id"] in {"travel", "meeting"}:
+                self.assertIn("原件", scene["notice"])
+                self.assertIn("旧版标准", scene["notice"])
+        for source_id in ("49ffae5f9e086dbe", "92e53de8292208f4", "16069b8f0612f96e", "b94532550cea3953"):
+            doc = by_id[source_id]
+            self.assertEqual(urlparse(doc["url"]).netloc, "cla.shu.edu.cn")
+            self.assertEqual(doc["availability"], "text_available")
+            self.assertEqual(len(doc["original_page_images"]), doc["provenance"]["pdf_pages"])
+
+    def test_sanitized_manuals_remain_explicitly_partial(self):
+        for source_id in ("61a3f8e0420155b2", "961bdf4478743125", "344f4c10c302f024", "848097df4d434789"):
+            doc = next(doc for doc in self.docs if doc["id"] == source_id)
+            self.assertEqual(doc["availability"], "partial_text")
+            self.assertIn("screenshots_privacy_withheld", doc["parse_warnings"])
+            self.assertTrue(doc["privacy_redacted_regions"])
+            self.assertNotIn("original_page_images", doc)
+            self.assertNotRegex(doc["text"], r"(?<!\d)\d{8,}(?!\d)")
+            self.assertIn("不能视为完整原文", build.source_page(doc))
+
+    def test_new_travel_rules_keep_table_and_source_page_together(self):
+        for source_id in ("49ffae5f9e086dbe", "92e53de8292208f4"):
+            doc = next(doc for doc in self.docs if doc["id"] == source_id)
+            page = build.source_page(doc)
+            self.assertIn("头等舱<br>公务舱", page)
+            self.assertIn("![原件第 3 页]", page)
+            self.assertIn("第 3 页恢复", page)
+            self.assertIn("下载官方原件副本", page)
+
+    def test_tax_notice_hides_contact_region_but_keeps_other_content(self):
+        for source_id in ("8d0c0b91760cc651", "aecfa90073cd2b63"):
+            doc = next(doc for doc in self.docs if doc["id"] == source_id)
+            self.assertEqual(doc["privacy_redacted_regions"], [2])
+            self.assertEqual([page["page"] for page in doc["original_page_images"]], [1])
+            self.assertIn("联系人员信息已隐去", doc["text"])
+            self.assertIn("抵扣流程", doc["text"])
+            self.assertNotRegex(doc["text"], r"(?<!\d)\d{8,}(?!\d)")
 
     def test_skill_runs_from_a_different_directory_without_repo(self):
         with tempfile.TemporaryDirectory(prefix="shu-skill-") as folder:

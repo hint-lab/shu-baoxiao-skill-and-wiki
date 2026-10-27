@@ -16,14 +16,15 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "skills/shu-baoxiao/references/knowledge/documents.jsonl"
 MAX_BYTES = 5 * 1024 * 1024
+OFFICIAL_HOSTS = {"cwc.shu.edu.cn", "cla.shu.edu.cn"}
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 
 
 def official_url(url: str) -> str:
     url = urldefrag(url.strip())[0]
     parsed = urlparse(url)
-    if parsed.scheme != "https" or parsed.netloc != "cwc.shu.edu.cn" or parsed.username or parsed.password:
-        raise ValueError("只接受 https://cwc.shu.edu.cn/ 的公开链接。")
+    if parsed.scheme != "https" or parsed.netloc not in OFFICIAL_HOSTS or parsed.username or parsed.password:
+        raise ValueError("只接受财务处或文学院的上海大学公开链接。")
     return url
 
 
@@ -122,7 +123,7 @@ def parse_page(url: str, html: str, fetched_at: str) -> dict:
             continue
         target = urljoin(url, node.attrs["href"])
         parsed = urlparse(target)
-        if parsed.netloc != "cwc.shu.edu.cn" or not re.search(r"download\.jsp|/__local/|\.(pdf|docx?|xlsx?|rar|zip|pptx?)$", parsed.path, re.I):
+        if parsed.netloc not in OFFICIAL_HOSTS or not re.search(r"download\.jsp|/__local/|\.(pdf|docx?|xlsx?|rar|zip|pptx?)$", parsed.path, re.I):
             continue
         if parsed.scheme == "http":
             target = "https:" + target[5:]

@@ -64,7 +64,7 @@ def search_documents(documents: list[dict], query: str, limit: int = 5, text_onl
     avg = sum(lengths) / max(1, len(lengths)) or 1
     ranked = []
     for doc, counter, length in zip(documents, counters, lengths):
-        if text_only and doc["availability"] != "text_available":
+        if text_only and doc["availability"] not in {"text_available", "partial_text"}:
             continue
         matched = [term for term in original if term in counter]
         if not matched or len(matched) / len(original) < 0.15:

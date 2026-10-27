@@ -9,6 +9,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -22,6 +23,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -33,6 +35,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -46,6 +49,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -57,6 +61,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -70,6 +75,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -83,6 +89,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -96,6 +103,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -114,7 +122,24 @@
         "68d0916d80e6a4dc",
         "a90bc3ae95b8eff7"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
+      "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "0632eeafc9651f9d",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "entry_only",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [
+        "16069b8f0612f96e"
+      ],
+      "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
     },
@@ -125,6 +150,7 @@
       "availability": "entry_only",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -136,6 +162,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -149,6 +176,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -165,6 +193,7 @@
       "linked_readable": [
         "1e88716b10c71712"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -178,6 +207,7 @@
       "linked_readable": [
         "b5409f2f3e611da1"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -191,6 +221,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -199,9 +230,10 @@
       "id": "0cdb09a803bb26ce",
       "kind": "manual",
       "scenarios": [],
-      "availability": "downloaded_no_text",
+      "availability": "partial_text",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -217,6 +249,7 @@
       "linked_readable": [
         "be0a14da7b7d67b4"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -232,6 +265,7 @@
       "linked_readable": [
         "f98e3f444a935ac3"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -245,6 +279,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -258,6 +293,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -271,6 +307,7 @@
       "linked_readable": [
         "675c42067898dca4"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -282,6 +319,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -293,6 +331,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -306,9 +345,24 @@
       "availability": "blocked_forbidden",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
+    },
+    {
+      "id": "16069b8f0612f96e",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
     },
     {
       "id": "1612384ef6465516",
@@ -319,6 +373,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -334,6 +389,7 @@
       "linked_readable": [
         "2aba91d3cb39ce40"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -347,6 +403,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -360,6 +417,7 @@
       "linked_readable": [
         "afdec23243a95097"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -373,6 +431,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -388,6 +447,7 @@
       "linked_readable": [
         "da5de69c3958b4c3"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -401,6 +461,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -412,13 +473,12 @@
         "general"
       ],
       "availability": "entry_only",
-      "needs_text": false,
-      "linked_readable": [
-        "344f4c10c302f024"
-      ],
-      "linked_coverage": true,
+      "needs_text": true,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
       "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "priority": "再核对近年资料"
     },
     {
       "id": "1e88716b10c71712",
@@ -430,6 +490,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -441,6 +502,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -454,6 +516,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -467,6 +530,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -478,6 +542,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -489,6 +554,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -506,6 +572,7 @@
         "5c9fcd80176f6ff4",
         "2e6e19e09289914c"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -519,6 +586,7 @@
       "availability": "blocked_forbidden",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -532,6 +600,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -543,6 +612,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -556,6 +626,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -572,6 +643,7 @@
         "7c9f3482bd5de5b0",
         "21fd483497f88408"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -585,6 +657,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -598,6 +671,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -611,6 +685,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -624,6 +699,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -632,12 +708,13 @@
       "id": "2b37225f9fdb95bd",
       "kind": "policy",
       "scenarios": [],
-      "availability": "entry_only",
-      "needs_text": true,
+      "availability": "text_available",
+      "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "再核对近年资料"
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
     },
     {
       "id": "2bdbbf4acb033866",
@@ -652,6 +729,7 @@
         "6e2c5c1b1f3ef5b3",
         "555c15d289d1c6a6"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -663,6 +741,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -674,6 +753,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -687,6 +767,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -700,6 +781,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -713,6 +795,7 @@
       "linked_readable": [
         "c3b16291ce284acb"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -724,6 +807,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -735,6 +819,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -745,12 +830,13 @@
       "scenarios": [
         "general"
       ],
-      "availability": "text_available",
-      "needs_text": false,
+      "availability": "partial_text",
+      "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "ocr_unverified": true,
+      "priority": "先补常用场景"
     },
     {
       "id": "348f433a07e88f82",
@@ -761,6 +847,7 @@
       "linked_readable": [
         "23e75212ee1f2860"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -776,6 +863,7 @@
       "linked_readable": [
         "26574dc19ab46c71"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -792,6 +880,7 @@
         "0961fd7d66a85336",
         "1612384ef6465516"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -806,6 +895,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -819,6 +909,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -832,6 +923,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -848,6 +940,7 @@
         "59a4aca50c2c9444",
         "f554b85316d5f855"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -859,7 +952,24 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
+      "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "3c7bc0b1a632ff93",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "entry_only",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [
+        "49ffae5f9e086dbe"
+      ],
+      "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
     },
@@ -872,6 +982,7 @@
       "linked_readable": [
         "0896bd1b6b3c84b8"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -885,6 +996,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -898,6 +1010,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -909,6 +1022,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -924,6 +1038,7 @@
       "linked_readable": [
         "e994593f16a84a8c"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -937,6 +1052,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -950,6 +1066,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -965,6 +1082,7 @@
       "linked_readable": [
         "9b4337e2e2854e33"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -978,6 +1096,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -991,9 +1110,24 @@
       "availability": "blocked_forbidden",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
+    },
+    {
+      "id": "49ffae5f9e086dbe",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
     },
     {
       "id": "4bab928bab65abd9",
@@ -1004,6 +1138,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1017,6 +1152,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1030,6 +1166,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1043,6 +1180,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1058,6 +1196,7 @@
       "linked_readable": [
         "9e8b5445588cd398"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1073,6 +1212,7 @@
       "linked_readable": [
         "a85339b147d20fd5"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1086,6 +1226,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1099,6 +1240,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1110,6 +1252,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1123,6 +1266,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1131,12 +1275,13 @@
       "id": "571cb909cfa90b5c",
       "kind": "policy",
       "scenarios": [],
-      "availability": "entry_only",
-      "needs_text": true,
+      "availability": "text_available",
+      "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "一般待补"
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
     },
     {
       "id": "5954a9e5871afae0",
@@ -1145,6 +1290,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1158,6 +1304,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1171,6 +1318,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1187,6 +1335,7 @@
         "839a9a5c949b6b1e",
         "28ca99d491f0f3c7"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1200,6 +1349,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1213,6 +1363,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1226,6 +1377,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1236,11 +1388,12 @@
       "scenarios": [
         "labor"
       ],
-      "availability": "entry_only",
+      "availability": "partial_text",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
+      "ocr_unverified": true,
       "priority": "先补常用场景"
     },
     {
@@ -1250,6 +1403,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1267,6 +1421,7 @@
         "826fed04de09f0cd",
         "74dbe09ea2005378"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1280,6 +1435,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1293,6 +1449,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1306,6 +1463,7 @@
       "linked_readable": [
         "675c42067898dca4"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1319,6 +1477,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1329,9 +1488,10 @@
       "scenarios": [
         "procurement"
       ],
-      "availability": "downloaded_no_text",
+      "availability": "partial_text",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -1343,6 +1503,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1354,6 +1515,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1367,6 +1529,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1377,12 +1540,13 @@
       "scenarios": [
         "reception"
       ],
-      "availability": "entry_only",
-      "needs_text": true,
+      "availability": "text_available",
+      "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "先补常用场景"
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
     },
     {
       "id": "687244349d59923a",
@@ -1391,6 +1555,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1404,6 +1569,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1417,6 +1583,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1430,6 +1597,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1441,6 +1609,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1457,6 +1626,7 @@
         "e33df81465616fe9",
         "e33df81465616fe9"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1470,6 +1640,7 @@
       "linked_readable": [
         "675c42067898dca4"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1483,6 +1654,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1496,6 +1668,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1512,6 +1685,7 @@
       "linked_readable": [
         "becfd0e2d65b4f54"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1523,6 +1697,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1534,6 +1709,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1545,6 +1721,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1564,6 +1741,7 @@
         "7b97af8e348e6a68",
         "4635d7d26041b452"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1579,6 +1757,7 @@
       "linked_readable": [
         "a07b41e75c948578"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1590,6 +1769,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1603,6 +1783,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1614,6 +1795,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1627,6 +1809,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1640,6 +1823,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1655,6 +1839,7 @@
       "linked_readable": [
         "f06fd440d523e625"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1668,6 +1853,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1681,6 +1867,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1692,6 +1879,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1705,6 +1893,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1716,6 +1905,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1727,6 +1917,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -1740,6 +1931,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1753,6 +1945,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1766,6 +1959,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1779,6 +1973,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1789,12 +1984,13 @@
       "scenarios": [
         "procurement"
       ],
-      "availability": "text_available",
-      "needs_text": false,
+      "availability": "partial_text",
+      "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "ocr_unverified": true,
+      "priority": "先补常用场景"
     },
     {
       "id": "85574c802a6e0070",
@@ -1803,6 +1999,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1814,13 +2011,12 @@
         "general"
       ],
       "availability": "entry_only",
-      "needs_text": false,
-      "linked_readable": [
-        "344f4c10c302f024"
-      ],
-      "linked_coverage": true,
+      "needs_text": true,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
       "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "priority": "再核对近年资料"
     },
     {
       "id": "885ca15da191b2fc",
@@ -1829,22 +2025,36 @@
         "general"
       ],
       "availability": "entry_only",
-      "needs_text": false,
-      "linked_readable": [
-        "344f4c10c302f024"
-      ],
-      "linked_coverage": true,
+      "needs_text": true,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
       "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "priority": "先补常用场景"
     },
     {
       "id": "8d0c0b91760cc651",
       "kind": "policy",
       "scenarios": [],
+      "availability": "partial_text",
+      "needs_text": true,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "8d44bc096df21a70",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
       "availability": "entry_only",
       "needs_text": false,
-      "linked_readable": [
-        "961bdf4478743125"
+      "linked_readable": [],
+      "same_document_readable": [
+        "92e53de8292208f4"
       ],
       "linked_coverage": true,
       "ocr_unverified": false,
@@ -1859,6 +2069,7 @@
       "availability": "entry_only",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -1870,6 +2081,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1880,12 +2092,13 @@
       "scenarios": [
         "general"
       ],
-      "availability": "text_available",
-      "needs_text": false,
+      "availability": "partial_text",
+      "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "ocr_unverified": true,
+      "priority": "再核对近年资料"
     },
     {
       "id": "8f77be3c311234ff",
@@ -1894,6 +2107,7 @@
       "availability": "blocked_forbidden",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -1904,12 +2118,27 @@
       "scenarios": [
         "meeting"
       ],
-      "availability": "entry_only",
-      "needs_text": true,
+      "availability": "text_available",
+      "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "一般待补"
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "92e53de8292208f4",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
     },
     {
       "id": "961bdf4478743125",
@@ -1917,12 +2146,13 @@
       "scenarios": [
         "general"
       ],
-      "availability": "text_available",
-      "needs_text": false,
+      "availability": "partial_text",
+      "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "ocr_unverified": true,
+      "priority": "再核对近年资料"
     },
     {
       "id": "9687ca7856bcced7",
@@ -1933,6 +2163,7 @@
       "linked_readable": [
         "9e51d515d369a1b2"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1946,6 +2177,7 @@
       "availability": "entry_only",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -1962,6 +2194,7 @@
         "4ed65be1833598c2",
         "5effb1bf9dccb9e7"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1975,6 +2208,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -1988,6 +2222,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2001,6 +2236,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2012,6 +2248,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2025,6 +2262,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2036,6 +2274,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2049,6 +2288,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2060,6 +2300,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2073,6 +2314,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2086,6 +2328,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2110,6 +2353,7 @@
         "c50d86d6a47cf681",
         "03976750f4d5654e"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2123,6 +2367,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2136,6 +2381,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2151,6 +2397,7 @@
       "linked_readable": [
         "544f1f72a94084ea"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2161,9 +2408,10 @@
       "scenarios": [
         "procurement"
       ],
-      "availability": "downloaded_no_text",
+      "availability": "partial_text",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -2175,13 +2423,12 @@
         "general"
       ],
       "availability": "entry_only",
-      "needs_text": false,
-      "linked_readable": [
-        "8e31ffd3692da6b1"
-      ],
-      "linked_coverage": true,
+      "needs_text": true,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
       "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "priority": "再核对近年资料"
     },
     {
       "id": "a731e4919da8ec8f",
@@ -2192,6 +2439,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2205,6 +2453,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2218,6 +2467,7 @@
       "availability": "entry_only",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -2231,6 +2481,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2242,6 +2493,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2255,6 +2507,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2268,6 +2521,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2281,6 +2535,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2289,14 +2544,13 @@
       "id": "aecfa90073cd2b63",
       "kind": "policy",
       "scenarios": [],
-      "availability": "entry_only",
-      "needs_text": false,
-      "linked_readable": [
-        "961bdf4478743125"
-      ],
-      "linked_coverage": true,
-      "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "availability": "partial_text",
+      "needs_text": true,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": true,
+      "priority": "一般待补"
     },
     {
       "id": "aefb6fa0a3734716",
@@ -2304,12 +2558,13 @@
       "scenarios": [
         "reception"
       ],
-      "availability": "entry_only",
-      "needs_text": true,
+      "availability": "text_available",
+      "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "一般待补"
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
     },
     {
       "id": "af9e7ddfc66ff50f",
@@ -2320,6 +2575,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2331,6 +2587,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2344,6 +2601,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2357,6 +2615,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2370,6 +2629,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2381,6 +2641,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2394,6 +2655,7 @@
       "availability": "entry_only",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -2405,6 +2667,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2418,6 +2681,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2431,8 +2695,23 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "b94532550cea3953",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -2442,6 +2721,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2455,6 +2735,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2468,6 +2749,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2481,6 +2763,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2495,6 +2778,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2506,6 +2790,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2521,6 +2806,7 @@
       "linked_readable": [
         "8306c9e2b8f7b504"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2534,6 +2820,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2545,14 +2832,14 @@
         "procurement"
       ],
       "availability": "entry_only",
-      "needs_text": false,
+      "needs_text": true,
       "linked_readable": [
-        "848097df4d434789",
         "afe8564b9c6e4cfa"
       ],
-      "linked_coverage": true,
+      "same_document_readable": [],
+      "linked_coverage": false,
       "ocr_unverified": false,
-      "priority": "已有提取正文"
+      "priority": "先补常用场景"
     },
     {
       "id": "c3b16291ce284acb",
@@ -2564,6 +2851,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2575,6 +2863,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2586,6 +2875,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2600,6 +2890,7 @@
         "3f528584167976e5",
         "b97976da663e51ef"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2611,6 +2902,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2628,6 +2920,7 @@
         "4bab928bab65abd9",
         "b1755d914b9dec1d"
       ],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2639,6 +2932,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2652,6 +2946,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2665,6 +2960,7 @@
       "availability": "entry_only",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -2680,6 +2976,7 @@
       "linked_readable": [
         "05ac7fea00fe876f"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2693,6 +2990,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2703,12 +3001,13 @@
       "scenarios": [
         "reception"
       ],
-      "availability": "entry_only",
-      "needs_text": true,
+      "availability": "text_available",
+      "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
-      "ocr_unverified": false,
-      "priority": "再核对近年资料"
+      "ocr_unverified": true,
+      "priority": "已有提取正文"
     },
     {
       "id": "d92e13885466e9d1",
@@ -2717,6 +3016,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2730,6 +3030,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2743,6 +3044,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2754,6 +3056,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2765,6 +3068,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2776,6 +3080,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2789,6 +3094,7 @@
       "availability": "entry_only",
       "needs_text": true,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "一般待补"
@@ -2807,6 +3113,7 @@
         "1510b4dc81b58661",
         "70097ec797534841"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2818,6 +3125,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2831,6 +3139,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2844,6 +3153,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -2863,6 +3173,7 @@
         "1204db969883c964",
         "f576bdac37803485"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2876,6 +3187,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2892,6 +3204,7 @@
       "linked_readable": [
         "1e88716b10c71712"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2905,6 +3218,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2922,6 +3236,7 @@
         "048d5ec5bbfedf05",
         "f0a218578030cd8b"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2935,6 +3250,7 @@
       "linked_readable": [
         "c3b16291ce284acb"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2948,6 +3264,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2959,7 +3276,24 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
+      "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "f0bbb03fb34a0274",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "entry_only",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [
+        "b94532550cea3953"
+      ],
+      "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
     },
@@ -2972,6 +3306,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -2993,6 +3328,7 @@
         "9ec982452a1074bd",
         "d92e13885466e9d1"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3010,6 +3346,7 @@
         "6e2c5c1b1f3ef5b3",
         "555c15d289d1c6a6"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3025,6 +3362,7 @@
       "linked_readable": [
         "e76e8770d60f3c7f"
       ],
+      "same_document_readable": [],
       "linked_coverage": true,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3036,6 +3374,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3049,6 +3388,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3062,6 +3402,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3075,6 +3416,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3086,6 +3428,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3099,6 +3442,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -3112,6 +3456,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3123,6 +3468,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3136,6 +3482,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -3147,6 +3494,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
       "priority": "已有提取正文"
@@ -3160,6 +3508,7 @@
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
+      "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
       "priority": "已有提取正文"
@@ -3168,7 +3517,8 @@
   "same_extracted_text_groups": [
     [
       "03976750f4d5654e",
-      "23e75212ee1f2860"
+      "23e75212ee1f2860",
+      "2b37225f9fdb95bd"
     ],
     [
       "04a37a59feab5cd4",
@@ -3208,10 +3558,6 @@
     [
       "74dbe09ea2005378",
       "a07b41e75c948578"
-    ],
-    [
-      "8e31ffd3692da6b1",
-      "961bdf4478743125"
     ],
     [
       "ae0aa03a410c2284",
