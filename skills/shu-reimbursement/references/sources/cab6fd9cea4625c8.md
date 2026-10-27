@@ -4,13 +4,17 @@
 - 官方来源：[关于进一步规范科研项目开具上海市行政事业单位资金往来结算票据的通知](https://cwc.shu.edu.cn/info/1041/5252.htm)
 - 文档 ID：`cab6fd9cea4625c8`
 - 网页标注日期：2020-08-03（不等于生效日期）
-- 资料获取时间：2026-06-30T07:40:31.326916+00:00
+- 初次来源抓取记录：2026-06-30T07:40:31.326916+00:00
 - 正文状态：有提取正文
 - 生效状态：未核验；需结合业务日期和后续文件确认。
+- 资料取得方式：原官网页面或附件快照。
+- 文字质量：提取文本与原始版式可能不同，涉及具体要求时应核对原文件。
+
+
 
 ## 提取文本
 
-以下为历史快照中的提取文本；表格、图片和附件可能未完整解析。只有入口的资料不能充当已读政策。
+以下为提取文本；表格、图片和附件可能未完整解析。机器识别与已核对原文是不同状态，只有入口的资料不能充当已读政策。
 
 ````text
 关于进一步规范科研项目开具
@@ -27,8 +31,9 @@
 
 ## 官方附件入口
 
-- [关于进一步规范科研项目开具上海市行政事业单位资金往来结算票据的通知.pdf](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=F99D3495C6B854B39959BC3C46C4E974)
-- [附件一上海大学到账确认书.docx](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=68CC836025D8F0A6368E36C1D7325721)
-- [附件二上海大学外拨经费审批表.docx](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=3FE68532C31C5176B650F20B0EBEAEA2)
+- [关于进一步规范科研项目开具上海市行政事业单位资金往来结算票据的通知.pdf](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=F99D3495C6B854B39959BC3C46C4E974) · [阅读已提取内容](65162c6eef124103.md)
+- [附件一上海大学到账确认书.docx](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=68CC836025D8F0A6368E36C1D7325721) · [阅读已提取内容](4bab928bab65abd9.md)
+- [附件二上海大学外拨经费审批表.docx](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=3FE68532C31C5176B650F20B0EBEAEA2) · [阅读已提取内容](b1755d914b9dec1d.md)
+
 
 [返回技能资料目录](../catalog.md)

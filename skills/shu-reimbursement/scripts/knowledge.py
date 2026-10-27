@@ -90,8 +90,10 @@ def search_documents(documents: list[dict], query: str, limit: int = 5, text_onl
         if key in seen:
             continue
         seen.add(key)
-        result.append({field: doc.get(field, "") for field in ("id", "title", "url", "published_date", "fetched_at", "availability", "effectivity", "category")})
+        result.append({field: doc.get(field, "") for field in ("id", "title", "url", "published_date", "fetched_at", "availability", "effectivity", "category", "text_quality", "extraction_method")})
         result[-1].update(excerpt=passage(doc.get("text", ""), query), matched_terms=matched)
+        if doc.get("related_official_sources"):
+            result[-1]["related_official_sources"] = doc["related_official_sources"]
         if len(result) >= limit:
             break
     return result
@@ -139,9 +141,11 @@ def main() -> None:
             if not result["hits"]:
                 print("未找到可用线索；请换词或补充官方资料，不据此断言可以或不可以报销。")
             for hit in result["hits"]:
-                print(f"\n[{hit['id']}] {hit['title']}\n{hit['url']}\n状态：{hit['availability']}；快照：{hit['fetched_at']}\n{hit['excerpt']}")
+                warning = "；扫描件机器识别未逐页核验，关键数字和条件须对照原件" if hit.get("text_quality") == "ocr_unverified" else ""
+                print(f"\n[{hit['id']}] {hit['title']}\n{hit['url']}\n状态：{hit['availability']}；快照：{hit['fetched_at']}{warning}\n{hit['excerpt']}")
         elif args.command == "read":
-            print(f"{result['title']}\n{result['url']}\n状态：{result['availability']}；生效状态：{result['effectivity']}\n快照：{result['fetched_at']}\n\n{result['text']}")
+            warning = "\n注意：扫描件机器识别未逐页核验，关键数字和条件须对照原件。" if result.get("text_quality") == "ocr_unverified" else ""
+            print(f"{result['title']}\n{result['url']}\n状态：{result['availability']}；生效状态：{result['effectivity']}\n快照：{result['fetched_at']}{warning}\n\n{result['text']}")
             for item in result.get("attachments", []):
                 print(f"附件：{item['title']} {item['url']}")
         else:

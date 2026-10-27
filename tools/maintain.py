@@ -135,6 +135,9 @@ def save(doc: dict, path: Path = DATA) -> None:
     previous = next((item for item in records if item["url"] == doc["url"]), None)
     if previous:
         doc["id"] = previous["id"]
+        # A previously obtained copy remains a historical source, not proof of current validity.
+        if previous.get("public_asset"):
+            doc["public_asset"] = previous["public_asset"]
     records = [item for item in records if item["url"] != doc["url"]] + [doc]
     payload = "".join(json.dumps(item, ensure_ascii=False, sort_keys=True)+"\n" for item in sorted(records, key=lambda item: item["id"]))
     temp = path.with_suffix(".tmp")
@@ -151,6 +154,7 @@ def main() -> None:
     import_text.add_argument("--url", required=True)
     import_text.add_argument("--title", required=True)
     import_text.add_argument("--text", type=Path, required=True)
+    import_text.add_argument("--ocr", action="store_true", help="标记扫描件 OCR 未逐页核验，不能直接据此引用数字和表格")
     args = parser.parse_args()
     try:
         if args.command == "refresh":
@@ -163,7 +167,10 @@ def main() -> None:
             doc = {"id": hashlib.sha1(url.encode()).hexdigest()[:16], "title": args.title, "url": url,
                    "source_type": "attachment", "category": "policy", "published_date": "",
                    "fetched_at": datetime.now(timezone.utc).isoformat(), "effectivity": "unverified",
-                   "availability": "text_available", "text": text, "attachments": []}
+                   "availability": "text_available", "text": text, "attachments": [],
+                   "text_quality": "ocr_unverified" if args.ocr else "extracted_unverified",
+                   "extraction_method": "manual_text_import",
+                   "provenance": {"acquisition": "manual_text_import", "downloaded_at": "unknown"}}
         save(doc)
         print(f"已更新快照：{doc['title']} [{doc['availability']}]。请核对 Git 差异和适用条件，然后运行 python3 tools/build.py。")
     except (OSError, ValueError) as exc:

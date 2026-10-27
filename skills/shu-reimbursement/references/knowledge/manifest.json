@@ -1,16 +1,19 @@
 {
   "schema_version": 1,
-  "skill_version": "1.1.0",
+  "skill_version": "1.2.0",
   "migration_date": "2026-10-27",
   "document_count": 242,
   "availability_counts": {
-    "blocked_captcha": 71,
-    "text_available": 107,
-    "entry_only": 64
+    "text_available": 182,
+    "entry_only": 53,
+    "downloaded_no_text": 3,
+    "blocked_forbidden": 4
   },
+  "ocr_unverified_count": 20,
+  "linked_coverage_count": 38,
   "snapshot_earliest": "2026-06-30T07:40:31.326916+00:00",
   "snapshot_latest": "2026-10-27T13:03:00.404230+00:00",
-  "documents_sha256": "225c1440697168d73d3264b8b99c9597b08477d784aaaabf3d48eda896ded40b",
+  "documents_sha256": "5b8d8be78a9a10eb4968594a0c29a948fa3e5a08d5fac3e94b3a5ce14401b7d2",
   "effectivity": "unverified",
   "scope": "报销相关公开资料；未迁入个人名单、真实报销材料或登录状态"
 }

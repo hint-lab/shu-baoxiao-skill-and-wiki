@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import re
 import shutil
@@ -61,10 +62,15 @@ class KnowledgeTests(unittest.TestCase):
         index = build.organize_documents(self.docs, build.scenarios())
         records = {record["id"]: record for record in index["records"]}
         self.assertEqual(set(records), {doc["id"] for doc in self.docs})
+        by_id = {doc["id"]: doc for doc in self.docs}
         for doc in self.docs:
             record = records[doc["id"]]
             self.assertIn(record["kind"], build.KINDS)
-            self.assertEqual(record["needs_text"], doc["availability"] != "text_available")
+            if not record["needs_text"] and doc["availability"] != "text_available":
+                self.assertEqual(doc["source_type"], "page")
+                self.assertTrue(record["linked_readable"])
+                self.assertEqual(len(doc["attachments"]), len(record["linked_readable"]))
+                self.assertTrue(all(by_id[source_id]["availability"] == "text_available" for source_id in record["linked_readable"]))
         for scene in build.scenarios():
             for source_id in scene["source_ids"]:
                 self.assertIn(scene["id"], records[source_id]["scenarios"])
@@ -80,8 +86,29 @@ class KnowledgeTests(unittest.TestCase):
             self.assertGreater(len(group), 1)
             self.assertEqual(len({re.sub(r"\s+", "", by_id[source_id]["text"]) for source_id in group}), 1)
         queue = build.material_reports(self.docs, build.scenarios(), index)[ROOT / "wiki/待补资料.md"]
-        for doc in self.docs:
-            self.assertEqual(f"/{doc['id']}.md)" in queue, doc["availability"] != "text_available")
+        for item in index["records"]:
+            self.assertEqual(f"/{item['id']}.md)" in queue, item["needs_text"])
+
+    def test_ocr_uncertainty_reaches_search_and_source_pages(self):
+        ocr = [doc for doc in self.docs if doc.get("text_quality") == "ocr_unverified"]
+        self.assertTrue(ocr)
+        doc = ocr[0]
+        self.assertIn("机器识别未逐页核验", build.source_page(doc))
+        hits = knowledge.search_documents([doc], doc["title"], limit=1)
+        self.assertEqual(hits[0]["text_quality"], "ocr_unverified")
+
+    def test_form_copies_match_metadata_and_do_not_expose_redacted_pages(self):
+        assets = [doc for doc in self.docs if doc.get("public_asset")]
+        self.assertGreaterEqual(len(assets), 1)
+        for doc in assets:
+            asset = doc["public_asset"]
+            path = SKILL / asset["path"]
+            self.assertTrue(path.is_relative_to(SKILL / "assets/forms"))
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), asset["sha256"])
+            self.assertIn("../../" + asset["path"].split("/")[0], build.source_page(doc))
+        guide = next(doc for doc in self.docs if doc["id"] == "1e88716b10c71712")
+        self.assertEqual(guide["privacy_redacted_pages"], [70, 71, 72, 73])
+        self.assertEqual(guide["text"].count("该页涉及个人账户示例"), 4)
 
     def test_skill_runs_from_a_different_directory_without_repo(self):
         with tempfile.TemporaryDirectory(prefix="shu-skill-") as folder:
@@ -120,6 +147,9 @@ class KnowledgeTests(unittest.TestCase):
                             self.assertIn(key, skill)
             chat = Path(folder) / "chat/publication.txt"
             self.assertIn("https://cwc.shu.edu.cn/info/1113/4276.htm", chat.read_text())
+            consultation = (Path(folder) / "chat/consultation.txt").read_text()
+            self.assertIn("上海大学专家咨询意见表2024版.rar", consultation)
+            self.assertIn("【工作表：Sheet1】", consultation)
 
     def test_packages_are_reproducible(self):
         with tempfile.TemporaryDirectory() as folder:

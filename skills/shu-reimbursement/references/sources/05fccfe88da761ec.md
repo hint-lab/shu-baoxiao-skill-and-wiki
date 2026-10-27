@@ -4,13 +4,17 @@
 - 官方来源：[上海大学关于政府采购工作流程的工作手册](https://cwc.shu.edu.cn/info/1093/4241.htm)
 - 文档 ID：`05fccfe88da761ec`
 - 网页标注日期：2017-12-05（不等于生效日期）
-- 资料获取时间：2026-06-30T07:40:31.326916+00:00
+- 初次来源抓取记录：2026-06-30T07:40:31.326916+00:00
 - 正文状态：有提取正文
 - 生效状态：未核验；需结合业务日期和后续文件确认。
+- 资料取得方式：原官网页面或附件快照。
+- 文字质量：提取文本与原始版式可能不同，涉及具体要求时应核对原文件。
+
+
 
 ## 提取文本
 
-以下为历史快照中的提取文本；表格、图片和附件可能未完整解析。只有入口的资料不能充当已读政策。
+以下为提取文本；表格、图片和附件可能未完整解析。机器识别与已核对原文是不同状态，只有入口的资料不能充当已读政策。
 
 ````text
 上海大学关于政府采购工作流程的工作手册
@@ -134,9 +138,10 @@ c) 必须保证原有采购项目的一致性或者服务配套的要求，需�
 
 ## 官方附件入口
 
-- [政府采购附件-上海大学关于政府采购工作流程的工作手册20171205.docx](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=D1184A49592FD4698C7B8B87C5815629)
-- [政府采购附件-关于发布《上海市2017-2018年政府采购集中采购目录和采购限额标准》的通知（沪财采（2016）25号）.doc](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=82C585A9C2B733ED5C582C4CC6A5FC3C)
-- [政府采购表解读说明.doc](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=A96DE1612367BDAB58B466BA333863EC)
-- [政府采购品目分类目录.pdf](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=E3C6FBF91898123B417086C4EA1C8807)
+- [政府采购附件-上海大学关于政府采购工作流程的工作手册20171205.docx](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=D1184A49592FD4698C7B8B87C5815629) · [阅读已提取内容](6dbab0c19a0cd500.md)
+- [政府采购附件-关于发布《上海市2017-2018年政府采购集中采购目录和采购限额标准》的通知（沪财采（2016）25号）.doc](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=82C585A9C2B733ED5C582C4CC6A5FC3C) · [阅读已提取内容](b73152185f1e934c.md)
+- [政府采购表解读说明.doc](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=A96DE1612367BDAB58B466BA333863EC) · [阅读已提取内容](68d0916d80e6a4dc.md)
+- [政府采购品目分类目录.pdf](https://cwc.shu.edu.cn/system/_content/download.jsp?urltype=news.DownloadAttachUrl&owner=1393148177&wbfileid=E3C6FBF91898123B417086C4EA1C8807) · [阅读已提取内容](a90bc3ae95b8eff7.md)
+
 
 [返回技能资料目录](../catalog.md)
