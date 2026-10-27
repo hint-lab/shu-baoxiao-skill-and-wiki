@@ -57,6 +57,32 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(knowledge.search_documents([entry], "专家咨询", text_only=True), [])
         self.assertEqual(knowledge.search_documents([entry], "专家咨询")[0]["availability"], "entry_only")
 
+    def test_material_organization_covers_every_source_without_inventing_validity(self):
+        index = build.organize_documents(self.docs, build.scenarios())
+        records = {record["id"]: record for record in index["records"]}
+        self.assertEqual(set(records), {doc["id"] for doc in self.docs})
+        for doc in self.docs:
+            record = records[doc["id"]]
+            self.assertIn(record["kind"], build.KINDS)
+            self.assertEqual(record["needs_text"], doc["availability"] != "text_available")
+        for scene in build.scenarios():
+            for source_id in scene["source_ids"]:
+                self.assertIn(scene["id"], records[source_id]["scenarios"])
+        self.assertEqual(build.material_kind({"title": "上海大学专家咨询意见表2024版.rar"}), "form")
+        self.assertEqual(build.material_kind({"title": "国内差旅费报销指南（2024版）"}), "guide")
+        self.assertEqual(build.material_kind({"title": "上海大学智能报销操作手册"}), "manual")
+        self.assertEqual(build.material_kind({"title": "科研经费管理办法"}), "policy")
+
+    def test_duplicate_groups_compare_text_and_preserve_all_entries(self):
+        index = build.organize_documents(self.docs, build.scenarios())
+        by_id = {doc["id"]: doc for doc in self.docs}
+        for group in index["same_extracted_text_groups"]:
+            self.assertGreater(len(group), 1)
+            self.assertEqual(len({re.sub(r"\s+", "", by_id[source_id]["text"]) for source_id in group}), 1)
+        queue = build.material_reports(self.docs, build.scenarios(), index)[ROOT / "wiki/待补资料.md"]
+        for doc in self.docs:
+            self.assertEqual(f"/{doc['id']}.md)" in queue, doc["availability"] != "text_available")
+
     def test_skill_runs_from_a_different_directory_without_repo(self):
         with tempfile.TemporaryDirectory(prefix="shu-skill-") as folder:
             destination = Path(folder) / "技能 带空格"

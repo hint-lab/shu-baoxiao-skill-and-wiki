@@ -1,0 +1,2308 @@
+{
+  "schema_version": 1,
+  "classification": "辅助分类，不能直接用作政策适用或生效判断",
+  "records": [
+    {
+      "id": "00385b6622696b51",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "00704be5eb48728f",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "03976750f4d5654e",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "0476d71f3a3f81a2",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "048d5ec5bbfedf05",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "04a37a59feab5cd4",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "04e760a9d9dcf809",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "05ac7fea00fe876f",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "05fccfe88da761ec",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "0796b0a607ea55cb",
+      "kind": "manual",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "0896bd1b6b3c84b8",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "0961fd7d66a85336",
+      "kind": "form",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "09b85d0c18957a6a",
+      "kind": "guide",
+      "scenarios": [
+        "general",
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "09fc6d34ef28f027",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "0c1b99d445570790",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "0cdb09a803bb26ce",
+      "kind": "manual",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "0d8c225a3ff6e2a2",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "0ef0c26050773162",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "0feb2807f709c6da",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "1056622170af84e2",
+      "kind": "other",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "11760bed5a86f19c",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "1204db969883c964",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "1510b4dc81b58661",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "15268c17690bbf29",
+      "kind": "form",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "1612384ef6465516",
+      "kind": "form",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "171421f37699da44",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "18d228356b1174ab",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "19a1da4ece748464",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "19efa3f2b4260ce4",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "1a66702d3426a25a",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "1a877bdd560da67f",
+      "kind": "manual",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "1c595a6b0163aadc",
+      "kind": "manual",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "1e88716b10c71712",
+      "kind": "guide",
+      "scenarios": [
+        "general",
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "1ee69d19eea241d2",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "2019e1bb547a0d5e",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "21fd483497f88408",
+      "kind": "form",
+      "scenarios": [
+        "consultation"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "232c51f7b15c8a3d",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "23e75212ee1f2860",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "247ef22385028c70",
+      "kind": "guide",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "2490f3ab44d05c00",
+      "kind": "form",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "25d91463aef998f7",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "26001d072c430d68",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "26574dc19ab46c71",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "265ba03d107d9a2e",
+      "kind": "form",
+      "scenarios": [
+        "consultation"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "26e64b160dde7c85",
+      "kind": "guide",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "27b5928370a1b973",
+      "kind": "policy",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "28ca99d491f0f3c7",
+      "kind": "form",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "2aba91d3cb39ce40",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "2b37225f9fdb95bd",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "2bdbbf4acb033866",
+      "kind": "guide",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "2cc266f4a6e54679",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "2e1d3f1c220a254a",
+      "kind": "manual",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "2e6e19e09289914c",
+      "kind": "other",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "2f62b216e92446a3",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "3200e53366d96d2e",
+      "kind": "guide",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "3266d201f4e28fde",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "3412e2cde06704a5",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "344f4c10c302f024",
+      "kind": "manual",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "348f433a07e88f82",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "35960a68088aa8e3",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "3753dfadf647450a",
+      "kind": "form",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "3a052ddf6f848853",
+      "kind": "other",
+      "scenarios": [
+        "general",
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "3a83fbd61f99a501",
+      "kind": "guide",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "3ae702b6d843350a",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "3b2b679303b4a186",
+      "kind": "form",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "3bfc718d52f4b193",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "3dd9fdf0ff88909d",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "3e9c3ac7483ba2ab",
+      "kind": "policy",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "3ecccf68d1f676b1",
+      "kind": "guide",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "3f528584167976e5",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "3fd51d28f9786e4d",
+      "kind": "form",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "40bc692b116a4db7",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "435a47209f5e23c3",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "45256e171c1ccc4c",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "4635d7d26041b452",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "49d1e2f32e6da5be",
+      "kind": "form",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "4bab928bab65abd9",
+      "kind": "other",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "4e0cfb69799605cd",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "4ed65be1833598c2",
+      "kind": "form",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "4fa4a22d6f2a21ad",
+      "kind": "manual",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "50185b93292554c2",
+      "kind": "policy",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "51f42895d519758c",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "5287d2a6893e0a00",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "544f1f72a94084ea",
+      "kind": "other",
+      "scenarios": [
+        "publication"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "546732b113fea048",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "555c15d289d1c6a6",
+      "kind": "other",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "571cb909cfa90b5c",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "5954a9e5871afae0",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "59a4aca50c2c9444",
+      "kind": "form",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "59b9a5db6958d2f6",
+      "kind": "policy",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "5bbd93c691e4a52a",
+      "kind": "form",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "5c9fcd80176f6ff4",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "5effb1bf9dccb9e7",
+      "kind": "form",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "614325e71db33893",
+      "kind": "policy",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "61a3f8e0420155b2",
+      "kind": "manual",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "6336fed08a340f5d",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "6431ba44c9d6431e",
+      "kind": "guide",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "643cd53a56ac9320",
+      "kind": "policy",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "64fe6cda23557d1a",
+      "kind": "guide",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "650a2552d08e0da7",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "65162c6eef124103",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "65f9123d2d79b2ea",
+      "kind": "manual",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "66bf9fdc34c7d41b",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "675c42067898dca4",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "680cab66c4fcff81",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "6815831c89ec295a",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "687244349d59923a",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "68d0916d80e6a4dc",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "69a459f9e789932e",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "6bd627c54985fce9",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "6c1cda33bb64bbc5",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "6c508e7259974417",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "6d163c86020fee9b",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "6dbab0c19a0cd500",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "6e2c5c1b1f3ef5b3",
+      "kind": "other",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "6ec57776d633ce1d",
+      "kind": "form",
+      "scenarios": [
+        "international",
+        "labor"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "6f8b22548d5f8f3e",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "70097ec797534841",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "70c108694d2e0f79",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "71bce3108b3458d5",
+      "kind": "other",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "72dbeb2727d3574a",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "73e888ff20b0a400",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "74dbe09ea2005378",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "782510a82b0f2920",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "78b41de9df7955fc",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "79fcfd9d22ef0966",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "7a93aaa88805db08",
+      "kind": "policy",
+      "scenarios": [
+        "consultation"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "7b97af8e348e6a68",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "7c9f3482bd5de5b0",
+      "kind": "form",
+      "scenarios": [
+        "consultation"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "7d3ce1111536a736",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "7f3153f521b54120",
+      "kind": "guide",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "8073f3d9b643a4f3",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "80f8e6a95e05c483",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "826fed04de09f0cd",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "82e1b3238cd6cd9c",
+      "kind": "form",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "8306c9e2b8f7b504",
+      "kind": "form",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "839a9a5c949b6b1e",
+      "kind": "form",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "848097df4d434789",
+      "kind": "guide",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "85574c802a6e0070",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "877faa137e5801b7",
+      "kind": "manual",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "885ca15da191b2fc",
+      "kind": "manual",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "8d0c0b91760cc651",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "8d5dbf9e4ff1e36d",
+      "kind": "manual",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "8d8b67da6bbd2d17",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "8e31ffd3692da6b1",
+      "kind": "manual",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "8f77be3c311234ff",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "91e67e1fbee83352",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "961bdf4478743125",
+      "kind": "manual",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "9687ca7856bcced7",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "969925f8ff984113",
+      "kind": "manual",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "974131a888750e5f",
+      "kind": "guide",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "992e7a43b629c800",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "9ac76962513d565f",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "9b4337e2e2854e33",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "9c5c3539e17469a1",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "9d2db58cd80524a7",
+      "kind": "guide",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "9e51d515d369a1b2",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "9e8b5445588cd398",
+      "kind": "policy",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "9ec982452a1074bd",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "9eeba1a69b860ef6",
+      "kind": "manual",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "9f1d00fb8f915a52",
+      "kind": "other",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "a044e37916ef0028",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "a07b41e75c948578",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "a240d2c2e1cbf5bc",
+      "kind": "policy",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "a2b744cda8112604",
+      "kind": "guide",
+      "scenarios": [
+        "publication"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "a312d92155c63eca",
+      "kind": "manual",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "a66f085be6cb13a9",
+      "kind": "manual",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "a731e4919da8ec8f",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "a85339b147d20fd5",
+      "kind": "form",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "a86fcd12af787332",
+      "kind": "form",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "a87e4636f1c8bfc8",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "a8f37cad29588423",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "a90bc3ae95b8eff7",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "ac695cea84dfde6e",
+      "kind": "guide",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "ae0aa03a410c2284",
+      "kind": "other",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "aecfa90073cd2b63",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "aefb6fa0a3734716",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "af9e7ddfc66ff50f",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "afdec23243a95097",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "afe8564b9c6e4cfa",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "b1755d914b9dec1d",
+      "kind": "form",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "b3394966a2cc9138",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "b44070bad0ce4f10",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "b4b7fe2a2f9024ec",
+      "kind": "manual",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "b5409f2f3e611da1",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "b5fe9340980e718a",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "b73152185f1e934c",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "b97976da663e51ef",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "bc59af8768cc7283",
+      "kind": "policy",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "bd85cc07d081bf90",
+      "kind": "other",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "be0a14da7b7d67b4",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "becfd0e2d65b4f54",
+      "kind": "form",
+      "scenarios": [
+        "international",
+        "labor"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "beeecdb558531031",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "c109471b495fcc85",
+      "kind": "form",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "c318abc178bd8841",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "c32a4ea2a98f71e6",
+      "kind": "guide",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "c3b16291ce284acb",
+      "kind": "guide",
+      "scenarios": [
+        "procurement",
+        "testing"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "c4bc49e44c478fd5",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "c50d86d6a47cf681",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "c9b452d0e2ae5e5a",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "c9e50b0de1c1bbca",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "cab6fd9cea4625c8",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "cc5d7a136060714a",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "cd3cdb1a6c0346c0",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "d1c33678b92fcfe3",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "d355d376616ee249",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "d6f92c7aeadb7043",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "d780fee4f46ca902",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "d92e13885466e9d1",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "d9df2fe03f66ce79",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "da5de69c3958b4c3",
+      "kind": "policy",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "dc5c06707d0d394e",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "dc8f4feb585627b6",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "de99e106293fb3cd",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "e1521e233b106bca",
+      "kind": "form",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "e193f5119b1da207",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "e1f180acb3970745",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "e33df81465616fe9",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "e76e8770d60f3c7f",
+      "kind": "manual",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "e92490aa4f8e8aa0",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "e994593f16a84a8c",
+      "kind": "form",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "e9b6caf240d26ec7",
+      "kind": "guide",
+      "scenarios": [
+        "general",
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "ebc74b9735c5e225",
+      "kind": "policy",
+      "scenarios": [
+        "reception"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "ee65103880bb1a65",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "ef3ee2f17b01e3ae",
+      "kind": "guide",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "f06fd440d523e625",
+      "kind": "policy",
+      "scenarios": [
+        "consultation"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "f0a218578030cd8b",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "f148f75a0a1b1197",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "f3b595adb0844f6a",
+      "kind": "other",
+      "scenarios": [],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "f3bc2c36951d10a3",
+      "kind": "guide",
+      "scenarios": [
+        "international"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "再核对近年资料"
+    },
+    {
+      "id": "f490d8d4c717b8a9",
+      "kind": "manual",
+      "scenarios": [
+        "labor"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "先补常用场景"
+    },
+    {
+      "id": "f4a02d82a7883bc1",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "f554b85316d5f855",
+      "kind": "form",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "f55a15801c128ac1",
+      "kind": "other",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "f576bdac37803485",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "f58eb156b4a5889f",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "f5f4923df61b6d9d",
+      "kind": "policy",
+      "scenarios": [
+        "meeting"
+      ],
+      "availability": "blocked_captcha",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "f76762fd0707e612",
+      "kind": "guide",
+      "scenarios": [
+        "travel"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "f8f24575ca819773",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "f98e3f444a935ac3",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": true,
+      "priority": "一般待补"
+    },
+    {
+      "id": "fb0d4cc23724d78d",
+      "kind": "policy",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "fdeaa7535550a567",
+      "kind": "policy",
+      "scenarios": [
+        "general"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "priority": "已有提取正文"
+    }
+  ],
+  "same_extracted_text_groups": [
+    [
+      "0896bd1b6b3c84b8",
+      "c50d86d6a47cf681"
+    ],
+    [
+      "1a877bdd560da67f",
+      "4fa4a22d6f2a21ad",
+      "9eeba1a69b860ef6"
+    ],
+    [
+      "3a83fbd61f99a501",
+      "7f3153f521b54120",
+      "9d2db58cd80524a7"
+    ],
+    [
+      "64fe6cda23557d1a",
+      "f76762fd0707e612"
+    ],
+    [
+      "8e31ffd3692da6b1",
+      "961bdf4478743125"
+    ],
+    [
+      "ae0aa03a410c2284",
+      "bd85cc07d081bf90"
+    ],
+    [
+      "c4bc49e44c478fd5",
+      "f4a02d82a7883bc1"
+    ]
+  ],
+  "duplicate_note": "仅比较去除空白后的提取文字，未比较原始文件二进制。"
+}

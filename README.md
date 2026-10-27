@@ -7,9 +7,10 @@
 ## 直接使用
 
 - **看指南**：[Wiki 首页](wiki/Home.md)，按差旅、版面费、专家咨询费、采购等场景进入。
-- **Codex**：下载 [Codex 技能包](https://github.com/hint-lab/shu-reimbursement-agent/releases/latest/download/shu-reimbursement-codex.zip)，把解压后的 `shu-reimbursement` 整个文件夹复制到 `~/.agents/skills/`，调用 `$shu-reimbursement`。也可使用环境中的技能安装器从本仓库安装 `skills/shu-reimbursement`。
-- **WorkBuddy**：下载 [WorkBuddy 技能包](https://github.com/hint-lab/shu-reimbursement-agent/releases/latest/download/shu-reimbursement-workbuddy.zip)，在“添加技能 → 上传技能”中导入 ZIP。该包按官方技能元数据格式生成，实际客户端导入和对话效果仍需验收。
-- **豆包及普通聊天工具**：下载 [场景资料包](https://github.com/hint-lab/shu-reimbursement-agent/releases/latest/download/shu-reimbursement-chat.zip)，选择对应场景的文本，结合 [通用对话用法](wiki/使用方法.md) 使用。这里不假定豆包支持安装或执行本 Skill。
+- **整理材料**：[学校资料总览](wiki/材料整理.md)、[表格入口](wiki/空白表格.md)、[待补资料](wiki/待补资料.md)。个人每笔报销按 [事项包方法](wiki/个人材料整理.md) 留在本地。
+- **Codex**：下载 [Codex 技能包](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-reimbursement-codex.zip)，把解压后的 `shu-reimbursement` 整个文件夹复制到 `~/.agents/skills/`，调用 `$shu-reimbursement`。也可使用环境中的技能安装器从本仓库安装 `skills/shu-reimbursement`。
+- **WorkBuddy**：下载 [WorkBuddy 技能包](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-reimbursement-workbuddy.zip)，在“添加技能 → 上传技能”中导入 ZIP。该包按官方技能元数据格式生成，实际客户端导入和对话效果仍需验收。
+- **豆包及普通聊天工具**：下载 [场景资料包](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-reimbursement-chat.zip)，选择对应场景的文本，结合 [通用对话用法](wiki/使用方法.md) 使用。这里不假定豆包支持安装或执行本 Skill。
 
 例如：
 
