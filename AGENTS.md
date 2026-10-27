@@ -1,15 +1,13 @@
-# Agent Notes
+# 项目说明
 
-## Browser Usage
+本仓库只维护上海大学报销 Wiki、可安装 Skill 和轻量资料检索/打包工具。
 
-- The local web app is served at `http://127.0.0.1:8765`.
-- When checking or operating the app in a browser, first look for an existing browser tab whose URL starts with `http://127.0.0.1:8765`.
-- If that tab already exists, reuse it and navigate within that same tab as needed.
-- Do not open a new browser tab or a separate browser instance for routine app checks when the `8765` tab is already open.
-- Only create a new browser tab when no `8765` tab exists.
-- If the local service is not running, start the app service first, then open `http://127.0.0.1:8765`.
-
-## Runtime Boundary
-
-- Keep browser verification on the existing local app session whenever possible, because it may contain the current agreement state, login state, and UI context.
-- Do not change the user's active browser flow unless the task specifically requires it.
+- 不恢复独立聊天网页、桌面壳、数据库、邮箱收票、学校登录或自动代填。
+- 知识源位于 `skills/shu-reimbursement/references/knowledge/documents.jsonl`；Wiki 目录和原文阅读页由 `python3 tools/build.py` 生成。修改知识源后重新构建，不手工改生成页。
+- 区分原文、解释、待确认条件。网页发布日期、文件版本年份和规则生效日期是不同字段；未经核验不能宣称某份资料目前有效。
+- 只有附件入口时，保留入口和未解析状态，不假装读过附件。旧版启发式材料规则不作为学校正式规定。
+- 检索在本地运行，只返回证据，由宿主 AI 回答；不要求额外大模型 API Key。
+- 不把真实发票、姓名名单、账户、签名、会话、密钥或报销案例原件提交到 Git。
+- 维护脚本只访问公开官方来源。发现变化后核对适用范围再发布，不自动把个人经历升级成规则。
+- 修改后运行 `python3 -m unittest discover -s tests -v`、`python3 tools/build.py --check`，并验证技能可在其他目录独立运行。
+- 浏览器验收不需要启动本地服务。若需要查看旧版 `127.0.0.1:8765` 会话，先复用已有标签，不改变原有登录或协议状态。

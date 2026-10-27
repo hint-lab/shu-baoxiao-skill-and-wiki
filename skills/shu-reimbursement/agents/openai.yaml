@@ -1,0 +1,4 @@
+interface:
+  display_name: "上大报销助手"
+  short_description: "查上海大学报销规则，核对已有材料，解释退回意见并附原文依据"
+  default_prompt: "使用 $shu-reimbursement 查询这项报销的适用规则，检查我已有的材料并列出补齐步骤和依据。"

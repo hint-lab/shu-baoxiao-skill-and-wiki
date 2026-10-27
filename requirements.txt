@@ -1,7 +1,0 @@
-lxml
-pypdf
-python-docx
-numpy
-Pillow
-pytesseract
-playwright

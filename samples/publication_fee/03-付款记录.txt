@@ -1,5 +1,0 @@
-银行卡付款记录
-交易日期：2026-06-11
-收款方：Journal of Intelligent Systems
-金额：600.00 USD
-用途：论文版面费
