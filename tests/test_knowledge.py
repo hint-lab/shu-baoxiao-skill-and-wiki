@@ -110,6 +110,13 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(guide["privacy_redacted_pages"], [70, 71, 72, 73])
         self.assertEqual(guide["text"].count("该页涉及个人账户示例"), 4)
 
+    def test_private_transaction_example_page_is_withheld(self):
+        doc = next(doc for doc in self.docs if doc["id"] == "675c42067898dca4")
+        self.assertEqual(doc["privacy_redacted_pages"], [8])
+        page = re.search(r"(?ms)^### 原件第 8 页\n(.*?)(?=^### 原件第 9 页)", doc["text"])
+        self.assertIsNotNone(page)
+        self.assertEqual(page.group(1).strip(), "[该页含具体业务和个人信息示例，未公开；请查看学校原件。]")
+
     def test_skill_runs_from_a_different_directory_without_repo(self):
         with tempfile.TemporaryDirectory(prefix="shu-skill-") as folder:
             destination = Path(folder) / "技能 带空格"

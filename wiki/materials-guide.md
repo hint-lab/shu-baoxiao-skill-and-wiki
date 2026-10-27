@@ -7,7 +7,7 @@
 | --- | --- | --- |
 | [2018年新版常见业务费报销指南(文字版)](../skills/shu-baoxiao/references/sources/3200e53366d96d2e.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
 | [2018年新版常见业务费报销指南(文字版)](../skills/shu-baoxiao/references/sources/ef3ee2f17b01e3ae.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
-| [2018年新版常见业务费报销指南(文字版).pdf](../skills/shu-baoxiao/references/sources/c3b16291ce284acb.md) | 办公耗材与设备采购、测试化验加工费 | 有提取正文 |
+| [2018年新版常见业务费报销指南(文字版).pdf](../skills/shu-baoxiao/references/sources/c3b16291ce284acb.md) | 办公耗材与设备采购、测试化验加工费 | 有提取正文；OCR 待核 |
 | [2024资产入库指南（重大优化见第11页）.pdf](../skills/shu-baoxiao/references/sources/848097df4d434789.md) | 办公耗材与设备采购 | 有提取正文 |
 | [2025上海大学财务与资产业务百问百答（公布版）.pdf](../skills/shu-baoxiao/references/sources/1e88716b10c71712.md) | 系统操作与通用问题、办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [2025年上海大学财务与资产业务百问百答](../skills/shu-baoxiao/references/sources/09b85d0c18957a6a.md) | 系统操作与通用问题、办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |

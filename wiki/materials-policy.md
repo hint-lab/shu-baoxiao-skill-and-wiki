@@ -21,11 +21,11 @@
 | [上大内〔2019〕286号-关于印发《上海大学国内差旅费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/05ac7fea00fe876f.md) | 国内差旅 | 有提取正文；OCR 待核 |
 | [上大内〔2019〕295号-关于印发《上海大学理工科纵向民口科技项目经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/dc5c06707d0d394e.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [上大内〔2019〕58号 关于印发《上海大学国内公务接待管理办法》的通知](../skills/shu-baoxiao/references/sources/0d8c225a3ff6e2a2.md) | 公务接待与工作用餐 | 有提取正文 |
-| [上大内〔2020〕225号-关于印发《上海大学国有资产管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/680cab66c4fcff81.md) | 办公耗材与设备采购 | 有提取正文 |
+| [上大内〔2020〕225号-关于印发《上海大学国有资产管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/680cab66c4fcff81.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [上大内〔2020〕50号 关于印发《上海大学科研经费财务管理实施细则》的通知](../skills/shu-baoxiao/references/sources/e1f180acb3970745.md) | 跨场景/待归类 | 有提取正文 |
 | [上大内〔2020〕76号-关于印发《上海大学采购管理办法（试行）》的通知.pdf](../skills/shu-baoxiao/references/sources/78b41de9df7955fc.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
-| [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/0896bd1b6b3c84b8.md) | 跨场景/待归类 | 有提取正文 |
-| [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/c50d86d6a47cf681.md) | 跨场景/待归类 | 有提取正文 |
+| [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/0896bd1b6b3c84b8.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/c50d86d6a47cf681.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [上大内〔2022〕142号-关于印发《上海大学外事接待管理办法》的通知](../skills/shu-baoxiao/references/sources/aefb6fa0a3734716.md) | 公务接待与工作用餐 | 仅入口/短文本 |
 | [上大内〔2023〕176号-关于印发《上海大学合同管理办法》的通知](../skills/shu-baoxiao/references/sources/571cb909cfa90b5c.md) | 跨场景/待归类 | 仅入口/短文本 |
 | [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知](../skills/shu-baoxiao/references/sources/2b37225f9fdb95bd.md) | 跨场景/待归类 | 仅入口/短文本 |
@@ -75,7 +75,7 @@
 | [关于印发《中央国家机关和事业单位差旅费管理办法有关问题解答》的通知](../skills/shu-baoxiao/references/sources/8073f3d9b643a4f3.md) | 跨场景/待归类 | 有提取正文 |
 | [关于印发《中央国家机关和事业单位差旅费管理办法有关问题解答（二）》的通知](../skills/shu-baoxiao/references/sources/8d8b67da6bbd2d17.md) | 跨场景/待归类 | 有提取正文 |
 | [关于印发《中央财政科研项目专家咨询费管理办法》的通知  财科教〔2017〕128号](../skills/shu-baoxiao/references/sources/7a93aaa88805db08.md) | 专家咨询费 | 仅入口/短文本；关联附件有文本 |
-| [关于印发《国家自然科学基金资助项目资金管理办法》的通知（财教〔2021〕177 号）.pdf](../skills/shu-baoxiao/references/sources/fb0d4cc23724d78d.md) | 跨场景/待归类 | 有提取正文 |
+| [关于印发《国家自然科学基金资助项目资金管理办法》的通知（财教〔2021〕177 号）.pdf](../skills/shu-baoxiao/references/sources/fb0d4cc23724d78d.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [关于印发《行政事业单位资金往来结算票据使用管理暂行办法》的通知](../skills/shu-baoxiao/references/sources/b5fe9340980e718a.md) | 系统操作与通用问题 | 有提取正文 |
 | [关于发布《上海市2014年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/b3394966a2cc9138.md) | 办公耗材与设备采购 | 有提取正文 |
 | [关于发布《上海市2016年政府采购集中目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/79fcfd9d22ef0966.md) | 办公耗材与设备采购 | 有提取正文 |
@@ -105,8 +105,8 @@
 | [关于进口设备采购相关事务的通知](../skills/shu-baoxiao/references/sources/435a47209f5e23c3.md) | 办公耗材与设备采购 | 有提取正文 |
 | [关于集中办理中国农业银行公务卡的通知](../skills/shu-baoxiao/references/sources/00704be5eb48728f.md) | 系统操作与通用问题 | 有提取正文 |
 | [启用“网上报销填报系统”的相关通知](../skills/shu-baoxiao/references/sources/7d3ce1111536a736.md) | 跨场景/待归类 | 有提取正文 |
-| [国务院办公厅关于改革完善中央财政科研经费管理的若干意见国办发〔2021〕32号.pdf](../skills/shu-baoxiao/references/sources/afdec23243a95097.md) | 跨场景/待归类 | 有提取正文 |
-| [国家社会科学基金项目资金管理办法(财教〔2021〕237号).docx.pdf](../skills/shu-baoxiao/references/sources/6336fed08a340f5d.md) | 跨场景/待归类 | 有提取正文 |
+| [国务院办公厅关于改革完善中央财政科研经费管理的若干意见国办发〔2021〕32号.pdf](../skills/shu-baoxiao/references/sources/afdec23243a95097.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [国家社会科学基金项目资金管理办法(财教〔2021〕237号).docx.pdf](../skills/shu-baoxiao/references/sources/6336fed08a340f5d.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [国家自然科学基金委员会关于国家自然科学基金项目经费管理相关事宜的通知（国科金财函〔2021〕23号）.pdf](../skills/shu-baoxiao/references/sources/1510b4dc81b58661.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [国家自然科学基金资助项目资金管理办法财教〔2015〕15号.docx](../skills/shu-baoxiao/references/sources/546732b113fea048.md) | 跨场景/待归类 | 有提取正文 |
 | [国家重点研发计划资金管理办法（财科教（2016）113号）.doc](../skills/shu-baoxiao/references/sources/6c1cda33bb64bbc5.md) | 跨场景/待归类 | 有提取正文 |
@@ -115,7 +115,7 @@
 | [科研经费相关管理办法](../skills/shu-baoxiao/references/sources/e92490aa4f8e8aa0.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
 | [财政部 科技部 发展改革委关于印发《国家科技重大专项（民口）资金管理办法》的通知（财科教〔2017〕74号）.docx](../skills/shu-baoxiao/references/sources/1204db969883c964.md) | 跨场景/待归类 | 有提取正文 |
 | [财政部 科技部关于中央财政科技计划（专项、基金等）经费管理新旧政策衔接有关事项的通知.pdf](../skills/shu-baoxiao/references/sources/70097ec797534841.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [财政部 科技部关于印发《国家重点研发计划资金管理办法》的通知（财教〔2021〕178号）.pdf](../skills/shu-baoxiao/references/sources/9c5c3539e17469a1.md) | 跨场景/待归类 | 有提取正文 |
+| [财政部 科技部关于印发《国家重点研发计划资金管理办法》的通知（财教〔2021〕178号）.pdf](../skills/shu-baoxiao/references/sources/9c5c3539e17469a1.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [财政部关于印发《中央国家机关和事业单位差旅费管理办法》的通知](../skills/shu-baoxiao/references/sources/f58eb156b4a5889f.md) | 跨场景/待归类 | 有提取正文 |
 | [财政部关于印发《在华举办国际会议费用开支标准和财务管理办法》的通知](../skills/shu-baoxiao/references/sources/f148f75a0a1b1197.md) | 会议费 | 有提取正文 |
 | [财政部关于行政事业单位资金往来结算票据使用管理有关问题的补充通知](../skills/shu-baoxiao/references/sources/3ae702b6d843350a.md) | 系统操作与通用问题 | 有提取正文 |
