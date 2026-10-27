@@ -19,7 +19,7 @@
 | [外汇业务宣讲202305.pdf](../skills/shu-baoxiao/references/sources/6e2c5c1b1f3ef5b3.md) | 出国境与外汇 | 有提取正文；OCR 待核 |
 | [提醒 ／ 2019年，发票监制章改版啦](../skills/shu-baoxiao/references/sources/ae0aa03a410c2284.md) | 系统操作与通用问题 | 有提取正文 |
 | [提醒 ／ 2019年，发票监制章改版啦](../skills/shu-baoxiao/references/sources/bd85cc07d081bf90.md) | 系统操作与通用问题 | 有提取正文 |
-| [政府采购品目分类目录.pdf](../skills/shu-baoxiao/references/sources/a90bc3ae95b8eff7.md) | 办公耗材与设备采购 | 有提取正文 |
+| [政府采购品目分类目录.pdf](../skills/shu-baoxiao/references/sources/a90bc3ae95b8eff7.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [政府采购表解读说明.doc](../skills/shu-baoxiao/references/sources/68d0916d80e6a4dc.md) | 办公耗材与设备采购 | 有提取正文 |
 | [政府采购附件-上海大学关于政府采购工作流程的工作手册20171205.docx](../skills/shu-baoxiao/references/sources/6dbab0c19a0cd500.md) | 办公耗材与设备采购 | 有提取正文 |
 | [文科类科研项目各类用表汇总](../skills/shu-baoxiao/references/sources/ee65103880bb1a65.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
