@@ -12,8 +12,8 @@
 | [2025上海大学财务与资产业务百问百答（公布版）.pdf](../skills/shu-baoxiao/references/sources/1e88716b10c71712.md) | 系统操作与通用问题、办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [2025年上海大学财务与资产业务百问百答](../skills/shu-baoxiao/references/sources/09b85d0c18957a6a.md) | 系统操作与通用问题、办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
 | [2025年上海大学财务与资产业务百问百答](../skills/shu-baoxiao/references/sources/e9b6caf240d26ec7.md) | 系统操作与通用问题、办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
-| [【国际合作交流费】外汇相关业务报销指南（2024版）](../skills/shu-baoxiao/references/sources/2bdbbf4acb033866.md) | 出国境与外汇 | 仅入口/短文本；关联附件有文本 |
-| [【国际合作交流费】外汇相关业务报销指南（2024版）](../skills/shu-baoxiao/references/sources/f3bc2c36951d10a3.md) | 出国境与外汇 | 仅入口/短文本；关联附件有文本 |
+| [【国际合作交流费】外汇相关业务报销指南（2024版）](../skills/shu-baoxiao/references/sources/2bdbbf4acb033866.md) | 出国境与外汇 | 仅入口/短文本 |
+| [【国际合作交流费】外汇相关业务报销指南（2024版）](../skills/shu-baoxiao/references/sources/f3bc2c36951d10a3.md) | 出国境与外汇 | 仅入口/短文本 |
 | [【报销讲解】公务接待费及工作用餐使用报销讲解](../skills/shu-baoxiao/references/sources/247ef22385028c70.md) | 公务接待与工作用餐 | 有提取正文 |
 | [公务卡相关热点问答](../skills/shu-baoxiao/references/sources/3a83fbd61f99a501.md) | 系统操作与通用问题 | 有提取正文 |
 | [公务卡相关热点问答](../skills/shu-baoxiao/references/sources/7f3153f521b54120.md) | 系统操作与通用问题 | 有提取正文 |

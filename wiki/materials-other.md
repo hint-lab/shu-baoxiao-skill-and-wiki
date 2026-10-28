@@ -16,7 +16,7 @@
 | [关于启用新版财政票据的友情提示](../skills/shu-baoxiao/references/sources/1056622170af84e2.md) | 系统操作与通用问题 | 有提取正文 |
 | [关于重申发票真伪鉴定的友情提醒](../skills/shu-baoxiao/references/sources/f55a15801c128ac1.md) | 系统操作与通用问题 | 有提取正文 |
 | [出国（境）报销标准字典表（202303更新版）.pdf](../skills/shu-baoxiao/references/sources/555c15d289d1c6a6.md) | 出国境与外汇 | 有提取正文；OCR 待核 |
-| [外汇业务宣讲202305.pdf](../skills/shu-baoxiao/references/sources/6e2c5c1b1f3ef5b3.md) | 出国境与外汇 | 有提取正文；OCR 待核 |
+| [外汇业务宣讲202305.pdf](../skills/shu-baoxiao/references/sources/6e2c5c1b1f3ef5b3.md) | 出国境与外汇 | 有部分文字，待补或核对；OCR 待核 |
 | [提醒 ／ 2019年，发票监制章改版啦](../skills/shu-baoxiao/references/sources/ae0aa03a410c2284.md) | 系统操作与通用问题 | 有提取正文 |
 | [提醒 ／ 2019年，发票监制章改版啦](../skills/shu-baoxiao/references/sources/bd85cc07d081bf90.md) | 系统操作与通用问题 | 有提取正文 |
 | [政府采购品目分类目录.pdf](../skills/shu-baoxiao/references/sources/a90bc3ae95b8eff7.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
@@ -33,6 +33,6 @@
 | [财务入账及开票流程介绍（横向科研经费）](../skills/shu-baoxiao/references/sources/650a2552d08e0da7.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
 | [财务入账及开票流程介绍（横向科研经费）](../skills/shu-baoxiao/references/sources/6d163c86020fee9b.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
 | [财务入账及开票流程介绍（横向科研经费）.pdf](../skills/shu-baoxiao/references/sources/675c42067898dca4.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [附件一上海大学到账确认书.docx](../skills/shu-baoxiao/references/sources/4bab928bab65abd9.md) | 系统操作与通用问题 | 有提取正文 |
+| [附件一上海大学到账确认书.docx](../skills/shu-baoxiao/references/sources/4bab928bab65abd9.md) | 系统操作与通用问题 | 有部分文字，待补或核对 |
 
 [返回材料总览](材料整理.md)

@@ -121,15 +121,44 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(page.group(1).strip(), "[该页含具体业务和个人信息示例，未公开；请查看学校原件。]")
 
     def test_original_page_images_are_complete_and_locally_resolvable(self):
-        for source_id, expected in (("74dbe09ea2005378", 7), ("03976750f4d5654e", 52)):
+        for source_id, expected in (("74dbe09ea2005378", 7), ("03976750f4d5654e", 52), ("9e51d515d369a1b2", 10)):
             doc = next(doc for doc in self.docs if doc["id"] == source_id)
             pages = doc["original_page_images"]
             self.assertEqual([page["page"] for page in pages], list(range(1, expected + 1)))
             rendered = build.source_page(doc)
+            self.assertEqual(rendered.count("<summary>查看本页识别文字（待校对）</summary>"), expected)
+            self.assertEqual(rendered.count("<details>"), rendered.count("</details>"))
             for page in pages:
                 path = SKILL / page["path"]
                 self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), page["sha256"])
                 self.assertIn(f'![原件第 {page["page"]} 页](../../{page["path"]})', rendered)
+
+    def test_multiple_form_preview_pages_are_visible_and_ordered(self):
+        doc = next(d for d in self.docs if d["id"] == "8306c9e2b8f7b504")
+        self.assertEqual([image["page"] for image in doc["preview_images"]], [1, 2])
+        rendered = build.source_page(doc)
+        for image in doc["preview_images"]:
+            self.assertEqual(hashlib.sha256((SKILL / image["path"]).read_bytes()).hexdigest(), image["sha256"])
+            self.assertIn(f'![版式预览第 {image["page"]} 页](../../{image["path"]})', rendered)
+        self.assertIn("分页、字体可能与 Word 或 Excel 不同", rendered)
+
+    def test_audit_distinguishes_originals_from_partial_and_previews(self):
+        index = build.organize_documents(self.docs, build.scenarios())
+        audit = build.material_reports(self.docs, build.scenarios(), index)[ROOT / "wiki/原文对照进度.md"]
+        self.assertIn("原页图可保留版式，但不代表", audit)
+        self.assertIn("部分文字或摘要；部分内容未公开", audit)
+        self.assertIn("转换预览与提取文字", audit)
+
+    def test_bank_receipt_example_is_withheld_from_word_preview(self):
+        doc = next(d for d in self.docs if d["id"] == "4bab928bab65abd9")
+        self.assertEqual(doc["availability"], "partial_text")
+        self.assertEqual(doc["preview_withheld_pages"], [2])
+        self.assertEqual([p["page"] for p in doc["preview_images"]], [1])
+        self.assertIn("第 2 页银行回单示例未公开", build.source_page(doc))
+        withheld = dict(doc["preview_images"][0], page=2, path="assets/previews/4bab928bab65abd9-page-002.png")
+        unsafe = dict(doc, preview_images=doc["preview_images"] + [withheld])
+        with self.assertRaisesRegex(ValueError, "隐私删节页"):
+            build.source_page(unsafe)
 
     def test_new_school_policies_are_marked_as_unread_entries(self):
         by_id = {doc["id"]: doc for doc in self.docs}
@@ -191,7 +220,7 @@ class KnowledgeTests(unittest.TestCase):
             self.assertEqual(path.read_text(encoding="utf-8"), expected, str(path))
         for path in list((ROOT / "wiki").glob("*.md")) + list(SKILL.rglob("*.md")):
             text = re.sub(r"`{3,}.*?`{3,}", "", path.read_text(encoding="utf-8"), flags=re.S)
-            for target in re.findall(r"\]\(([^)]+)\)", text):
+            for target in re.findall(r"(?<!\\)\]\(([^)\n]+)\)", text):
                 if not target.startswith(("http:", "https:", "#", "mailto:")):
                     self.assertTrue((path.parent / unquote(target.split("#")[0])).exists(), f"{path}: {target}")
 
@@ -244,6 +273,23 @@ class MaintenanceTests(unittest.TestCase):
         self.assertEqual(len(result["attachments"]), 1)
         entry = maintain.parse_page("https://cwc.shu.edu.cn/x", "<title>只有入口</title><nav>" + "导航"*100 + "</nav>", "2026-10-27")
         self.assertEqual(entry["availability"], "entry_only")
+
+    def test_html_tables_keep_merged_cells_and_inline_text(self):
+        html = '''<div class="v_news_content"><p>第<span>十二</span>条：正文。</p>
+        <table><caption>标准表</caption><tbody><tr><td rowspan="2" onclick="bad()">人员</td><td>金额</td></tr>
+        <tr><td><p>100</p><p>附注</p></td></tr></tbody></table>
+        <img src="private.png"><script>不应提取</script></div>'''
+        result = maintain.parse_page("https://cwc.shu.edu.cn/x", html, "2026-10-28")
+        self.assertIn("第十二条", result["text"])
+        self.assertIn("标准表", result["text"])
+        self.assertIn('rowspan="2"', result["text"])
+        self.assertIn("100<br>附注", result["text"])
+        self.assertNotIn("onclick", result["text"])
+        self.assertNotIn("private.png", result["text"])
+        self.assertNotIn("不应提取", result["text"])
+        self.assertIn("images_not_extracted", result["parse_warnings"])
+        maintain.validate_markdown(result["text"])
+        self.assertEqual(result["availability"], "entry_only")
 
     def test_updates_preserve_source_identity(self):
         with tempfile.TemporaryDirectory() as folder:

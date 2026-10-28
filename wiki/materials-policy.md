@@ -88,7 +88,7 @@
 | [关于发布《上海市2014年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/b3394966a2cc9138.md) | 办公耗材与设备采购 | 有提取正文 |
 | [关于发布《上海市2016年政府采购集中目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/79fcfd9d22ef0966.md) | 办公耗材与设备采购 | 有提取正文 |
 | [关于发布《上海市2017-2018年政府采购集中采购目录和采购限额标准》的通知](../skills/shu-baoxiao/references/sources/a731e4919da8ec8f.md) | 办公耗材与设备采购 | 有提取正文 |
-| [关于启用“无现金报销”系统的通知](../skills/shu-baoxiao/references/sources/6f8b22548d5f8f3e.md) | 跨场景/待归类 | 有提取正文 |
+| [关于启用“无现金报销”系统的通知](../skills/shu-baoxiao/references/sources/6f8b22548d5f8f3e.md) | 跨场景/待归类 | 有部分文字，待补或核对 |
 | [关于国家科技重大专项（民口）资金管理有关事项的通知（财教〔2021〕262号）.pdf](../skills/shu-baoxiao/references/sources/80f8e6a95e05c483.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [关于国际客票使用《航空运输电子客票行程单》报销的通知](../skills/shu-baoxiao/references/sources/f8f24575ca819773.md) | 跨场景/待归类 | 有提取正文 |
 | [关于增值税电子发票报销事项的通知](../skills/shu-baoxiao/references/sources/18d228356b1174ab.md) | 系统操作与通用问题 | 有提取正文 |

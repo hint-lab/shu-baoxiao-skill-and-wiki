@@ -8,8 +8,8 @@
 | [上海大学智能报销操作手册2025年3月.pdf](../skills/shu-baoxiao/references/sources/8e31ffd3692da6b1.md) | 系统操作与通用问题 | 有部分文字，待补或核对；OCR 待核 |
 | [上海大学智能报销操作手册2025年3月.pdf](../skills/shu-baoxiao/references/sources/961bdf4478743125.md) | 系统操作与通用问题 | 有部分文字，待补或核对；OCR 待核 |
 | [上海大学智能报销操作手册（2025年3月）](../skills/shu-baoxiao/references/sources/a66f085be6cb13a9.md) | 系统操作与通用问题 | 仅入口/短文本 |
-| [临聘劳务合同登记及申报发放手册（填报人）](../skills/shu-baoxiao/references/sources/f490d8d4c717b8a9.md) | 劳务费 | 仅入口/短文本；关联附件有文本 |
-| [临聘劳务合同登记及申报发放手册（填报人）.pdf](../skills/shu-baoxiao/references/sources/e76e8770d60f3c7f.md) | 劳务费 | 有提取正文；OCR 待核 |
+| [临聘劳务合同登记及申报发放手册（填报人）](../skills/shu-baoxiao/references/sources/f490d8d4c717b8a9.md) | 劳务费 | 仅入口/短文本 |
+| [临聘劳务合同登记及申报发放手册（填报人）.pdf](../skills/shu-baoxiao/references/sources/e76e8770d60f3c7f.md) | 劳务费 | 有部分文字，待补或核对；OCR 待核 |
 | [关于劳务费填报流程变动的说明(2020年）](../skills/shu-baoxiao/references/sources/1a877bdd560da67f.md) | 劳务费 | 有提取正文 |
 | [关于劳务费填报流程变动的说明(2020年）](../skills/shu-baoxiao/references/sources/4fa4a22d6f2a21ad.md) | 劳务费 | 有提取正文 |
 | [关于劳务费填报流程变动的说明(2020年）](../skills/shu-baoxiao/references/sources/9eeba1a69b860ef6.md) | 劳务费 | 有提取正文 |

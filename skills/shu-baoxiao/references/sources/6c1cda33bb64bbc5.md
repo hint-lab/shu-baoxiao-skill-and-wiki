@@ -11,6 +11,44 @@
 - 文字质量：从 Word 结构提取并保留表格合并关系；仍须核对原件与适用版本。 解析提示：旧版 Word 经 LibreOffice 转换，请核对版式。
 
 
+## 原文件版式预览
+
+由本机 Microsoft Word 按原文件排版导出，分页、字体可能与 Word 或 Excel 不同；请下载原件核对。
+
+在本机 Microsoft Word 中打开官方原件的副本，使用本地打印方式导出后逐页生成预览；未改动源文件。已检查各页版面与是否有填写示例，文字及表格尚未逐项人工校对。不同字体和 Word 环境仍可能改变分页。
+
+![版式预览第 1 页](../../assets/previews/6c1cda33bb64bbc5-page-001.png)
+
+![版式预览第 2 页](../../assets/previews/6c1cda33bb64bbc5-page-002.png)
+
+![版式预览第 3 页](../../assets/previews/6c1cda33bb64bbc5-page-003.png)
+
+![版式预览第 4 页](../../assets/previews/6c1cda33bb64bbc5-page-004.png)
+
+![版式预览第 5 页](../../assets/previews/6c1cda33bb64bbc5-page-005.png)
+
+![版式预览第 6 页](../../assets/previews/6c1cda33bb64bbc5-page-006.png)
+
+![版式预览第 7 页](../../assets/previews/6c1cda33bb64bbc5-page-007.png)
+
+![版式预览第 8 页](../../assets/previews/6c1cda33bb64bbc5-page-008.png)
+
+![版式预览第 9 页](../../assets/previews/6c1cda33bb64bbc5-page-009.png)
+
+![版式预览第 10 页](../../assets/previews/6c1cda33bb64bbc5-page-010.png)
+
+![版式预览第 11 页](../../assets/previews/6c1cda33bb64bbc5-page-011.png)
+
+![版式预览第 12 页](../../assets/previews/6c1cda33bb64bbc5-page-012.png)
+
+![版式预览第 13 页](../../assets/previews/6c1cda33bb64bbc5-page-013.png)
+
+![版式预览第 14 页](../../assets/previews/6c1cda33bb64bbc5-page-014.png)
+
+![版式预览第 15 页](../../assets/previews/6c1cda33bb64bbc5-page-015.png)
+
+![版式预览第 16 页](../../assets/previews/6c1cda33bb64bbc5-page-016.png)
+
 
 ## 提取文本
 

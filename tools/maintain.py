@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html as html_module
 import json
 import re
 from dataclasses import dataclass, field
@@ -106,6 +107,74 @@ def clean(text: str) -> str:
     return "\n".join(line.strip() for line in text.replace("\xa0", " ").splitlines() if line.strip())
 
 
+def article_markdown(root: Node) -> dict:
+    """Keep article tables and paragraphs; do not publish unreviewed media."""
+    warnings, tables, images = set(), 0, 0
+
+    def literal(value: str, in_cell: bool = False) -> str:
+        value = html_module.escape(value.replace("\xa0", " "), quote=False)
+        if not in_cell:
+            value = re.sub(r"([\\\[\]_*`#])", r"\\\1", value)
+        return value
+
+    def render(node, in_cell: bool = False) -> str:
+        nonlocal tables, images
+        if isinstance(node, str):
+            return literal(re.sub(r"\s+", " ", node), in_cell)
+        if node.tag in {"script", "style", "noscript"}:
+            return ""
+        if node.tag in {"iframe", "object", "embed", "video", "audio"}:
+            warnings.add("embedded_object_not_extracted")
+            return "[网页内嵌内容未公开，请查看官方原页。]"
+        if node.tag == "img":
+            images += 1
+            warnings.add("images_not_extracted")
+            return "[原网页图片尚未核对，未公开；请查看官方原页。]"
+        if node.tag == "br":
+            return "<br>" if in_cell else "  \n"
+        if node.tag == "table":
+            tables += 1
+
+            def rows(parent):
+                for child in parent.children:
+                    if isinstance(child, Node) and child.tag == "tr":
+                        yield child
+                    elif isinstance(child, Node) and child.tag in {"thead", "tbody", "tfoot"}:
+                        yield from rows(child)
+
+            captions = [render(child, True).strip() for child in node.children if isinstance(child, Node) and child.tag == "caption"]
+            result = ["<table>"]
+            for row in rows(node):
+                result.append("<tr>")
+                for cell in row.children:
+                    if not isinstance(cell, Node) or cell.tag not in {"td", "th"}:
+                        continue
+                    attrs = ""
+                    for key in ("rowspan", "colspan"):
+                        value = cell.attrs.get(key, "")
+                        if value.isdigit() and 1 <= int(value) <= 100:
+                            attrs += f' {key}="{int(value)}"'
+                        elif value:
+                            warnings.add("unmatched_vertical_merge")
+                    value = "".join(render(child, True) for child in cell.children).strip()
+                    value = re.sub(r"(?:<br>)+$", "", value)
+                    result.append(f"<{cell.tag}{attrs}>{value}</{cell.tag}>")
+                result.append("</tr>")
+            result.append("</table>")
+            return "\n\n" + "\n\n".join(captions + ["".join(result)]) + "\n\n"
+        content = "".join(render(child, in_cell) for child in node.children)
+        if node.tag in {"p", "div", "section", "article", "blockquote"}:
+            return content.strip() + ("<br>" if in_cell else "\n\n")
+        if node.tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+            return content.strip() + "<br>" if in_cell else "#" * min(6, int(node.tag[1]) + 1) + " " + content.strip() + "\n\n"
+        if node.tag == "li":
+            return content.strip() + "<br>" if in_cell else "- " + content.strip() + "\n"
+        return content
+
+    markdown = re.sub(r"\n{3,}", "\n\n", render(root)).strip() + "\n"
+    return {"markdown": markdown, "warnings": sorted(warnings), "tables": tables, "images": images}
+
+
 def parse_page(url: str, html: str, fetched_at: str) -> dict:
     parser = PageParser()
     parser.feed(html)
@@ -114,7 +183,9 @@ def parse_page(url: str, html: str, fetched_at: str) -> dict:
     title = re.sub(r"[-_\s]*上海大学财务处.*$", "", title).strip() or url
     candidates = [node for node in nodes if any(marker in (node.attrs.get("id", "") + " " + node.attrs.get("class", "")) for marker in ("vsb_content", "v_news_content", "Article_Content"))]
     # A whole navigation page is not policy body text.
-    text = clean(max(candidates, key=lambda node: len(node.text())).text()) if candidates else ""
+    article = max(candidates, key=lambda node: len(node.text())) if candidates else None
+    structured = article_markdown(article) if article else None
+    text = structured["markdown"] if structured else ""
     date = re.search(r"创建时间\s*[:：]\s*(\d{4}-\d{2}-\d{2})", clean(parser.root.text()))
     attachments = []
     seen = set()
@@ -135,8 +206,10 @@ def parse_page(url: str, html: str, fetched_at: str) -> dict:
     return {"id": hashlib.sha1(url.encode()).hexdigest()[:16], "title": title, "url": url,
             "source_type": "page", "category": "guide" if re.search("指南|手册|讲解|百问百答|演示", title) else "policy",
             "published_date": date.group(1) if date else "", "fetched_at": fetched_at,
-            "effectivity": "unverified", "availability": "text_available" if len(text) >= 65 else "entry_only",
-            "text": text, "attachments": attachments}
+            "effectivity": "unverified", "availability": "text_available" if article and len(clean(article.text())) >= 65 else "entry_only",
+            "text": text, "attachments": attachments,
+            "text_format": "markdown", "text_quality": "html_structured_unverified",
+            "extraction_method": "official_html_structured", "parse_warnings": structured["warnings"] if structured else []}
 
 
 def fetch(url: str) -> dict:
