@@ -31,7 +31,9 @@
     {
       "id": "03976750f4d5654e",
       "kind": "policy",
-      "scenarios": [],
+      "scenarios": [
+        "procurement"
+      ],
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],
@@ -484,8 +486,12 @@
       "id": "1e88716b10c71712",
       "kind": "guide",
       "scenarios": [
+        "consultation",
         "general",
-        "procurement"
+        "labor",
+        "procurement",
+        "publication",
+        "testing"
       ],
       "availability": "text_available",
       "needs_text": false,
@@ -505,6 +511,20 @@
       "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "1fec9dab903b59b8",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": false,
       "priority": "已有提取正文"
     },
     {
@@ -1185,6 +1205,20 @@
       "priority": "已有提取正文"
     },
     {
+      "id": "4fb6a80be4794b1b",
+      "kind": "form",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
       "id": "50185b93292554c2",
       "kind": "policy",
       "scenarios": [
@@ -1560,6 +1594,20 @@
       "priority": "已有提取正文"
     },
     {
+      "id": "68b19894c6e1b95a",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
       "id": "68d0916d80e6a4dc",
       "kind": "other",
       "scenarios": [
@@ -1571,6 +1619,20 @@
       "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "692dd43823f5948a",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": true,
       "priority": "已有提取正文"
     },
     {
@@ -1919,6 +1981,22 @@
       "same_document_readable": [],
       "linked_coverage": false,
       "ocr_unverified": true,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "824307ef1c8a330c",
+      "kind": "policy",
+      "scenarios": [
+        "procurement"
+      ],
+      "availability": "entry_only",
+      "needs_text": false,
+      "linked_readable": [
+        "692dd43823f5948a"
+      ],
+      "same_document_readable": [],
+      "linked_coverage": true,
+      "ocr_unverified": false,
       "priority": "已有提取正文"
     },
     {
@@ -2786,6 +2864,20 @@
       "id": "beeecdb558531031",
       "kind": "other",
       "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
+      "id": "bf5809b1b3213d0a",
+      "kind": "other",
+      "scenarios": [
+        "procurement"
+      ],
       "availability": "text_available",
       "needs_text": false,
       "linked_readable": [],

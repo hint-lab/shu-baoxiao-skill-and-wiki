@@ -17,7 +17,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "skills/shu-baoxiao/references/knowledge/documents.jsonl"
 MAX_BYTES = 5 * 1024 * 1024
-OFFICIAL_HOSTS = {"cwc.shu.edu.cn", "cla.shu.edu.cn"}
+OFFICIAL_HOSTS = {"cwc.shu.edu.cn", "cla.shu.edu.cn", "czb.shu.edu.cn"}
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 
 
@@ -25,7 +25,7 @@ def official_url(url: str) -> str:
     url = urldefrag(url.strip())[0]
     parsed = urlparse(url)
     if parsed.scheme != "https" or parsed.netloc not in OFFICIAL_HOSTS or parsed.username or parsed.password:
-        raise ValueError("只接受财务处或文学院的上海大学公开链接。")
+        raise ValueError("只接受上海大学财务处、文学院或采购中心官网的公开链接。")
     return url
 
 

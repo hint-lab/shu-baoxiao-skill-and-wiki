@@ -1,19 +1,23 @@
 {
   "schema_version": 1,
-  "skill_version": "1.5.0",
+  "skill_version": "1.10.1",
   "migration_date": "2026-10-27",
-  "document_count": 250,
+  "document_count": 256,
   "availability_counts": {
-    "text_available": 184,
-    "entry_only": 48,
+    "text_available": 189,
+    "entry_only": 49,
     "partial_text": 14,
     "blocked_forbidden": 4
   },
-  "ocr_unverified_count": 58,
-  "linked_coverage_count": 32,
+  "ocr_unverified_count": 59,
+  "linked_coverage_count": 33,
   "snapshot_earliest": "2026-06-30T07:40:31.326916+00:00",
-  "snapshot_latest": "2026-10-27T16:35:39.901674+00:00",
-  "documents_sha256": "fb03349d65f361b029d57b80e0ba01b4329b6f76e063b60ba7cc248bd2d490e3",
+  "snapshot_latest": "2026-10-29T02:48:59.834829+00:00",
+  "documents_sha256": "6089686af48a580f71b174c93f31c2591eb386f107c7224883a2d409c9ab87b1",
+  "checklist_count": 13,
+  "checklists_sha256": "09f69745ea8d48d3b857121f06e5e021246d86e15ec947646be584a991a415d5",
+  "reported_practice_count": 2,
+  "reported_practices_sha256": "3855a214aa374b9aaaa99a7a0c33b79c61ed0b10a711798bd7b612ce642dde62",
   "effectivity": "unverified",
   "scope": "报销相关公开资料；未迁入个人名单、真实报销材料或登录状态"
 }

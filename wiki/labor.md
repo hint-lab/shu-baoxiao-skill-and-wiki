@@ -11,6 +11,7 @@
 
 ## 从这些学校资料开始
 
+- [2025上海大学财务与资产业务百问百答（公布版）.pdf](../skills/shu-baoxiao/references/sources/1e88716b10c71712.md)：有提取正文
 - [【劳务费支取表（原临聘劳务合同）】上海大学劳务费支取表2025版](../skills/shu-baoxiao/references/sources/5bbd93c691e4a52a.md)：有提取正文
 - [学生劳务登记与申报发放操作手册（2026年5月版本）](../skills/shu-baoxiao/references/sources/61a3f8e0420155b2.md)：有部分文字，待补或核对
 - [临聘劳务合同登记及申报发放手册（填报人）](../skills/shu-baoxiao/references/sources/f490d8d4c717b8a9.md)：仅入口/短文本
@@ -23,4 +24,4 @@
 
 可用检索词：劳务费 支取表；学生劳务 登记 申报。
 
-[使用方法](使用方法.md) · [资料目录](资料目录.md) · [返回首页](Home.md)
+[使用方法](使用方法.md) · [反馈与纠错](反馈与纠错.md) · [资料目录](资料目录.md) · [返回首页](Home.md)

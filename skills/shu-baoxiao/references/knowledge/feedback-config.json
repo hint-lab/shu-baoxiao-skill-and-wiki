@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "primary_channel": "feishu_form",
+  "form_url": "https://tcnrkcsneh6s.feishu.cn/share/base/form/shrcn1OtilSVxBkMSeYIFA7fcNg",
+  "requires_account": false,
+  "anonymous": true,
+  "visibility": "maintainer_private",
+  "accepts": "redacted_text_only",
+  "verification": {
+    "date": "2026-10-29",
+    "logged_out_access_verified": true,
+    "submission_success_verified": true,
+    "matching_test_record_in_inbox_verified": true
+  },
+  "api": {
+    "status": "not_configured",
+    "url": null,
+    "rollout": "deferred_by_user",
+    "decision_date": "2026-10-29",
+    "reason": "维护者已选择先使用已启用的飞书匿名表单，现阶段暂不部署API。表单链接不是POST接口。"
+  },
+  "github_issues_url": "https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/issues"
+}

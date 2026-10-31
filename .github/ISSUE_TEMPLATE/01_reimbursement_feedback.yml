@@ -1,0 +1,91 @@
+name: 报销口径、材料清单或退回反馈
+description: 反馈实际办理与知识库不一致、材料遗漏或新的学院执行口径；仅提交脱敏文字。
+title: "[报销反馈] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        这里是公开反馈。请只说明问题，不上传真实发票、账户、签名、人员名单、学工号或完整聊天记录。
+        已提交反馈不等于已核实规则；请区分口头告知、实际经历和公开书面依据。
+  - type: dropdown
+    id: feedback_type
+    attributes:
+      label: 反馈类型
+      options:
+        - 按清单准备后仍被退回
+        - 实际办理口径与知识库不一致
+        - 材料清单有遗漏或多要求了材料
+        - 补充学院执行口径
+        - 官方政策、表格或链接有更新
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: college
+    attributes:
+      label: 学院或部门
+      description: 仅填单位名称，不填写个人姓名、学工号或联系方式。
+    validations:
+      required: true
+  - type: dropdown
+    id: funding
+    attributes:
+      label: 经费类型
+      options:
+        - 纵向科研经费
+        - 横向科研经费
+        - 办公类经费
+        - 教学或教改经费
+        - 学生项目经费
+        - 其他
+        - 尚不清楚
+    validations:
+      required: true
+  - type: input
+    id: business
+    attributes:
+      label: 事项或物品及业务年月
+      placeholder: 例如：硬盘采购，2026年10月；不要填写票据号或账户信息。
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: 关联页面、清单或AI原判断
+      description: 可填页面链接、清单名称、版本或摘录有问题的一句话；不知道版本也可以反馈。
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: 目前办理状态
+      options:
+        - 尚未申报，仅咨询
+        - 已申报，待审核
+        - 已被退回
+        - 已审核通过，尚未付款
+        - 已付款
+        - 尚不清楚
+    validations:
+      required: true
+  - type: textarea
+    id: discrepancy
+    attributes:
+      label: 实际差异或退回原因
+      description: 摘录脱敏后的告知或退回原文，说明希望修正什么；不上传原件或完整截图。
+      value: |
+        知识库/AI原判断：
+        实际告知或退回原因（脱敏）：
+        希望核对的问题：
+    validations:
+      required: true
+  - type: textarea
+    id: public_source
+    attributes:
+      label: 公开书面依据（如有）
+      description: 仅提供官方公开链接或脱敏条款文字。没有书面依据时，请标明口头告知或实际办理经历；不放登录信息或私有下载链接。
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我仅提交脱敏问题说明，未上传真实票据、账户、签名、人员名单或完整聊天记录。
+          required: true

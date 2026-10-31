@@ -1,6 +1,8 @@
 <!-- Generated from scenarios.json; no binding checklist. -->
 # 办公耗材与设备采购
 
+**版本提示：2024版采购办法第38条明确2020版同时废止。目录外50万元起为委托采购，不能把旧提示表的“招标”简写套成一律公开招标。先使用已核对清单并匹配目录、用途、经费和采购/结算渠道。**
+
 先提供事项与已有材料。下面是会影响判断的条件，不是要求你额外准备的材料清单。
 
 ## 先确认
@@ -11,6 +13,11 @@
 
 ## 从这些学校资料开始
 
+- [上大内〔2024〕222号-关于印发《上海大学采购管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/692dd43823f5948a.md)：有提取正文
+- [《上海市政府集中采购目录及标准（2024年版）》解释及对照表-上海大学采购与招标管理中心](../skills/shu-baoxiao/references/sources/4fb6a80be4794b1b.md)：有提取正文
+- [政府采购-框架协议采购查询说明（2024版）-上海大学采购与招标管理中心](../skills/shu-baoxiao/references/sources/bf5809b1b3213d0a.md)：有提取正文
+- [2025上海大学财务与资产业务百问百答（公布版）.pdf](../skills/shu-baoxiao/references/sources/1e88716b10c71712.md)：有提取正文
+- [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/03976750f4d5654e.md)：有提取正文
 - [资产采购-入库-报销指南（2024版）](../skills/shu-baoxiao/references/sources/c32a4ea2a98f71e6.md)：仅入口/短文本
 - [2018年新版常见业务费报销指南(文字版).pdf](../skills/shu-baoxiao/references/sources/c3b16291ce284acb.md)：有提取正文
 
@@ -22,4 +29,4 @@
 
 可用检索词：资产采购 入库 报销指南；办公用品 材料费 发票 明细。
 
-[使用方法](使用方法.md) · [资料目录](资料目录.md) · [返回首页](Home.md)
+[使用方法](使用方法.md) · [反馈与纠错](反馈与纠错.md) · [资料目录](资料目录.md) · [返回首页](Home.md)

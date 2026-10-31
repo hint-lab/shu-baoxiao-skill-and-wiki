@@ -1,0 +1,50 @@
+name: Skill使用、识别或资料链接问题
+description: 反馈安装失败、运行错误、识别错漏、页面或下载链接失效。
+title: "[使用反馈] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请提交脱敏后的操作说明和错误文字，不上传个人报销文件、密钥、登录信息或完整聊天记录。
+  - type: input
+    id: environment
+    attributes:
+      label: 使用环境
+      placeholder: 例如：Codex / WorkBuddy / 普通聊天工具，以及操作系统（如知道）。
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Skill或资料包版本（可选）
+      description: 不知道版本也可以反馈。
+  - type: dropdown
+    id: problem_type
+    attributes:
+      label: 问题类型
+      options:
+        - 安装或导入失败
+        - 运行报错
+        - 文件识别错漏
+        - 资料链接或下载失效
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 如何遇到这个问题
+      value: |
+        操作步骤：
+        预期结果：
+        实际结果或错误文字（脱敏）：
+        相关公开页面链接（如有）：
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已去除个人材料、账户、密钥、登录信息和其他隐私内容。
+          required: true

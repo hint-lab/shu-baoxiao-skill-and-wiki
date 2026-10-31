@@ -28,8 +28,9 @@
 | [上大内〔2021〕224号-关于印发《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/c50d86d6a47cf681.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [上大内〔2022〕142号-关于印发《上海大学外事接待管理办法》的通知](../skills/shu-baoxiao/references/sources/aefb6fa0a3734716.md) | 公务接待与工作用餐 | 有提取正文；OCR 待核 |
 | [上大内〔2023〕176号-关于印发《上海大学合同管理办法》的通知](../skills/shu-baoxiao/references/sources/571cb909cfa90b5c.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上大内〔2024〕222号-关于印发《上海大学采购管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/692dd43823f5948a.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知](../skills/shu-baoxiao/references/sources/2b37225f9fdb95bd.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
-| [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/03976750f4d5654e.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
+| [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/03976750f4d5654e.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [上大内〔2025〕141号-关于印发修订后的《上海大学科研项目与经费管理办法》的通知.pdf](../skills/shu-baoxiao/references/sources/23e75212ee1f2860.md) | 跨场景/待归类 | 有提取正文；OCR 待核 |
 | [上大内〔2026〕127号-关于印发《上海大学国内差旅费管理办法》的通知](../skills/shu-baoxiao/references/sources/3c7bc0b1a632ff93.md) | 国内差旅 | 仅入口/短文本；另有同文号可读来源 |
 | [上大内〔2026〕127号-关于印发《上海大学国内差旅费管理办法》的通知（文学院公开转发的 PDF）](../skills/shu-baoxiao/references/sources/49ffae5f9e086dbe.md) | 国内差旅 | 有提取正文；OCR 待核 |
@@ -54,6 +55,7 @@
 | [上海大学用汇申请报销管理办法（上大内2016年第207号文）](../skills/shu-baoxiao/references/sources/9687ca7856bcced7.md) | 跨场景/待归类 | 仅入口/短文本；关联附件有文本 |
 | [上海大学票据管理办法](../skills/shu-baoxiao/references/sources/d6f92c7aeadb7043.md) | 系统操作与通用问题 | 有提取正文 |
 | [上海大学科研项目结题财务制度汇总](../skills/shu-baoxiao/references/sources/a044e37916ef0028.md) | 跨场景/待归类 | 有提取正文 |
+| [上海大学采购管理办法（上大内〔2024〕222号）-上海大学采购与招标管理中心](../skills/shu-baoxiao/references/sources/824307ef1c8a330c.md) | 办公耗材与设备采购 | 仅入口/短文本；关联附件有文本 |
 | [上海市市级预算单位公务卡使用考核管理暂行办法](../skills/shu-baoxiao/references/sources/4e0cfb69799605cd.md) | 系统操作与通用问题 | 有提取正文 |
 | [上海市教委关于进一步加强上海高校科研经费管理的指导意见（沪教委科〔2017〕100号）.doc](../skills/shu-baoxiao/references/sources/3412e2cde06704a5.md) | 跨场景/待归类 | 有提取正文 |
 | [中办 国办印发关于进一步完善中央财政科研项目资金管理等政策的若干意见的通知（中办发（2016）50）.doc](../skills/shu-baoxiao/references/sources/b44070bad0ce4f10.md) | 跨场景/待归类 | 有提取正文 |

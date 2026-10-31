@@ -11,7 +11,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills/shu-baoxiao"
@@ -45,6 +45,8 @@ class KnowledgeTests(unittest.TestCase):
             for attachment in doc["attachments"]:
                 self.assertIn(urlparse(attachment["url"]).netloc, maintain.OFFICIAL_HOSTS)
         self.assertTrue(knowledge.status()["integrity_ok"])
+        self.assertTrue(knowledge.status()["checklists_integrity_ok"])
+        self.assertTrue(knowledge.status()["reported_practices_integrity_ok"])
 
     def test_retrieval_finds_relevant_originals(self):
         for query, source_id in [("版面费 外币", "a2b744cda8112604"), ("国内差旅", "974131a888750e5f"), ("专家咨询意见表", "265ba03d107d9a2e")]:
@@ -57,6 +59,33 @@ class KnowledgeTests(unittest.TestCase):
         entry = {"id": "x", "title": "专家咨询意见表", "url": "https://cwc.shu.edu.cn/x", "text": "", "availability": "entry_only"}
         self.assertEqual(knowledge.search_documents([entry], "专家咨询", text_only=True), [])
         self.assertEqual(knowledge.search_documents([entry], "专家咨询")[0]["availability"], "entry_only")
+
+    def test_feedback_link_contains_only_blank_fields_and_public_checklist_context(self):
+        info = knowledge.feedback_info("office")
+        target = urlparse(info["feedback_url"])
+        self.assertTrue(target.netloc.endswith(".feishu.cn"))
+        self.assertTrue(target.path.startswith("/share/base/form/"))
+        self.assertFalse(target.query)
+        self.assertFalse(target.fragment)
+        self.assertEqual(info["visibility"], "maintainer_private")
+        self.assertFalse(info["requires_github_account"])
+        self.assertFalse(info["requires_account"])
+        self.assertEqual(info["api"]["status"], "not_configured")
+        self.assertIsNone(info["api"]["url"])
+        target = urlparse(info["github_draft_url"])
+        self.assertEqual(target.netloc, "github.com")
+        self.assertEqual(target.path, "/hint-lab/shu-baoxiao-skill-and-wiki/issues/new")
+        body = parse_qs(target.query)["body"][0]
+        self.assertIn("office", body)
+        self.assertNotIn("/Users/", body)
+        self.assertNotIn("计算机学院", body)
+        self.assertFalse(info["submitted"])
+        self.assertFalse(info["automatic_upload"])
+        self.assertIn("office", info["draft_template"])
+
+    def test_feedback_link_rejects_arbitrary_case_content_as_context(self):
+        with self.assertRaises(ValueError):
+            knowledge.feedback_info("姓名、账户或真实退回原文")
 
     def test_material_organization_covers_every_source_without_inventing_validity(self):
         index = build.organize_documents(self.docs, build.scenarios())
@@ -211,6 +240,25 @@ class KnowledgeTests(unittest.TestCase):
             output = subprocess.check_output(command, cwd=folder, text=True)
             hits = json.loads(output)["hits"]
             self.assertTrue(hits)
+            cached = subprocess.check_output([sys.executable, str(destination / "scripts/knowledge.py"), "checklist", "printer", "--json"], cwd=folder, text=True)
+            checklist = json.loads(cached)["checklist"]
+            self.assertEqual(checklist["id"], "printer")
+            self.assertTrue(checklist["references"])
+            self.assertIn(checklist["source_state"], {"reviewed_snapshot", "needs_review"})
+            reported = subprocess.check_output([sys.executable, str(destination / "scripts/knowledge.py"), "practice", "计算机学院", "--json"], cwd=folder, text=True)
+            self.assertEqual(json.loads(reported)["reported_practices"][0]["source_type"], "user_statement")
+            collection = subprocess.check_output([sys.executable, str(destination / "scripts/knowledge.py"), "practice", "数据采集", "--json"], cwd=folder, text=True)
+            entry = json.loads(collection)["reported_practices"][0]
+            self.assertEqual(entry["id"], "data-collection-materials-20261030")
+            self.assertEqual(next(item for item in entry["materials"] if item["id"] == "questionnaire")["kind"], "conditional")
+            feedback = subprocess.check_output([sys.executable, str(destination / "scripts/knowledge.py"), "feedback", "--checklist", "office", "--json"], cwd=folder, text=True)
+            self.assertFalse(json.loads(feedback)["submitted"])
+            payload = Path(folder) / "feedback.json"
+            payload.write_text(json.dumps({"schema_version": 1, "category": "usage", "item_or_matter": "本地模拟测试",
+                                           "actual_feedback": "只验证预览，不向外提交。", "privacy_checked": True}), encoding="utf-8")
+            preview = subprocess.check_output([sys.executable, str(destination / "scripts/submit_feedback.py"), "--payload", str(payload)], cwd=folder, text=True)
+            self.assertEqual(json.loads(preview)["status"], "prepared")
+            self.assertFalse(json.loads(preview)["submitted"])
             read = subprocess.run([sys.executable, str(destination / "scripts/knowledge.py"), "read", "not-found"], cwd=folder, capture_output=True, text=True)
             self.assertEqual(read.returncode, 2)
             self.assertNotIn("Traceback", read.stderr)
@@ -232,6 +280,14 @@ class KnowledgeTests(unittest.TestCase):
                     names = archive.namelist()
                     self.assertIn("shu-baoxiao/SKILL.md", names)
                     self.assertIn("shu-baoxiao/references/knowledge/documents.jsonl", names)
+                    self.assertIn("shu-baoxiao/references/knowledge/checklists.json", names)
+                    self.assertIn("shu-baoxiao/references/knowledge/reported-practices.json", names)
+                    self.assertIn("shu-baoxiao/references/reported-practices.md", names)
+                    self.assertIn("shu-baoxiao/references/feedback.md", names)
+                    self.assertIn("shu-baoxiao/assets/反馈模板.txt", names)
+                    self.assertIn("shu-baoxiao/assets/反馈提交示例.json", names)
+                    self.assertIn("shu-baoxiao/scripts/submit_feedback.py", names)
+                    self.assertIn("shu-baoxiao/references/checklists/printer.md", names)
                     self.assertIn("shu-baoxiao/LICENSE", names)
                     self.assertFalse(any("__pycache__" in name or "data/settings" in name for name in names))
                     if "workbuddy" in path.name:

@@ -8,6 +8,7 @@
 | [3.上海大学科研经费校内转账审批表(垫支).rar](../skills/shu-baoxiao/references/sources/d92e13885466e9d1.md) | 跨场景/待归类 | 有提取正文 |
 | [4.上海大学横向项目结题一次性奖励支取申请表（理工科类）.rar](../skills/shu-baoxiao/references/sources/9ec982452a1074bd.md) | 跨场景/待归类 | 有提取正文 |
 | [5.理工科横向科研项目预算调剂申请表2025.rar](../skills/shu-baoxiao/references/sources/c9e50b0de1c1bbca.md) | 跨场景/待归类 | 有提取正文 |
+| [《上海市政府集中采购目录及标准（2024年版）》解释及对照表-上海大学采购与招标管理中心](../skills/shu-baoxiao/references/sources/4fb6a80be4794b1b.md) | 办公耗材与设备采购 | 有提取正文 |
 | [【专家咨询意见表】上海大学专家咨询意见表（2024版）](../skills/shu-baoxiao/references/sources/265ba03d107d9a2e.md) | 专家咨询费 | 仅入口/短文本；关联附件有文本 |
 | [【公务接待】上海大学国内公务接待清单](../skills/shu-baoxiao/references/sources/35960a68088aa8e3.md) | 公务接待与工作用餐 | 仅入口/短文本；关联附件有文本 |
 | [【劳务费支取表（原临聘劳务合同）】上海大学劳务费支取表2025版](../skills/shu-baoxiao/references/sources/5bbd93c691e4a52a.md) | 劳务费 | 有提取正文 |

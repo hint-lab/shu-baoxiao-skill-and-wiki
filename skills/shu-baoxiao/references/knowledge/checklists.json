@@ -1,0 +1,980 @@
+{
+  "schema_version": 1,
+  "updated_on": "2026-10-29",
+  "policy": {
+    "description": "项目维护的已核对版本摘要；不是学校新增材料规定，也不是覆盖所有场景的准报清单。",
+    "review_interval_days": 30,
+    "review_interval_note": "30天是本项目复核提醒策略，不是学校规定或规则有效期限。",
+    "routine_use": "在适用条件匹配、来源内容未变且未到复核日期时，直接复用已核对摘要，无需每次重新检索全部资料或重读PDF。",
+    "refresh_when": [
+      "来源内容变化或到复核日期",
+      "业务日期、经费、人员、币种、支付/采购渠道不在已核对范围",
+      "发现更新文件、规则冲突或财务新口径",
+      "用户明确要求核对现行/最新政策，或需要摘要未覆盖的金额限额、例外和审批要求"
+    ],
+    "common_context": [
+      "事项与业务日期",
+      "经费来源/类型及允许的预算科目",
+      "人员身份",
+      "当前阶段：拟发生、已发生未付款、已付款、已申报或退回",
+      "实际支付与结算渠道"
+    ],
+    "private_case_state": "每笔事项的已有文件、核对状态和补件记录只保存在用户授权的本地目录；共享清单不保存真实材料或个人信息。",
+    "evidence_note": "核对摘要及材料核对要点为项目对所引条款的转述与解释；学校原文独立保留，未明确为强制附件的补充核验事项标为先确认。"
+  },
+  "source_reviews": {
+    "procurement-2024": {
+      "source_id": "692dd43823f5948a",
+      "locator": "第14—15、17、21—22、26—29、38条；原件第7—10、12页",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a71d11c9a466a16d5613b0a487f258f516ede294176347679982954af1a6d76c",
+      "verified_summary": "集中采购目录内按目录及学校规定执行；目录外货物服务不足10万元为零星采购，10万元（含）至不足50万元为快速采购，50万元（含）以上为委托采购，其中政府采购限额100万元、公开招标限额400万元。采购须申请审批；合同按学校合同管理标准签订；2020版同时废止。",
+      "status": "reviewed"
+    },
+    "equipment-rules": {
+      "source_id": "03976750f4d5654e",
+      "locator": "第19—20条；原件第39—40页",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "bfa2106ad4d787f695b23d2d243d1d491bd11bece5cc21f267470c032e9262a7",
+      "verified_summary": "设备费包括购置、试制、升级改造、租赁，计算类仪器设备和软件工具可在设备费列支；固定资产登记及采购另按学校规定办理。材料原则上在学校平台申领；化学原料、试剂需化学品采购平台登记；材料需保管和领用记录。",
+      "status": "reviewed"
+    },
+    "office": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第20问；原件第19页（印刷页码13）",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "办公用品、办公耗材和电脑配件发票需注明名称、数量、单价；概括性电子、通讯、数码配件发票按原文条件附明细。指定低值两用物资需低值入库。",
+      "status": "reviewed"
+    },
+    "materials": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第21问；原件第20页（印刷页码14）",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "材料费发票注明材料名称、数量、单价；化学试剂、化学原料需化学品平台登记并生成入库凭证；支付证明须结合实际付款方式核对，不能要求尚未付款或学校统一结算业务提供个人付款记录。",
+      "status": "reviewed"
+    },
+    "publication": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第22问；原件第20—21页（印刷页码14—15）",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "国内版面费/审稿费提供发票、论文录用/审稿通知、付款记录。外币版面费（不出国参会）提供负责人签字的报销说明、中英文录取通知、带INVOICE/RECEIPT字样的外文发票及自行支付记录；先核算人民币。如出国参会按出国费用关联核对。",
+      "status": "reviewed"
+    },
+    "book-publication": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第23问；原件第21页（印刷页码15）",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "出版费材料列有发票、服务申购单、出版合同原件；采购要求和预算准报范围另行匹配，不能沿用旧表推导新采购限额。",
+      "status": "reviewed"
+    },
+    "testing": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第24问；原件第21页（印刷页码15）",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "校内设备处测试平台申请并由测试单位结算后财务自动转账，无需个人重复提交报销材料。校外测试提供发票；发票不能体现具体内容时，提供盖章测试/加工清单或合同。",
+      "status": "reviewed"
+    },
+    "consultation": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第29、31问；原件第25—26页（印刷页码19—20）",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "咨询费按实际形式生成会议/现场/通讯咨询结算单，附专家咨询意见表；会议咨询附会议通知。线下会议和现场咨询意见由专家签字，线上会议和通讯咨询由项目负责人签字。不得发给参与项目研究或课题管理人员。",
+      "status": "reviewed"
+    },
+    "labor": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第29、31问；原件第24—26页（印刷页码18—20）",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "临聘劳务使用酬金结算单、劳务费支取表等并先进行临聘合同登记；已登记合同按月申报临聘劳务时无需每次上传附件。支取表原件由负责人保存；线下签字递交与线上审批流程不同。",
+      "status": "reviewed"
+    },
+    "equipment-workflow": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第38问；原件第31页（印刷页码25），仅核对附件与入库流程",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "设备采购后登记入库；不同采购和结算渠道所需附件不同。申购单、合同、发票、资产入库单、成交公告等按渠道核对。旧表将50万元起统称招标的简写不用作采购方式判断，采购分类以2024正式办法为依据。",
+      "status": "reviewed"
+    },
+    "office-funding": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第72问；原件第47页（印刷页码41）",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "verified_summary": "理工科纵向项目的办公用品（原文列举硒鼓、墨盒、色带）及所列鼠标、键盘、内存条、移动硬盘、打印机等，规定由间接费用支出，不可直接列材料费或设备购置费。粉盒作为普通办公打印耗材按此类核对，属于归类解释，不扩大为其他经费的统一限制。",
+      "status": "reviewed",
+      "clarified_on": "2026-10-29"
+    },
+    "printer-route": {
+      "source_id": "4fb6a80be4794b1b",
+      "locator": "采购方式说明及打印机、多功能一体机品目",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "官网正文及品目表阅读",
+      "text_sha256": "efc2472dc819318db1f1e3554c92d5c55e023bf94c176d6d7d615cfc004ca086",
+      "verified_summary": "普通办公打印机、多功能一体机列入集中采购目录，适用框架协议采购；目录内小额项目由学校统一采购，不能套用目录外零星采购。",
+      "status": "reviewed"
+    },
+    "framework": {
+      "source_id": "bf5809b1b3213d0a",
+      "locator": "正文第1—3步",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "官网正文阅读",
+      "text_sha256": "64c3bb37800a1e856d3075560b7c12e252ba535b93114dfae3ba77df81cb7ddf",
+      "verified_summary": "先在上海政府采购云平台框架协议采购馆查询目录内商品，选中所需商品后进入学校采购管理系统提出采购申请。",
+      "status": "reviewed"
+    },
+    "travel-research": {
+      "source_id": "92e53de8292208f4",
+      "locator": "第18—21、27条；原件第6、9页",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "48798e3eb82dee39f7acc62a970d530f85fd40def6616e721ea6255c520f0fc3",
+      "verified_summary": "科研国内差旅提供出差审批单、差旅报销单及发生费用对应的交通/住宿凭证；行程不连续或缺往返票需真实情况说明，住宿发票缺天数人数单价时补住宿清单。公务卡消费记录和非公务机票渠道的同时间同航班比价截图按实际条件提供。",
+      "status": "reviewed"
+    },
+    "meeting-research": {
+      "source_id": "b94532550cea3953",
+      "locator": "第13—14条；原件第6页",
+      "checked_on": "2026-10-28",
+      "review_after": "2026-11-27",
+      "method": "原页人工对照",
+      "text_sha256": "4d6a14d86b5f9d65a3e6709b07d4a369497c39db07b99ebf50b31fe55696913c",
+      "verified_summary": "科研会议费需会议通知含议程、实际签到表或无法提供时由负责人签字确认的参会名单、审批表、决算表及与会期相符的票据和结算明细。国际会议批件、合办协办委托协议按实际情况提供；公务卡支付附消费记录。",
+      "status": "reviewed"
+    },
+    "toner-catalog-history": {
+      "source_id": "1fec9dab903b59b8",
+      "locator": "正文“一、政府集中采购目录的调整情况”第（二）项；仅复核硒鼓和粉盒品目变动",
+      "checked_on": "2026-10-29",
+      "review_after": "2026-11-28",
+      "method": "官网正文及品目表阅读",
+      "text_sha256": "7944d16872469885e81d644e3f9e7df7129ea2e9b385b1fc4d765c669b1d28b3",
+      "verified_summary": "学校2021年解读明确硒鼓和粉盒不再纳入集中采购，目录外货物服务按学校内控流程执行。这里只复用该品目移除的历史事实，不沿用该旧页面其他限额或所有采购口径。",
+      "status": "reviewed"
+    },
+    "catalog-2024": {
+      "source_id": "68b19894c6e1b95a",
+      "locator": "2024版集中采购目录完整35个品目，及目录外采购说明",
+      "checked_on": "2026-10-29",
+      "review_after": "2026-11-28",
+      "method": "官网正文及品目表阅读",
+      "text_sha256": "ec70ed364f753fcecc389a0d4da166ad7b4d1135127ace49db883672505df367",
+      "verified_summary": "该版目录列有打印机、多功能一体机，未列硒鼓和粉盒；耗材与打印机本体分开判断。未列入集中采购不表示禁止报销，也不表示不受预算及校内采购流程约束。",
+      "status": "reviewed"
+    },
+    "asset-classification": {
+      "source_id": "1e88716b10c71712",
+      "locator": "第71—72问；原件第47页（印刷页码41）",
+      "checked_on": "2026-10-29",
+      "review_after": "2026-11-28",
+      "method": "已人工对照的原件同页条款，结合本次资产分类问题复核",
+      "text_sha256": "a78af4765b1227bbd1c2c1fed56f22c8585570b2669df03e846e521b9c5fc683",
+      "status": "reviewed",
+      "verified_summary": "第71问以是否作为固定资产入账区分设备购置费和材料费；第72问另对理工科纵向项目办公用品及所列配件规定由间接费用支出。因此不能脱离用途、经费范围和资产认定，仅按硬盘名称、价格或是否能独立使用机械套用材料费。SSD、NAS具体归类为通用规定解释，原文未专门点名。"
+    }
+  },
+  "templates": [
+    {
+      "id": "materials",
+      "title": "实验材料与耗材采购",
+      "scenario_id": "procurement",
+      "aliases": [
+        "材料费",
+        "材料",
+        "耗材"
+      ],
+      "scope": "用于项目中消耗的原材料、辅助材料、低值易耗品；不是设备或日常办公用品的统称。",
+      "context_questions": [
+        "物品用途、数量和金额是什么？",
+        "学校平台统一结算还是个人先行付款？",
+        "是否涉及化学原料、试剂、耐用设备或目录内物品？"
+      ],
+      "materials": [
+        {
+          "name": "发票及材料明细",
+          "kind": "base",
+          "when": "实际采购并申请报销时",
+          "check": "核对真实名称、数量、单价及金额；只写批或笼统品名时补足真实明细。",
+          "basis": [
+            "materials"
+          ]
+        },
+        {
+          "name": "实际付款或结算依据",
+          "kind": "conditional",
+          "when": "本人已付款并申请报销，或所选结算方式要求时",
+          "check": "核对收款方、订单、金额及支付方式；学校统一结算不要求编造个人付款记录。",
+          "basis": [
+            "materials",
+            "equipment-rules"
+          ]
+        },
+        {
+          "name": "申购、采购审批或合同",
+          "kind": "conditional",
+          "when": "采购渠道、金额、合同管理标准或所选交易方式要求时",
+          "check": "按目录内外及2024版办法匹配，不能把旧表的简写当成现行统一门槛。",
+          "basis": [
+            "procurement-2024"
+          ]
+        },
+        {
+          "name": "化学品登记及入库凭证",
+          "kind": "conditional",
+          "when": "化学原料、化学试剂等化学材料",
+          "check": "核对化学品采购平台登记与实际物品。",
+          "basis": [
+            "materials",
+            "equipment-rules"
+          ]
+        },
+        {
+          "name": "材料保管与领用记录",
+          "kind": "confirmation",
+          "when": "材料已取得、已领用时",
+          "check": "核对真实领用记录是否已保留及用途；不由保管义务推导为每笔都必须提交领用记录。学校平台结算单按渠道核对。",
+          "basis": [
+            "equipment-rules"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "office",
+      "title": "办公用品、打印耗材与电脑配件",
+      "scenario_id": "procurement",
+      "aliases": [
+        "办公用品",
+        "电脑配件",
+        "办公耗材",
+        "硒鼓",
+        "粉盒",
+        "墨盒",
+        "色带"
+      ],
+      "scope": "日常办公用途，不能直接等同科研专用设备；先核经费允许范围及预算科目。",
+      "context_questions": [
+        "物品用于日常办公还是专用研究/设备改造？",
+        "是否为理工科纵向科研经费？",
+        "品名、数量、单价、金额、付款与结算方式是什么？"
+      ],
+      "materials": [
+        {
+          "name": "发票及真实商品明细",
+          "kind": "base",
+          "when": "实际采购并申请报销时",
+          "check": "核对名称、数量和单价；概括性品名按所引原文条件补明细。",
+          "basis": [
+            "office"
+          ]
+        },
+        {
+          "name": "可用预算科目核定",
+          "kind": "confirmation",
+          "when": "使用科研经费时",
+          "check": "理工科纵向办公用品及所列电脑配件按间接费用处理；其他经费与专用实验用途另核。",
+          "basis": [
+            "office-funding"
+          ]
+        },
+        {
+          "name": "申购、采购合同及登记凭证",
+          "kind": "conditional",
+          "when": "涉及目录内商品、合同管理标准或低值资产登记时",
+          "check": "按渠道和资产类别核对，不以价格低直接判定免手续。",
+          "basis": [
+            "procurement-2024",
+            "office"
+          ]
+        },
+        {
+          "name": "硒鼓、粉盒的采购渠道确认",
+          "kind": "confirmation",
+          "when": "购买普通办公打印耗材时",
+          "check": "先核经费科目及学校内控采购要求；硒鼓、粉盒与打印机本体分开判断，不沿用2019—2020年目录把两者都要求走同一采购渠道。",
+          "basis": [
+            "toner-catalog-history",
+            "catalog-2024",
+            "procurement-2024"
+          ]
+        }
+      ],
+      "notes": [
+        "已核对资料不能推出“硒鼓、粉盒全面禁止报销”。能否由本笔经费承担还要核对预算、用途、采购与支付凭证；发生退回时按实际退回意见定位原因。"
+      ]
+    },
+    {
+      "id": "equipment",
+      "title": "科研设备购置与升级改造",
+      "scenario_id": "procurement",
+      "aliases": [
+        "设备",
+        "硬件",
+        "工作站",
+        "服务器",
+        "显卡"
+      ],
+      "scope": "确与科研任务相关的设备购置、试制、升级改造或租赁；办公用品及专用实验配件先区分。",
+      "context_questions": [
+        "经费类型、预算用途及业务日期是什么？",
+        "是目录内通用设备还是目录外专用设备？",
+        "是零星、快速、委托采购还是已获批的特殊渠道？",
+        "设备归属是否有合同约定，是否需要入库？"
+      ],
+      "materials": [
+        {
+          "name": "经费与采购审批依据",
+          "kind": "base",
+          "when": "实施采购前",
+          "check": "核对科研用途、可用预算和已批准的采购申请；拟采购时列为下一步，不虚构已批准。",
+          "basis": [
+            "procurement-2024",
+            "equipment-rules"
+          ]
+        },
+        {
+          "name": "发票、采购合同或平台成交凭证",
+          "kind": "conditional",
+          "when": "按已确定的采购渠道与合同管理标准要求",
+          "check": "保留真实票据与交易明细；不能把所有渠道都写成必须同一套纸质合同。",
+          "basis": [
+            "procurement-2024",
+            "equipment-workflow"
+          ]
+        },
+        {
+          "name": "验收及资产登记/入库凭证",
+          "kind": "conditional",
+          "when": "设备需按资产规定登记，或合同约定验收付款时",
+          "check": "核对实际设备、入库状态及所需验收证明；归属甲方等特殊约定另核。",
+          "basis": [
+            "equipment-workflow",
+            "procurement-2024"
+          ]
+        },
+        {
+          "name": "成交公告或采购结果文件",
+          "kind": "conditional",
+          "when": "快速、委托等采购方式要求时",
+          "check": "按实际采购方式取得；50万元起是委托采购，不能一律要求公开招标中标通知。",
+          "basis": [
+            "procurement-2024",
+            "equipment-workflow"
+          ]
+        },
+        {
+          "name": "支付或统一结算记录",
+          "kind": "confirmation",
+          "when": "确定由谁付款、怎样结算时",
+          "check": "学校统一结算与个人报销分开，尚未付款不得判缺个人付款证明。",
+          "basis": [
+            "equipment-workflow"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "printer",
+      "title": "普通办公打印机",
+      "scenario_id": "procurement",
+      "aliases": [
+        "打印机",
+        "办公打印机",
+        "多功能一体机"
+      ],
+      "scope": "普通办公打印机/打印复印一体机；不涵盖实验用3D打印机或其他科研专用设备。",
+      "context_questions": [
+        "使用哪类经费，是否有允许的办公或间接费用预算？",
+        "打印需求、数量和预计金额是什么？",
+        "已申请还是尚未购买，由谁采购和结算？"
+      ],
+      "materials": [
+        {
+          "name": "经费科目确认",
+          "kind": "base",
+          "when": "提出采购需求前",
+          "check": "理工科纵向办公打印机按所引规定列间接费用；横向及其他经费另核预算。",
+          "basis": [
+            "office-funding"
+          ]
+        },
+        {
+          "name": "框架协议选品信息及学校采购申请",
+          "kind": "base",
+          "when": "普通办公打印机采购前",
+          "check": "先查框架协议馆品目，再由学校采购系统申购；不套目录外不足10万元自行采购。",
+          "basis": [
+            "printer-route",
+            "framework",
+            "procurement-2024"
+          ]
+        },
+        {
+          "name": "到货验收、资产或低值耐耗品入库凭证",
+          "kind": "conditional",
+          "when": "到货后按资产分类要求",
+          "check": "按实际品类和单价办理登记；不能认定不足1000元就一律不入库。",
+          "basis": [
+            "office",
+            "equipment-workflow"
+          ]
+        },
+        {
+          "name": "发票、合同及结算单据",
+          "kind": "conditional",
+          "when": "由所选采购与结算渠道要求",
+          "check": "学校统一结算按经办流程提供；不让学生重复垫付再报。",
+          "basis": [
+            "equipment-workflow"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "publication-domestic",
+      "title": "国内版面费与审稿费",
+      "scenario_id": "publication",
+      "aliases": [
+        "版面费",
+        "国内版面费",
+        "审稿费"
+      ],
+      "scope": "国内论文版面费/审稿费；先确认该经费允许支出，不能仅据材料齐全推定准报。",
+      "context_questions": [
+        "经费类型、实际用途及是否允许该费用？",
+        "是审稿还是录用出版，已支付还是拟支付？"
+      ],
+      "materials": [
+        {
+          "name": "发票",
+          "kind": "base",
+          "when": "费用实际发生并申请报销时",
+          "check": "核对开票方、费用内容、金额与论文关系。",
+          "basis": [
+            "publication"
+          ]
+        },
+        {
+          "name": "论文录用通知或审稿通知",
+          "kind": "base",
+          "when": "按实际收费事由",
+          "check": "通知与论文、收费方和收费事由一致，不同时强求录用和审稿两份。",
+          "basis": [
+            "publication"
+          ]
+        },
+        {
+          "name": "付款记录",
+          "kind": "base",
+          "when": "自行支付后申请报销时",
+          "check": "核对实际收款方、币种、金额及对应论文。",
+          "basis": [
+            "publication"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "publication-foreign",
+      "title": "外币论文版面费",
+      "scenario_id": "publication",
+      "aliases": [
+        "版面费",
+        "外币版面费",
+        "外币论文费"
+      ],
+      "scope": "不涉及出国参会论文的外币版面费；出国参会相关费用转入出国事项核对。",
+      "context_questions": [
+        "是否与出国参会有关？",
+        "经费是否允许此项费用，币种金额及支付状态？"
+      ],
+      "materials": [
+        {
+          "name": "论文版面费报销说明",
+          "kind": "base",
+          "when": "该外币版面费申请报销时",
+          "check": "项目负责人签字；只按真实论文与业务填写。",
+          "basis": [
+            "publication"
+          ]
+        },
+        {
+          "name": "中英文录取通知",
+          "kind": "base",
+          "when": "该外币版面费申请报销时",
+          "check": "中文可自行翻译，保留外文原件及译文对应关系。",
+          "basis": [
+            "publication"
+          ]
+        },
+        {
+          "name": "外文发票或收据",
+          "kind": "base",
+          "when": "费用已发生时",
+          "check": "原文要求带INVOICE或RECEIPT字样，核对开票方与金额。",
+          "basis": [
+            "publication"
+          ]
+        },
+        {
+          "name": "自行支付的付款记录",
+          "kind": "conditional",
+          "when": "本人先行支付后报销时",
+          "check": "核对银行卡或银行汇款等真实支付；未支付时列准备步骤。",
+          "basis": [
+            "publication"
+          ]
+        },
+        {
+          "name": "人民币核算及对应采购手续",
+          "kind": "confirmation",
+          "when": "报销前",
+          "check": "按所引版本核对外汇核算办理方式；如业务日期、渠道或采购要求不同，重新确认。",
+          "basis": [
+            "publication",
+            "procurement-2024"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "book-publication",
+      "title": "图书出版费",
+      "scenario_id": "publication",
+      "aliases": [
+        "出版费",
+        "图书出版"
+      ],
+      "scope": "图书出版，不与论文版面费混用；先确认资助经费对最终成果出版等的限制。",
+      "context_questions": [
+        "经费是否允许出版该成果，是否已签合同及申请采购？"
+      ],
+      "materials": [
+        {
+          "name": "出版费用发票",
+          "kind": "base",
+          "when": "实际发生并申请报销时",
+          "check": "核对出版社、合同、作品及金额。",
+          "basis": [
+            "book-publication"
+          ]
+        },
+        {
+          "name": "服务申购单及出版合同原件",
+          "kind": "base",
+          "when": "该版指南所列出版费报销情形",
+          "check": "核对真实申购及合同签署；是否需要特定盖章和审批按学校合同管理规定核定。",
+          "basis": [
+            "book-publication",
+            "procurement-2024"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "testing",
+      "title": "测试化验加工费",
+      "scenario_id": "testing",
+      "aliases": [
+        "测试费",
+        "测试化验加工费",
+        "加工费"
+      ],
+      "scope": "先分学校测试平台自动结算和校外服务；采购、预算限制另核。",
+      "context_questions": [
+        "校内平台还是校外服务？",
+        "是否自行付款、服务内容是否能在发票体现？"
+      ],
+      "materials": [
+        {
+          "name": "校内平台申请及结算状态",
+          "kind": "conditional",
+          "when": "学校测试平台自动转账业务",
+          "check": "核对平台申请及结算；不重复要求个人提交发票报销包。",
+          "basis": [
+            "testing"
+          ]
+        },
+        {
+          "name": "校外服务发票",
+          "kind": "conditional",
+          "when": "校外单位测试化验加工并申请报销时",
+          "check": "核对服务方、服务内容、金额及项目关联。",
+          "basis": [
+            "testing"
+          ]
+        },
+        {
+          "name": "盖章服务明细或合同",
+          "kind": "conditional",
+          "when": "校外发票不能体现具体测试/加工内容时",
+          "check": "原文提供清单或合同的替代关系，不一律同时要求两者。",
+          "basis": [
+            "testing"
+          ]
+        },
+        {
+          "name": "采购申请与审批",
+          "kind": "conditional",
+          "when": "采购渠道及管理规定要求时",
+          "check": "按目录、项目金额和所选采购方式核对。",
+          "basis": [
+            "procurement-2024"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "consultation",
+      "title": "专家咨询费申报",
+      "scenario_id": "consultation",
+      "aliases": [
+        "专家咨询费",
+        "咨询费"
+      ],
+      "scope": "真实发生的会议、现场或通讯咨询；不能把咨询费用清单当成所有会议费用清单。",
+      "context_questions": [
+        "会议/现场/通讯咨询，线上还是线下？",
+        "专家是否参与本项目研究或课题管理？",
+        "是否还同时申报场地、餐费等会议费用？"
+      ],
+      "materials": [
+        {
+          "name": "会议/现场/通讯咨询结算单",
+          "kind": "base",
+          "when": "按实际咨询形式申报时",
+          "check": "核对形式、人员、职称、实际工作量和拟发放口径。",
+          "basis": [
+            "consultation"
+          ]
+        },
+        {
+          "name": "专家咨询意见表",
+          "kind": "base",
+          "when": "真实咨询业务申报时",
+          "check": "线下会议及现场咨询按原文由专家签字；线上会议及通讯咨询按原文由项目负责人签字。不能代签。",
+          "basis": [
+            "consultation"
+          ]
+        },
+        {
+          "name": "会议通知",
+          "kind": "conditional",
+          "when": "会议咨询",
+          "check": "现场或通讯咨询不因套用会议模板而强制补会议通知。",
+          "basis": [
+            "consultation"
+          ]
+        },
+        {
+          "name": "会议费相关材料",
+          "kind": "conditional",
+          "when": "同时申报实际会议费用时",
+          "check": "再匹配科研会议清单，不由咨询费单独推导签到、场地等强制要求。",
+          "basis": [
+            "meeting-research"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "labor",
+      "title": "学生助研与临聘劳务",
+      "scenario_id": "labor",
+      "aliases": [
+        "劳务费",
+        "学生助研",
+        "临聘劳务"
+      ],
+      "scope": "实际参与项目的学生助研、临聘人员；与咨询、讲座、绩效区分。",
+      "context_questions": [
+        "人员身份与实际工作内容是什么？",
+        "临聘合同是否已登记，是否首次发放？",
+        "线上审批还是线下签字递交？"
+      ],
+      "materials": [
+        {
+          "name": "酬金结算单及实际发放明细",
+          "kind": "base",
+          "when": "申报该类劳务时",
+          "check": "核对人员、期间、工作内容、经费和金额；个人证件和银行卡信息仅在授权环境处理。核对系统单据内明细，不据此强制额外制作一份表格。",
+          "basis": [
+            "labor"
+          ]
+        },
+        {
+          "name": "劳务费支取表、临聘合同及登记号",
+          "kind": "conditional",
+          "when": "该临聘劳务登记与首次发放需要时",
+          "check": "核对登记情况；原件由负责人保存，已登记的按月发放不重复要求上传全部附件。",
+          "basis": [
+            "labor"
+          ]
+        },
+        {
+          "name": "退休返聘登记材料",
+          "kind": "conditional",
+          "when": "返聘或临聘本校退休人员时",
+          "check": "按对应人事登记要求取得；不推广给普通学生助研。",
+          "basis": [
+            "labor"
+          ]
+        },
+        {
+          "name": "打印签字单据及附件",
+          "kind": "conditional",
+          "when": "选择线下签字递交时",
+          "check": "与线上审批路线区分，不能要求线上完成的业务再做同一套线下递交。",
+          "basis": [
+            "labor"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "travel-research",
+      "title": "科研国内差旅",
+      "scenario_id": "travel",
+      "aliases": [
+        "科研差旅",
+        "国内差旅",
+        "出差"
+      ],
+      "scope": "2026版科研国内差旅的基础凭证；非科研、出国、特殊交通、补助限额和历史日期另匹配。",
+      "context_questions": [
+        "经费类型、人员身份、日期地点及真实出差事由？",
+        "实际发生了哪些交通、住宿费用？",
+        "是否有单程/不连续行程、校外人员、自驾、租车或特殊机票渠道？"
+      ],
+      "materials": [
+        {
+          "name": "国内出差审批单和国内差旅费报销单",
+          "kind": "base",
+          "when": "该科研出差报销时",
+          "check": "核对审批权限、日期地点及一事一批一事一报；差异不得补造审批事实。",
+          "basis": [
+            "travel-research"
+          ]
+        },
+        {
+          "name": "实际交通票据和住宿发票",
+          "kind": "conditional",
+          "when": "对应费用实际发生并申报时",
+          "check": "核对往返行程与住宿天数人数单价；没有发生的费用不要求虚构票据。",
+          "basis": [
+            "travel-research"
+          ]
+        },
+        {
+          "name": "真实行程情况说明或住宿清单",
+          "kind": "conditional",
+          "when": "单程、行程不连续，或住宿发票缺必要明细等原文情形",
+          "check": "针对实际差异说明；不一律向每次出差索要情况说明。",
+          "basis": [
+            "travel-research"
+          ]
+        },
+        {
+          "name": "公务卡消费记录或购票比价截图",
+          "kind": "conditional",
+          "when": "采用公务卡，或按原文在非公务机票渠道购买更低价机票时",
+          "check": "比价须同一购票时点同航班舱位，不事后伪造。",
+          "basis": [
+            "travel-research"
+          ]
+        }
+      ],
+      "notes": [
+        "自驾、租车、校外人员来访及补助标准不在本基础摘要内，遇到时再查对应条款。"
+      ]
+    },
+    {
+      "id": "meeting-research",
+      "title": "科研会议费",
+      "scenario_id": "meeting",
+      "aliases": [
+        "科研会议",
+        "会议费"
+      ],
+      "scope": "2026版科研会议费；外出参会差旅、单独咨询费和非科研会议不直接套用。",
+      "context_questions": [
+        "主办会议还是外出参会，是否使用科研经费？",
+        "是否国际会议，是否合办/协办/委托第三方？",
+        "已发生哪些费用，如何支付与结算？"
+      ],
+      "materials": [
+        {
+          "name": "会议通知及议程",
+          "kind": "base",
+          "when": "科研会议费用报销时",
+          "check": "核对真实日期、事由、议程及与项目关系。",
+          "basis": [
+            "meeting-research"
+          ]
+        },
+        {
+          "name": "实际签到表或负责人签字确认名单",
+          "kind": "base",
+          "when": "科研会议费用报销时",
+          "check": "无法提供签到表时可按原文提供负责人签字确认的实际参会名单，不同时强求二者。",
+          "basis": [
+            "meeting-research"
+          ]
+        },
+        {
+          "name": "会议审批表和会议决算表",
+          "kind": "base",
+          "when": "科研会议费用报销时",
+          "check": "核对真实审批、预算决算及费用对应关系。",
+          "basis": [
+            "meeting-research"
+          ]
+        },
+        {
+          "name": "有效票据及费用明细结算凭证",
+          "kind": "base",
+          "when": "对应费用已发生时",
+          "check": "核对会期、服务方、费用明细及委托合同等实际结算凭证。",
+          "basis": [
+            "meeting-research"
+          ]
+        },
+        {
+          "name": "国际会议批件",
+          "kind": "conditional",
+          "when": "国际会议且按规定需要时",
+          "check": "国内会议不套此项。",
+          "basis": [
+            "meeting-research"
+          ]
+        },
+        {
+          "name": "合办、协办或委托协议及明细结算单",
+          "kind": "conditional",
+          "when": "合办、协办或委托第三方举办时",
+          "check": "核对实际收入与支出责任。",
+          "basis": [
+            "meeting-research"
+          ]
+        },
+        {
+          "name": "公务卡消费记录",
+          "kind": "conditional",
+          "when": "以公务卡方式支付时",
+          "check": "银行转账按其实际付款记录核对，不要求不存在的刷卡记录。",
+          "basis": [
+            "meeting-research"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "storage",
+      "title": "固态硬盘与NAS存储",
+      "scenario_id": "procurement",
+      "aliases": [
+        "固态硬盘",
+        "SSD",
+        "ssd",
+        "NAS",
+        "nas",
+        "NAS存储",
+        "存储硬盘"
+      ],
+      "scope": "单独存储硬盘、科研设备扩容及完整NAS存储设备；须先区分日常办公、科研配套部件和形成整套耐用设备的情形。",
+      "context_questions": [
+        "单独购买硬盘，还是NAS主机及硬盘整套？",
+        "用于日常办公备份、具体科研实验，还是给哪台现有科研设备扩容？",
+        "型号、数量、单价、总额及经费类型和预算是什么？",
+        "是否需作为新资产入库，或作为现有设备升级改造处理？"
+      ],
+      "materials": [
+        {
+          "name": "用途、预算科目与资产类别核定",
+          "kind": "confirmation",
+          "when": "购买或报销该类存储物品前",
+          "check": "整套可长期使用的NAS先按设备购置方向核定；单独科研配套硬盘不符合固定资产入账标准且预算允许时，才可进一步确认材料费；普通办公用途另核办公/间接费用。此项是归类判断，不是新增一份强制表格。",
+          "basis": [
+            "asset-classification",
+            "equipment-rules",
+            "office-funding"
+          ]
+        },
+        {
+          "name": "现有设备关联及扩容用途信息",
+          "kind": "confirmation",
+          "when": "为科研服务器或NAS升级扩容时",
+          "check": "确认实际装入哪台设备、与科研任务的关系及改造方式，由财务/资产部门核定科目及是否涉及资产价值变更；不默认所有扩容都列材料费，也不强制额外制作无原文依据的报告。",
+          "basis": [
+            "equipment-rules",
+            "asset-classification"
+          ]
+        },
+        {
+          "name": "采购申请、合同及真实商品明细",
+          "kind": "conditional",
+          "when": "实际采购渠道及学校管理规定要求时",
+          "check": "按物品真实名称、数量、型号和金额核对票据及采购手续；形成整套设备时按实际整体业务核定。",
+          "basis": [
+            "procurement-2024",
+            "office"
+          ]
+        },
+        {
+          "name": "验收、资产入库及结算凭证",
+          "kind": "conditional",
+          "when": "按已核定资产类别及采购结算方式要求时",
+          "check": "适用设备采购清单的部分继续使用对应分支；学校统一结算与个人付款凭证分开。",
+          "basis": [
+            "equipment-workflow"
+          ]
+        }
+      ],
+      "notes": [
+        "未取得专门列明SSD或NAS可按材料费报销的校方条款。以上为通用规定的分类解释，须结合实际用途、预算及资产认定确认，不能作为准报承诺。"
+      ]
+    }
+  ]
+}

@@ -5,6 +5,8 @@
 
 | 资料 | 场景标签 | 正文状态 |
 | --- | --- | --- |
+| [2021年政府集中采购目录及标准解读-上海大学采购与招标管理中心](../skills/shu-baoxiao/references/sources/1fec9dab903b59b8.md) | 办公耗材与设备采购 | 有提取正文 |
+| [2024年版上海市政府集中采购目录-上海大学采购与招标管理中心](../skills/shu-baoxiao/references/sources/68b19894c6e1b95a.md) | 办公耗材与设备采购 | 有提取正文 |
 | [2024年版上海市政府集中采购目录.pdf](../skills/shu-baoxiao/references/sources/afe8564b9c6e4cfa.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [【文理共用】科研项目用表汇总](../skills/shu-baoxiao/references/sources/09fc6d34ef28f027.md) | 跨场景/待归类 | 仅入口/短文本 |
 | [上海大学关于政府采购工作流程的工作手册](../skills/shu-baoxiao/references/sources/05fccfe88da761ec.md) | 办公耗材与设备采购 | 有提取正文 |
@@ -19,6 +21,7 @@
 | [外汇业务宣讲202305.pdf](../skills/shu-baoxiao/references/sources/6e2c5c1b1f3ef5b3.md) | 出国境与外汇 | 有部分文字，待补或核对；OCR 待核 |
 | [提醒 ／ 2019年，发票监制章改版啦](../skills/shu-baoxiao/references/sources/ae0aa03a410c2284.md) | 系统操作与通用问题 | 有提取正文 |
 | [提醒 ／ 2019年，发票监制章改版啦](../skills/shu-baoxiao/references/sources/bd85cc07d081bf90.md) | 系统操作与通用问题 | 有提取正文 |
+| [政府采购-框架协议采购查询说明（2024版）-上海大学采购与招标管理中心](../skills/shu-baoxiao/references/sources/bf5809b1b3213d0a.md) | 办公耗材与设备采购 | 有提取正文 |
 | [政府采购品目分类目录.pdf](../skills/shu-baoxiao/references/sources/a90bc3ae95b8eff7.md) | 办公耗材与设备采购 | 有提取正文；OCR 待核 |
 | [政府采购表解读说明.doc](../skills/shu-baoxiao/references/sources/68d0916d80e6a4dc.md) | 办公耗材与设备采购 | 有提取正文 |
 | [政府采购附件-上海大学关于政府采购工作流程的工作手册20171205.docx](../skills/shu-baoxiao/references/sources/6dbab0c19a0cd500.md) | 办公耗材与设备采购 | 有提取正文 |
