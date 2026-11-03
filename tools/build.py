@@ -76,6 +76,19 @@ def label(value: str) -> str:
     return value.replace("|", "／").replace("[", "（").replace("]", "）").replace("\n", " ")
 
 
+def github_backup_url(backup: dict) -> str:
+    path = backup["path"]
+    if not re.fullmatch(r"forms/horizontal/[a-f0-9]{16}-[^/\\]+\.docx", path):
+        raise ValueError("空白表格备份路径不合法。")
+    file = ROOT / path
+    if not file.is_file() or hashlib.sha256(file.read_bytes()).hexdigest() != backup["sha256"]:
+        raise ValueError("空白表格备份缺失或校验值不匹配。")
+    url = "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/" + quote(path, safe="/")
+    if backup.get("url") != url:
+        raise ValueError("空白表格备份链接与路径不匹配。")
+    return url
+
+
 def material_kind(doc: dict) -> str:
     title = doc["title"]
     if re.search("操作|演示|使用手册|发放手册|填报流程|登记与申报", title):
@@ -202,9 +215,8 @@ def material_reports(docs: list[dict], scene_list: list[dict], index: dict) -> d
         if metadata[doc["id"]]["kind"] == "form":
             asset = doc.get("public_asset") or {}
             copy = f"[{asset['label']}](../skills/shu-baoxiao/{quote(asset['path'], safe='/')})" if asset else "未提供"
-            if asset.get("direct_download"):
-                raw = "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/skills/shu-baoxiao/" + quote(asset["path"], safe="/")
-                copy += f" · [直接下载]({raw})"
+            if doc.get("github_backup"):
+                copy = f"[直接下载空白 Word]({github_backup_url(doc['github_backup'])})"
             forms.append(f"| [{label(doc['title'])}](../skills/shu-baoxiao/references/sources/{doc['id']}.md) | [打开学校来源]({doc['url']}) | {STATES[doc['availability']]} | {copy} |")
     forms.extend(["", "[返回材料总览](材料整理.md)"])
     result[ROOT / "wiki/空白表格.md"] = "\n".join(forms) + "\n"
@@ -312,9 +324,9 @@ def source_page(doc: dict, by_url: dict | None = None, asset_root: str = "../../
     related = "\n## 相关资料（独立来源）\n\n" + "\n".join(related_lines) + "\n" if related_lines else ""
     asset = doc.get("public_asset") or {}
     asset_line = f"- [{asset['label']}]({asset_root}{quote(asset['path'], safe='/')})：{asset['origin_note']}\n" if asset else ""
-    if asset.get("direct_download"):
-        raw = "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/skills/shu-baoxiao/" + quote(asset["path"], safe="/")
-        asset_line += f"- [从 GitHub 直接下载空白原表]({raw})。\n"
+    backup = doc.get("github_backup") or {}
+    if backup:
+        asset_line += f"- [{backup['label']}]({github_backup_url(backup)})：{backup['origin_note']}\n"
     original_pdf = doc.get("original_pdf") or {}
     if original_pdf:
         path = original_pdf["path"]
@@ -344,13 +356,19 @@ def source_page(doc: dict, by_url: dict | None = None, asset_root: str = "../../
         lines = []
         for n, image in enumerate(previews, 1):
             path = image["path"]
-            if image["page"] != n or not re.fullmatch(r"assets/previews/[a-f0-9]{16}-page-[0-9]+\.png", path) or not path.startswith(f"assets/previews/{doc['id']}-page-"):
+            is_backup = image.get("storage") == "github_backup"
+            prefix = "forms/horizontal/previews/" if is_backup else "assets/previews/"
+            if image.get("storage") not in (None, "github_backup"):
+                raise ValueError("未知的预览图存储位置。")
+            if image["page"] != n or not re.fullmatch(re.escape(prefix) + r"[a-f0-9]{16}-page-[0-9]+\.png", path) or not path.startswith(f"{prefix}{doc['id']}-page-"):
                 raise ValueError("预览图路径或页码不合法。")
             if n in doc.get("preview_withheld_pages", []) or n in doc.get("privacy_redacted_pages", []) or n in doc.get("privacy_redacted_regions", []):
                 raise ValueError("隐私删节页不能附未经处理的预览图。")
-            if not (SKILL / path).is_file() or hashlib.sha256((SKILL / path).read_bytes()).hexdigest() != image["sha256"]:
+            image_path = (ROOT if is_backup else SKILL) / path
+            if not image_path.is_file() or hashlib.sha256(image_path.read_bytes()).hexdigest() != image["sha256"]:
                 raise ValueError("预览图缺失或校验值不匹配。")
-            lines.append(f"![版式预览第 {n} 页]({image_root}{path})")
+            image_url = "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/" + quote(path, safe="/") if is_backup else image_root + path
+            lines.append(f"![版式预览第 {n} 页]({image_url})")
         renderer = "由本机 Microsoft Word 按原文件排版导出" if provenance.get("preview_renderer") == "microsoft_word_local" else "由原文件转换生成"
         note = ("\n\n" + provenance["preview_note"]) if provenance.get("preview_note") else ""
         preview_line = "\n## 原文件版式预览\n\n" + renderer + "，分页、字体可能与 Word 或 Excel 不同；请下载原件核对。" + note + "\n\n" + "\n\n".join(lines) + "\n"

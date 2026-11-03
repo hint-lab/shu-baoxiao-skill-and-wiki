@@ -151,16 +151,19 @@ class KnowledgeTests(unittest.TestCase):
         wiki = build.material_reports(self.docs, build.scenarios(), index)[ROOT / "wiki/空白表格.md"]
         for source_id, query in cases:
             doc = by_id[source_id]
-            asset = doc["public_asset"]
+            asset = doc["github_backup"]
             self.assertEqual(doc["availability"], "text_available")
             self.assertEqual(build.material_kind(doc), "form")
             hits = knowledge.search_documents(self.docs, query, 8)
-            self.assertTrue(any(by_id[hit["id"]].get("public_asset", {}).get("sha256") == asset["sha256"]
+            self.assertTrue(any(by_id[hit["id"]].get("github_backup", {}).get("sha256") == asset["sha256"]
                                 for hit in hits), query)
-            self.assertEqual(hashlib.sha256((SKILL / asset["path"]).read_bytes()).hexdigest(), asset["sha256"])
-            self.assertIn("从 GitHub 直接下载空白原表", build.source_page(doc))
+            self.assertEqual(hashlib.sha256((ROOT / asset["path"]).read_bytes()).hexdigest(), asset["sha256"])
+            self.assertIn(asset["url"], build.source_page(doc))
+            for preview in doc["preview_images"]:
+                self.assertEqual(preview["storage"], "github_backup")
+                self.assertEqual(hashlib.sha256((ROOT / preview["path"]).read_bytes()).hexdigest(), preview["sha256"])
             row = next(line for line in wiki.splitlines() if source_id + ".md)" in line)
-            self.assertIn("raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/skills/shu-baoxiao/", row)
+            self.assertIn(asset["url"], row)
 
     def test_private_transaction_example_page_is_withheld(self):
         doc = next(doc for doc in self.docs if doc["id"] == "675c42067898dca4")
@@ -311,10 +314,11 @@ class KnowledgeTests(unittest.TestCase):
                     self.assertIn("shu-baoxiao/LICENSE", names)
                     for source_id in ("f11d28892d5227b3", "9ec982452a1074bd", "3bfc718d52f4b193"):
                         doc = next(doc for doc in self.docs if doc["id"] == source_id)
-                        asset = doc["public_asset"]
-                        member = "shu-baoxiao/" + asset["path"]
-                        self.assertIn(member, names)
-                        self.assertEqual(hashlib.sha256(archive.read(member)).hexdigest(), asset["sha256"])
+                        asset = doc["github_backup"]
+                        self.assertFalse(any(Path(name).name == Path(asset["path"]).name for name in names))
+                        for preview in doc["preview_images"]:
+                            self.assertFalse(any(Path(name).name == Path(preview["path"]).name for name in names))
+                        self.assertIn(asset["url"].encode(), archive.read("shu-baoxiao/references/knowledge/documents.jsonl"))
                     self.assertFalse(any("__pycache__" in name or "data/settings" in name for name in names))
                     if "workbuddy" in path.name:
                         skill = archive.read("shu-baoxiao/SKILL.md").decode()
