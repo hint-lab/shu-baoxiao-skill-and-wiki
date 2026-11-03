@@ -76,17 +76,21 @@ def label(value: str) -> str:
     return value.replace("|", "／").replace("[", "（").replace("]", "）").replace("\n", " ")
 
 
-def github_backup_url(backup: dict) -> str:
+def github_asset_url(backup: dict, pattern: str) -> str:
     path = backup["path"]
-    if not re.fullmatch(r"forms/horizontal/[a-f0-9]{16}-[^/\\]+\.docx", path):
-        raise ValueError("空白表格备份路径不合法。")
+    if backup.get("storage") != "github_backup" or not re.fullmatch(pattern, path):
+        raise ValueError("学校资料备份路径不合法。")
     file = ROOT / path
     if not file.is_file() or hashlib.sha256(file.read_bytes()).hexdigest() != backup["sha256"]:
-        raise ValueError("空白表格备份缺失或校验值不匹配。")
+        raise ValueError("学校资料备份缺失或校验值不匹配。")
     url = "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/" + quote(path, safe="/")
     if backup.get("url") != url:
-        raise ValueError("空白表格备份链接与路径不匹配。")
+        raise ValueError("学校资料备份链接与路径不匹配。")
     return url
+
+
+def github_backup_url(backup: dict) -> str:
+    return github_asset_url(backup, r"school-assets/forms/[a-f0-9]{16}-[^/\\]+\.(?:docx?|xlsx?)")
 
 
 def material_kind(doc: dict) -> str:
@@ -216,7 +220,7 @@ def material_reports(docs: list[dict], scene_list: list[dict], index: dict) -> d
             asset = doc.get("public_asset") or {}
             copy = f"[{asset['label']}](../skills/shu-baoxiao/{quote(asset['path'], safe='/')})" if asset else "未提供"
             if doc.get("github_backup"):
-                copy = f"[直接下载空白 Word]({github_backup_url(doc['github_backup'])})"
+                copy = f"[直接下载原件副本]({github_backup_url(doc['github_backup'])})"
             forms.append(f"| [{label(doc['title'])}](../skills/shu-baoxiao/references/sources/{doc['id']}.md) | [打开学校来源]({doc['url']}) | {STATES[doc['availability']]} | {copy} |")
     forms.extend(["", "[返回材料总览](材料整理.md)"])
     result[ROOT / "wiki/空白表格.md"] = "\n".join(forms) + "\n"
@@ -286,18 +290,27 @@ def source_page(doc: dict, by_url: dict | None = None, asset_root: str = "../../
         )
         for page in original_pages:
             number, path = page["page"], page["path"]
-            if not isinstance(number, int) or number < 1 or number in seen or not re.fullmatch(r"assets/source-pages/[a-f0-9]{16}/page-[0-9]+\.jpg", path):
+            is_backup = page.get("storage") == "github_backup"
+            prefix = "school-assets/source-pages/" if is_backup else "assets/source-pages/"
+            if page.get("storage") not in (None, "github_backup"):
+                raise ValueError("未知的原页图像存储位置。")
+            pattern = re.escape(prefix) + r"[a-f0-9]{16}/page-[0-9]+\.jpg"
+            if not isinstance(number, int) or number < 1 or number in seen or not re.fullmatch(pattern, path):
                 raise ValueError("原页图像元数据不合法。")
             if number in doc.get("privacy_redacted_pages", []) or number in doc.get("privacy_redacted_regions", []):
                 raise ValueError("隐私删节页或有截图删节的页面不能附未处理的原页图像。")
-            image_path = SKILL / path
-            if not image_path.is_file() or hashlib.sha256(image_path.read_bytes()).hexdigest() != page["sha256"]:
-                raise ValueError("原页图像缺失或校验值不匹配。")
+            if is_backup:
+                image_url = github_asset_url(page, pattern)
+            else:
+                image_path = SKILL / path
+                if not image_path.is_file() or hashlib.sha256(image_path.read_bytes()).hexdigest() != page["sha256"]:
+                    raise ValueError("原页图像缺失或校验值不匹配。")
+                image_url = image_root + path
             heading = f"### 原件第 {number} 页"
             heading_pattern = re.compile(r"^" + re.escape(heading) + r"$", re.M)
             if len(heading_pattern.findall(body)) != 1:
                 raise ValueError("原页图像与正文页码不匹配。")
-            body = heading_pattern.sub(lambda match: match.group(0) + f"\n\n![原件第 {number} 页]({image_root}{path})", body, count=1)
+            body = heading_pattern.sub(lambda match: match.group(0) + f"\n\n![原件第 {number} 页]({image_url})", body, count=1)
             seen.add(number)
         def image_note(match):
             return match.group(0).replace("[原件含图像或印章，未公开；请查看原页。]", "[图像或印章请对照本页原图。]") if int(match.group(1)) in seen else match.group(0)
@@ -330,24 +343,36 @@ def source_page(doc: dict, by_url: dict | None = None, asset_root: str = "../../
     original_pdf = doc.get("original_pdf") or {}
     if original_pdf:
         path = original_pdf["path"]
-        if not re.fullmatch(r"assets/original-pdfs/[a-f0-9]{64}\.pdf", path):
-            raise ValueError("原件副本路径不合法。")
-        pdf_path = SKILL / path
-        if not pdf_path.is_file() or hashlib.sha256(pdf_path.read_bytes()).hexdigest() != original_pdf["sha256"]:
-            raise ValueError("原件副本缺失或校验值不匹配。")
+        if original_pdf.get("storage") == "github_backup":
+            pdf_url = github_asset_url(original_pdf, r"school-assets/original-pdfs/[a-f0-9]{64}\.pdf")
+        elif original_pdf.get("storage") is None:
+            if not re.fullmatch(r"assets/original-pdfs/[a-f0-9]{64}\.pdf", path):
+                raise ValueError("原件副本路径不合法。")
+            pdf_path = SKILL / path
+            if not pdf_path.is_file() or hashlib.sha256(pdf_path.read_bytes()).hexdigest() != original_pdf["sha256"]:
+                raise ValueError("原件副本缺失或校验值不匹配。")
+            pdf_url = asset_root + path
+        else:
+            raise ValueError("未知的原件副本存储位置。")
         note = original_pdf.get("origin_note", "上海大学文学院公开转发版本；请核对适用时间。")
-        asset_line += f"- [下载官方原件副本]({asset_root}{path})：{note}\n"
+        asset_line += f"- [下载官方原件副本]({pdf_url})：{note}\n"
     preview = doc.get("preview_image") or {}
     preview_line = ""
     if preview:
         path = preview["path"]
-        if not re.fullmatch(r"assets/previews/[a-f0-9]{16}\.png", path):
-            raise ValueError("表格预览路径不合法。")
-        preview_path = SKILL / path
-        if not preview_path.is_file() or hashlib.sha256(preview_path.read_bytes()).hexdigest() != preview["sha256"]:
-            raise ValueError("表格预览缺失或校验值不匹配。")
         image_root = asset_root.replace("https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/blob/main/", "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/")
-        preview_line = f"\n## 空白表格预览\n\n由原始 XLS 转换生成，版式可能与 Excel 略有不同。\n\n![空白表格预览]({image_root}{path})\n"
+        if preview.get("storage") == "github_backup":
+            image_url = github_asset_url(preview, r"school-assets/previews/[a-f0-9]{16}\.png")
+        elif preview.get("storage") is None:
+            if not re.fullmatch(r"assets/previews/[a-f0-9]{16}\.png", path):
+                raise ValueError("表格预览路径不合法。")
+            preview_path = SKILL / path
+            if not preview_path.is_file() or hashlib.sha256(preview_path.read_bytes()).hexdigest() != preview["sha256"]:
+                raise ValueError("表格预览缺失或校验值不匹配。")
+            image_url = image_root + path
+        else:
+            raise ValueError("未知的表格预览存储位置。")
+        preview_line = f"\n## 空白表格预览\n\n由原始 XLS 转换生成，版式可能与 Excel 略有不同。\n\n![空白表格预览]({image_url})\n"
     previews = doc.get("preview_images") or []
     if previews:
         if preview:
@@ -357,17 +382,20 @@ def source_page(doc: dict, by_url: dict | None = None, asset_root: str = "../../
         for n, image in enumerate(previews, 1):
             path = image["path"]
             is_backup = image.get("storage") == "github_backup"
-            prefix = "forms/horizontal/previews/" if is_backup else "assets/previews/"
+            prefix = "school-assets/previews/" if is_backup else "assets/previews/"
             if image.get("storage") not in (None, "github_backup"):
                 raise ValueError("未知的预览图存储位置。")
             if image["page"] != n or not re.fullmatch(re.escape(prefix) + r"[a-f0-9]{16}-page-[0-9]+\.png", path) or not path.startswith(f"{prefix}{doc['id']}-page-"):
                 raise ValueError("预览图路径或页码不合法。")
             if n in doc.get("preview_withheld_pages", []) or n in doc.get("privacy_redacted_pages", []) or n in doc.get("privacy_redacted_regions", []):
                 raise ValueError("隐私删节页不能附未经处理的预览图。")
-            image_path = (ROOT if is_backup else SKILL) / path
-            if not image_path.is_file() or hashlib.sha256(image_path.read_bytes()).hexdigest() != image["sha256"]:
-                raise ValueError("预览图缺失或校验值不匹配。")
-            image_url = "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/" + quote(path, safe="/") if is_backup else image_root + path
+            if is_backup:
+                image_url = github_asset_url(image, re.escape(prefix) + r"[a-f0-9]{16}-page-[0-9]+\.png")
+            else:
+                image_path = SKILL / path
+                if not image_path.is_file() or hashlib.sha256(image_path.read_bytes()).hexdigest() != image["sha256"]:
+                    raise ValueError("预览图缺失或校验值不匹配。")
+                image_url = image_root + path
             lines.append(f"![版式预览第 {n} 页]({image_url})")
         renderer = "由本机 Microsoft Word 按原文件排版导出" if provenance.get("preview_renderer") == "microsoft_word_local" else "由原文件转换生成"
         note = ("\n\n" + provenance["preview_note"]) if provenance.get("preview_note") else ""

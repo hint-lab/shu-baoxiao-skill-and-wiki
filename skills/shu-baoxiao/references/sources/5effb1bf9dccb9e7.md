@@ -9,7 +9,7 @@
 - 生效状态：未核验；需结合业务日期和后续文件确认。
 - 资料取得方式：此前成功下载的官方附件缓存；具体下载日期未核实。
 - 文字质量：提取文本与原始版式可能不同，涉及具体要求时应核对原文件。
-- [下载空白表格副本](../../assets/forms/5effb1bf9dccb9e7-%E4%B8%8A%E6%B5%B7%E5%A4%A7%E5%AD%A6%E5%9B%BD%E5%86%85%E5%B7%AE%E6%97%85%E8%B4%B9%E6%8A%A5%E9%94%80%E5%8D%95%E5%8F%8A%E4%B8%8A%E6%B5%B7%E5%A4%A7%E5%AD%A6%E5%87%BA%E5%B7%AE%E5%AE%A1%E6%89%B9%E5%8D%95%EF%BC%88%E6%96%B0%EF%BC%89.xlsx)：此前从官网取得的原始文件；是否仍适用需向学校核对。
+- [下载空白表格副本](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/forms/5effb1bf9dccb9e7-%E4%B8%8A%E6%B5%B7%E5%A4%A7%E5%AD%A6%E5%9B%BD%E5%86%85%E5%B7%AE%E6%97%85%E8%B4%B9%E6%8A%A5%E9%94%80%E5%8D%95%E5%8F%8A%E4%B8%8A%E6%B5%B7%E5%A4%A7%E5%AD%A6%E5%87%BA%E5%B7%AE%E5%AE%A1%E6%89%B9%E5%8D%95%EF%BC%88%E6%96%B0%EF%BC%89.xlsx)：此前从官网取得的原始文件；是否仍适用需向学校核对。
 
 
 

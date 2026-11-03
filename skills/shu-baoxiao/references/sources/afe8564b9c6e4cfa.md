@@ -20,7 +20,7 @@
 
 ### 原件第 1 页
 
-![原件第 1 页](../../assets/source-pages/28bccea9fe53ec3a/page-1.jpg)
+![原件第 1 页](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/source-pages/28bccea9fe53ec3a/page-1.jpg)
 
 <details>
 <summary>查看本页识别文字（待校对）</summary>
@@ -39,7 +39,7 @@
 
 ### 原件第 2 页
 
-![原件第 2 页](../../assets/source-pages/28bccea9fe53ec3a/page-2.jpg)
+![原件第 2 页](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/source-pages/28bccea9fe53ec3a/page-2.jpg)
 
 <details>
 <summary>查看本页识别文字（待校对）</summary>
@@ -50,7 +50,7 @@
 
 ### 原件第 3 页
 
-![原件第 3 页](../../assets/source-pages/28bccea9fe53ec3a/page-3.jpg)
+![原件第 3 页](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/source-pages/28bccea9fe53ec3a/page-3.jpg)
 
 <details>
 <summary>查看本页识别文字（待校对）</summary>
@@ -61,7 +61,7 @@
 
 ### 原件第 4 页
 
-![原件第 4 页](../../assets/source-pages/28bccea9fe53ec3a/page-4.jpg)
+![原件第 4 页](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/source-pages/28bccea9fe53ec3a/page-4.jpg)
 
 <details>
 <summary>查看本页识别文字（待校对）</summary>
@@ -80,7 +80,7 @@
 
 ### 原件第 5 页
 
-![原件第 5 页](../../assets/source-pages/28bccea9fe53ec3a/page-5.jpg)
+![原件第 5 页](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/source-pages/28bccea9fe53ec3a/page-5.jpg)
 
 <details>
 <summary>查看本页识别文字（待校对）</summary>
@@ -105,7 +105,7 @@
 
 ### 原件第 6 页
 
-![原件第 6 页](../../assets/source-pages/28bccea9fe53ec3a/page-6.jpg)
+![原件第 6 页](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/source-pages/28bccea9fe53ec3a/page-6.jpg)
 
 <details>
 <summary>查看本页识别文字（待校对）</summary>
@@ -134,7 +134,7 @@
 
 ### 原件第 7 页
 
-![原件第 7 页](../../assets/source-pages/28bccea9fe53ec3a/page-7.jpg)
+![原件第 7 页](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/source-pages/28bccea9fe53ec3a/page-7.jpg)
 
 <details>
 <summary>查看本页识别文字（待校对）</summary>
@@ -159,7 +159,7 @@
 
 ### 原件第 8 页
 
-![原件第 8 页](../../assets/source-pages/28bccea9fe53ec3a/page-8.jpg)
+![原件第 8 页](https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/school-assets/source-pages/28bccea9fe53ec3a/page-8.jpg)
 
 <details>
 <summary>查看本页识别文字（待校对）</summary>

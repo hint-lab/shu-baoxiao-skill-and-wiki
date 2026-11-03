@@ -130,14 +130,14 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(hits[0]["text_quality"], "ocr_unverified")
 
     def test_form_copies_match_metadata_and_do_not_expose_redacted_pages(self):
-        assets = [doc for doc in self.docs if doc.get("public_asset")]
+        assets = [doc for doc in self.docs if doc.get("github_backup")]
         self.assertGreaterEqual(len(assets), 1)
         for doc in assets:
-            asset = doc["public_asset"]
-            path = SKILL / asset["path"]
-            self.assertTrue(path.is_relative_to(SKILL / "assets/forms"))
+            asset = doc["github_backup"]
+            path = ROOT / asset["path"]
+            self.assertTrue(path.is_relative_to(ROOT / "school-assets/forms"))
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), asset["sha256"])
-            self.assertIn("../../" + asset["path"].split("/")[0], build.source_page(doc))
+            self.assertIn(asset["url"], build.source_page(doc))
         guide = next(doc for doc in self.docs if doc["id"] == "1e88716b10c71712")
         self.assertEqual(guide["privacy_redacted_pages"], [70, 71, 72, 73])
         self.assertEqual(guide["text"].count("该页涉及个人账户示例"), 4)
@@ -157,6 +157,7 @@ class KnowledgeTests(unittest.TestCase):
             hits = knowledge.search_documents(self.docs, query, 8)
             self.assertTrue(any(by_id[hit["id"]].get("github_backup", {}).get("sha256") == asset["sha256"]
                                 for hit in hits), query)
+            self.assertTrue(any(hit.get("github_backup", {}).get("url") == asset["url"] for hit in hits), query)
             self.assertEqual(hashlib.sha256((ROOT / asset["path"]).read_bytes()).hexdigest(), asset["sha256"])
             self.assertIn(asset["url"], build.source_page(doc))
             for preview in doc["preview_images"]:
@@ -181,17 +182,19 @@ class KnowledgeTests(unittest.TestCase):
             self.assertEqual(rendered.count("<summary>查看本页识别文字（待校对）</summary>"), expected)
             self.assertEqual(rendered.count("<details>"), rendered.count("</details>"))
             for page in pages:
-                path = SKILL / page["path"]
+                self.assertEqual(page["storage"], "github_backup")
+                path = ROOT / page["path"]
                 self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), page["sha256"])
-                self.assertIn(f'![原件第 {page["page"]} 页](../../{page["path"]})', rendered)
+                self.assertIn(f'![原件第 {page["page"]} 页]({page["url"]})', rendered)
 
     def test_multiple_form_preview_pages_are_visible_and_ordered(self):
         doc = next(d for d in self.docs if d["id"] == "8306c9e2b8f7b504")
         self.assertEqual([image["page"] for image in doc["preview_images"]], [1, 2])
         rendered = build.source_page(doc)
         for image in doc["preview_images"]:
-            self.assertEqual(hashlib.sha256((SKILL / image["path"]).read_bytes()).hexdigest(), image["sha256"])
-            self.assertIn(f'![版式预览第 {image["page"]} 页](../../{image["path"]})', rendered)
+            self.assertEqual(image["storage"], "github_backup")
+            self.assertEqual(hashlib.sha256((ROOT / image["path"]).read_bytes()).hexdigest(), image["sha256"])
+            self.assertIn(f'![版式预览第 {image["page"]} 页]({image["url"]})', rendered)
         self.assertIn("分页、字体可能与 Word 或 Excel 不同", rendered)
 
     def test_audit_distinguishes_originals_from_partial_and_previews(self):
@@ -207,7 +210,7 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(doc["preview_withheld_pages"], [2])
         self.assertEqual([p["page"] for p in doc["preview_images"]], [1])
         self.assertIn("第 2 页银行回单示例未公开", build.source_page(doc))
-        withheld = dict(doc["preview_images"][0], page=2, path="assets/previews/4bab928bab65abd9-page-002.png")
+        withheld = dict(doc["preview_images"][0], page=2, path="school-assets/previews/4bab928bab65abd9-page-002.png")
         unsafe = dict(doc, preview_images=doc["preview_images"] + [withheld])
         with self.assertRaisesRegex(ValueError, "隐私删节页"):
             build.source_page(unsafe)
@@ -312,6 +315,8 @@ class KnowledgeTests(unittest.TestCase):
                     self.assertIn("shu-baoxiao/scripts/submit_feedback.py", names)
                     self.assertIn("shu-baoxiao/references/checklists/printer.md", names)
                     self.assertIn("shu-baoxiao/LICENSE", names)
+                    for asset_dir in ("forms", "original-pdfs", "source-pages", "previews"):
+                        self.assertFalse(any(name.startswith("shu-baoxiao/assets/" + asset_dir + "/") for name in names))
                     for source_id in ("f11d28892d5227b3", "9ec982452a1074bd", "3bfc718d52f4b193"):
                         doc = next(doc for doc in self.docs if doc["id"] == source_id)
                         asset = doc["github_backup"]

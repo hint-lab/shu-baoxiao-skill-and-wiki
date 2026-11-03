@@ -99,6 +99,10 @@ def search_documents(documents: list[dict], query: str, limit: int = 5, text_onl
         seen.add(key)
         result.append({field: doc.get(field, "") for field in ("id", "title", "url", "published_date", "fetched_at", "availability", "effectivity", "category", "text_quality", "extraction_method")})
         result[-1].update(excerpt=passage(doc.get("text", ""), query), matched_terms=matched)
+        if doc.get("github_backup"):
+            result[-1]["github_backup"] = doc["github_backup"]
+        if doc.get("original_pdf", {}).get("url"):
+            result[-1]["original_pdf"] = doc["original_pdf"]
         if doc.get("related_official_sources"):
             result[-1]["related_official_sources"] = doc["related_official_sources"]
         if len(result) >= limit:
