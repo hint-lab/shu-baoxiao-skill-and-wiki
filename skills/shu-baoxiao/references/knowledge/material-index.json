@@ -3388,6 +3388,18 @@
       "priority": "已有提取正文"
     },
     {
+      "id": "f11d28892d5227b3",
+      "kind": "form",
+      "scenarios": [],
+      "availability": "text_available",
+      "needs_text": false,
+      "linked_readable": [],
+      "same_document_readable": [],
+      "linked_coverage": false,
+      "ocr_unverified": false,
+      "priority": "已有提取正文"
+    },
+    {
       "id": "f148f75a0a1b1197",
       "kind": "policy",
       "scenarios": [

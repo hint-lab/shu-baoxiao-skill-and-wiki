@@ -35,6 +35,7 @@
 | [上海大学市内公共交通费结算单（2024）.pdf](../skills/shu-baoxiao/references/sources/1612384ef6465516.md) | 国内差旅 | 有提取正文；OCR 待核 |
 | [上海大学市内公共交通费结算单（2024）.rar](../skills/shu-baoxiao/references/sources/0961fd7d66a85336.md) | 国内差旅 | 有提取正文 |
 | [上海大学文科纵向项目间接绩效支取申请表2026.rar](../skills/shu-baoxiao/references/sources/a8f37cad29588423.md) | 跨场景/待归类 | 有提取正文 |
+| [上海大学横向科研项目结题确认表（2023）.docx.zip](../skills/shu-baoxiao/references/sources/f11d28892d5227b3.md) | 跨场景/待归类 | 有提取正文 |
 | [上海大学横向项目结题一次性奖励支取申请表（文科类）（2026版）.rar](../skills/shu-baoxiao/references/sources/f0a218578030cd8b.md) | 跨场景/待归类 | 有提取正文 |
 | [上海大学横向项目绩效支取申请表2026.rar](../skills/shu-baoxiao/references/sources/b5409f2f3e611da1.md) | 跨场景/待归类 | 有提取正文 |
 | [上海大学横向项目绩效支取申请表2026（文理通用）.rar](../skills/shu-baoxiao/references/sources/3bfc718d52f4b193.md) | 跨场景/待归类 | 有提取正文 |

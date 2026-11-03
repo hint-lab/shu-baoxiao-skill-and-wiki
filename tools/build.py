@@ -82,7 +82,7 @@ def material_kind(doc: dict) -> str:
         return "manual"
     if re.search("指南|百问百答|热点问答|讲解|须知", title):
         return "guide"
-    if re.search("意见表|对照表|申请表|审批表|审批单|结算单|报销单|登记表|支取表|清单|承诺书|邀请函|验收单|汇总表", title):
+    if re.search("意见表|确认表|对照表|申请表|审批表|审批单|结算单|报销单|登记表|支取表|清单|承诺书|邀请函|验收单|汇总表", title):
         return "form"
     if re.search("办法|规定|通知|条例|细则|制度|意见", title):
         return "policy"
@@ -202,6 +202,9 @@ def material_reports(docs: list[dict], scene_list: list[dict], index: dict) -> d
         if metadata[doc["id"]]["kind"] == "form":
             asset = doc.get("public_asset") or {}
             copy = f"[{asset['label']}](../skills/shu-baoxiao/{quote(asset['path'], safe='/')})" if asset else "未提供"
+            if asset.get("direct_download"):
+                raw = "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/skills/shu-baoxiao/" + quote(asset["path"], safe="/")
+                copy += f" · [直接下载]({raw})"
             forms.append(f"| [{label(doc['title'])}](../skills/shu-baoxiao/references/sources/{doc['id']}.md) | [打开学校来源]({doc['url']}) | {STATES[doc['availability']]} | {copy} |")
     forms.extend(["", "[返回材料总览](材料整理.md)"])
     result[ROOT / "wiki/空白表格.md"] = "\n".join(forms) + "\n"
@@ -309,6 +312,9 @@ def source_page(doc: dict, by_url: dict | None = None, asset_root: str = "../../
     related = "\n## 相关资料（独立来源）\n\n" + "\n".join(related_lines) + "\n" if related_lines else ""
     asset = doc.get("public_asset") or {}
     asset_line = f"- [{asset['label']}]({asset_root}{quote(asset['path'], safe='/')})：{asset['origin_note']}\n" if asset else ""
+    if asset.get("direct_download"):
+        raw = "https://raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/skills/shu-baoxiao/" + quote(asset["path"], safe="/")
+        asset_line += f"- [从 GitHub 直接下载空白原表]({raw})。\n"
     original_pdf = doc.get("original_pdf") or {}
     if original_pdf:
         path = original_pdf["path"]

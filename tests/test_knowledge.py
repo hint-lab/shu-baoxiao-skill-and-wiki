@@ -142,6 +142,26 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(guide["privacy_redacted_pages"], [70, 71, 72, 73])
         self.assertEqual(guide["text"].count("该页涉及个人账户示例"), 4)
 
+    def test_horizontal_forms_are_searchable_and_downloadable(self):
+        by_id = {doc["id"]: doc for doc in self.docs}
+        cases = (("f11d28892d5227b3", "横向科研项目结题确认表"),
+                 ("9ec982452a1074bd", "横向项目结题一次性奖励支取申请表"),
+                 ("3bfc718d52f4b193", "横向项目绩效支取申请表2026"))
+        index = build.organize_documents(self.docs, build.scenarios())
+        wiki = build.material_reports(self.docs, build.scenarios(), index)[ROOT / "wiki/空白表格.md"]
+        for source_id, query in cases:
+            doc = by_id[source_id]
+            asset = doc["public_asset"]
+            self.assertEqual(doc["availability"], "text_available")
+            self.assertEqual(build.material_kind(doc), "form")
+            hits = knowledge.search_documents(self.docs, query, 8)
+            self.assertTrue(any(by_id[hit["id"]].get("public_asset", {}).get("sha256") == asset["sha256"]
+                                for hit in hits), query)
+            self.assertEqual(hashlib.sha256((SKILL / asset["path"]).read_bytes()).hexdigest(), asset["sha256"])
+            self.assertIn("从 GitHub 直接下载空白原表", build.source_page(doc))
+            row = next(line for line in wiki.splitlines() if source_id + ".md)" in line)
+            self.assertIn("raw.githubusercontent.com/hint-lab/shu-baoxiao-skill-and-wiki/main/skills/shu-baoxiao/", row)
+
     def test_private_transaction_example_page_is_withheld(self):
         doc = next(doc for doc in self.docs if doc["id"] == "675c42067898dca4")
         self.assertEqual(doc["privacy_redacted_pages"], [8])
@@ -289,6 +309,12 @@ class KnowledgeTests(unittest.TestCase):
                     self.assertIn("shu-baoxiao/scripts/submit_feedback.py", names)
                     self.assertIn("shu-baoxiao/references/checklists/printer.md", names)
                     self.assertIn("shu-baoxiao/LICENSE", names)
+                    for source_id in ("f11d28892d5227b3", "9ec982452a1074bd", "3bfc718d52f4b193"):
+                        doc = next(doc for doc in self.docs if doc["id"] == source_id)
+                        asset = doc["public_asset"]
+                        member = "shu-baoxiao/" + asset["path"]
+                        self.assertIn(member, names)
+                        self.assertEqual(hashlib.sha256(archive.read(member)).hexdigest(), asset["sha256"])
                     self.assertFalse(any("__pycache__" in name or "data/settings" in name for name in names))
                     if "workbuddy" in path.name:
                         skill = archive.read("shu-baoxiao/SKILL.md").decode()
@@ -315,7 +341,9 @@ class MaintenanceTests(unittest.TestCase):
                 maintain.validate_markdown(bad)
 
     def test_only_public_official_urls(self):
-        for bad in ("http://cwc.shu.edu.cn/x", "https://evil.example/x", "https://cwc.shu.edu.cn.evil.example/x", "https://user:pass@cwc.shu.edu.cn/x"):
+        self.assertEqual(maintain.official_url("https://kyglb.shu.edu.cn/info/1034/1812.htm"),
+                         "https://kyglb.shu.edu.cn/info/1034/1812.htm")
+        for bad in ("http://cwc.shu.edu.cn/x", "https://evil.example/x", "https://cwc.shu.edu.cn.evil.example/x", "https://kyglb.shu.edu.cn.evil.example/x", "https://user:pass@cwc.shu.edu.cn/x"):
             with self.assertRaises(ValueError):
                 maintain.official_url(bad)
 
