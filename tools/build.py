@@ -405,7 +405,7 @@ def source_page(doc: dict, by_url: dict | None = None, asset_root: str = "../../
     elif doc.get("text_quality") == "word_structured_unverified":
         quality = "从 Word 结构提取并保留表格合并关系；仍须核对原件与适用版本。"
     elif doc.get("text_quality") == "spreadsheet_structured_unverified":
-        quality = "从空白表格单元格提取，保留合并区域；仍须核对原件、版式与适用版本。"
+        quality = "从工作表原始单元格提取，保留表格合并关系；公式与缓存结果分别说明，仍须核对原件及适用版本。"
     elif doc.get("text_quality") == "html_structured_unverified":
         quality = "从官方网页正文结构提取，保留段落和表格合并关系；仍须对照官方原页核对内容、图片与适用版本。"
     elif doc.get("text_quality") == "video_visual_summary":
@@ -651,6 +651,8 @@ def generated_files() -> dict[Path, str]:
     result.update(reported_practice_files(docs))
     feedback = (SKILL / "references/feedback.md").read_text(encoding="utf-8")
     result[ROOT / "wiki/反馈与纠错.md"] = "<!-- Generated from skill references/feedback.md -->\n" + feedback.replace("(../assets/", "(../skills/shu-baoxiao/assets/")
+    retention = (SKILL / "references/content-retention.md").read_text(encoding="utf-8")
+    result[ROOT / "wiki/资料保留方式.md"] = "<!-- Generated from skill references/content-retention.md -->\n" + retention.replace("(sources/", "(../skills/shu-baoxiao/references/sources/")
     return result
 
 

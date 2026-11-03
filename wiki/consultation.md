@@ -1,6 +1,8 @@
 <!-- Generated from scenarios.json; no binding checklist. -->
 # 专家咨询费
 
+**版本提示：税前对照工作簿分列纵向、横向及讲座费；应按各分区、人员类别、咨询方式和业务日期核对，不把公式示例作为通用税务规则。**
+
 先提供事项与已有材料。下面是会影响判断的条件，不是要求你额外准备的材料清单。
 
 ## 先确认
@@ -14,6 +16,7 @@
 - [2025上海大学财务与资产业务百问百答（公布版）.pdf](../skills/shu-baoxiao/references/sources/1e88716b10c71712.md)：有提取正文
 - [【专家咨询意见表】上海大学专家咨询意见表（2024版）](../skills/shu-baoxiao/references/sources/265ba03d107d9a2e.md)：仅入口/短文本
 - [关于印发《中央财政科研项目专家咨询费管理办法》的通知  财科教〔2017〕128号](../skills/shu-baoxiao/references/sources/7a93aaa88805db08.md)：仅入口/短文本
+- [专家咨询费税前对照表.xlsx](../skills/shu-baoxiao/references/sources/21fd483497f88408.md)：有提取正文
 
 原文可能是历史快照或仅有入口。请核对业务日期、经费适用范围和后续版本；未解析附件不能用于断言具体要求。
 
