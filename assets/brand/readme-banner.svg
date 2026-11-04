@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="252" viewBox="0 0 1040 252" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">上大报销助手 shu-baoxiao</title>
+  <desc id="desc">深蓝色横幅与双页资料标志。查依据、对材料、找表格。</desc>
+  <defs>
+    <clipPath id="frame"><rect width="1040" height="252" rx="16"/></clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect width="1040" height="252" fill="#173B77"/>
+    <path d="M770 0H1040V252H770V0Z" fill="#19417E"/>
+    <g opacity=".12" transform="translate(817 -42) scale(2.6)">
+      <path d="M12 25C29 22 43 26 55 36V99C43 89 29 85 12 88V25Z" fill="#DCE9FF"/>
+      <path d="M65 36C77 26 91 22 108 25V88C91 85 77 89 65 99V36Z" fill="#A4E2DA"/>
+      <path d="M76 60L84 68L99 47" stroke="#173B77" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g transform="translate(54 55) scale(1.2)">
+      <path d="M12 25C29 22 43 26 55 36V99C43 89 29 85 12 88V25Z" fill="#F2F6FF"/>
+      <path d="M65 36C77 26 91 22 108 25V88C91 85 77 89 65 99V36Z" fill="#A4E2DA"/>
+      <path d="M24 39C31 39 38 41 44 44M24 51C31 51 38 53 44 56M24 63C29 63 33 64 37 65" stroke="#2851CF" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M76 60L84 68L99 47" stroke="#173B77" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M55 108L60 112L65 108" stroke="#A4E2DA" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="238" y="111" fill="#FFFFFF" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif" font-size="52" font-weight="600" letter-spacing="2">上大报销助手</text>
+    <text x="240" y="149" fill="#BED1F0" font-family="'Avenir Next',Avenir,'Segoe UI',sans-serif" font-size="22" font-weight="500" letter-spacing="1">shu-baoxiao</text>
+    <text x="240" y="196" fill="#E5EEFC" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif" font-size="20" font-weight="400" letter-spacing="1">查依据　·　对材料　·　找表格</text>
+  </g>
+</svg>

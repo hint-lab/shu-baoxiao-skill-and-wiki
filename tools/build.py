@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import re
+import shutil
 import sys
 import zipfile
 from collections import Counter
@@ -15,6 +16,7 @@ from urllib.parse import quote
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "skills/shu-baoxiao"
 DATA = SKILL / "references/knowledge/documents.jsonl"
+SKILL_VARIANTS = ("codex", "workbuddy", "doubao", "kimi-cli", "deepseek-harness")
 STATES = {"text_available": "有提取正文", "partial_text": "有部分文字，待补或核对", "entry_only": "仅入口/短文本", "blocked_captcha": "验证码受阻", "blocked_forbidden": "访问受阻", "downloaded_no_text": "已有原件，尚无文本"}
 WORD_WARNINGS = {
     "transaction_example_redacted": "历史操作案例中的标识已隐去；示例金额不构成报销标准",
@@ -479,8 +481,12 @@ def reported_practice_files(docs: list[dict]) -> dict[Path, str]:
                           "- 可用经费（按用户口径）：" + ("、".join(entry["funding_scope"]["allowed"]) or "未说明，不推定范围"),
                           "- 不适用经费（按用户口径）：" + ("、".join(entry["funding_scope"]["excluded"]) or "未说明，不推定排除范围"),
                           "- 范围解释：" + entry["funding_scope"]["note"], "",
-                          "### 用户原话", "", "> " + entry["original_statement"].replace("\n", "\n> "), "",
-                          "### 与已收录书面资料的差异", ""])
+                          "### 用户原话", "", "> " + entry["original_statement"].replace("\n", "\n> "), ""])
+            for supplement in entry.get("supplements", []):
+                lines.extend([f"### 补充原话（{supplement['reported_on']}）", "",
+                              "来源：" + supplement["source_label"], "",
+                              "> " + supplement["original_statement"].replace("\n", "\n> "), ""])
+            lines.extend(["### 与已收录书面资料的差异", ""])
             for conflict in entry["conflicts"]:
                 doc = by_id[conflict["source_id"]]
                 lines.extend([f"- [{label(doc['title'])}]({source_prefix}{doc['id']}.md)：{conflict['locator']}。{conflict['description']}",
@@ -602,7 +608,7 @@ def generated_files() -> dict[Path, str]:
     routing = ["<!-- Generated from scenarios.json -->", "# 场景路由", "", "追问点用于判断适用条件，不是学校强制材料清单。先匹配[常用清单](checklists.md)，已核对摘要在其范围内可复用；未覆盖、来源变化或到复核日期时再查原文。", ""]
     home = ["# 上海大学报销 Wiki", "", "先找到你的事项，再让 AI 对照原文核对材料。无需启动独立报销软件。", "",
             "[常用材料清单](报销材料清单.md) · [材料整理总览](材料整理.md) · [表格入口](空白表格.md) · [待补资料](待补资料.md) · [原文对照进度](原文对照进度.md)", "",
-            "[怎样在 Codex、WorkBuddy、豆包中使用](使用方法.md) · [反馈与纠错](反馈与纠错.md) · [资料目录与覆盖情况](资料目录.md) · [如何更新](维护方法.md)", "",
+            "[在 Codex、WorkBuddy、豆包、Kimi CLI、DeepSeek Harness 中使用](使用方法.md) · [反馈与纠错](反馈与纠错.md) · [资料目录与覆盖情况](资料目录.md) · [如何更新](维护方法.md)", "",
             "本项目为社区整理。初始资料来自 2026-06-30 快照，部分附件仍需人工取得；涉及当前标准时应核对学校后续文件。", "", "## 按事项进入", ""]
     for scenario in scenarios():
         links = []
@@ -677,8 +683,20 @@ def obsolete_sources(expected: dict[Path, str]) -> list[Path]:
 def build_packages(output: Path) -> list[Path]:
     output.mkdir(parents=True, exist_ok=True)
     paths = []
-    for variant in ("codex", "workbuddy"):
+    for variant in SKILL_VARIANTS:
         target = output / f"shu-baoxiao-{variant}.zip"
+        # These hosts use the same Agent Skills directory bundle. Keep every
+        # reference and asset identical instead of maintaining separate skills.
+        if variant not in ("codex", "workbuddy"):
+            target.unlink(missing_ok=True)
+            try:
+                # Generated ZIPs are immutable artifacts. Reuse their disk data
+                # where supported; the published files remain standalone ZIPs.
+                target.hardlink_to(paths[0])
+            except OSError:
+                shutil.copyfile(paths[0], target)
+            paths.append(target)
+            continue
         with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(SKILL.rglob("*")):
                 if not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc":

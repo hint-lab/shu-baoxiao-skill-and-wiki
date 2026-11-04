@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">上大报销助手</title>
+  <desc id="desc">翻开的两页资料，左页保留原文线条，右页以勾选表示材料对照。</desc>
+  <path d="M12 25C29 22 43 26 55 36V99C43 89 29 85 12 88V25Z" fill="#2851CF"/>
+  <path d="M65 36C77 26 91 22 108 25V88C91 85 77 89 65 99V36Z" fill="#087F85"/>
+  <path d="M24 39C31 39 38 41 44 44M24 51C31 51 38 53 44 56M24 63C29 63 33 64 37 65" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M76 60L84 68L99 47" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M55 108L60 112L65 108" stroke="#2851CF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

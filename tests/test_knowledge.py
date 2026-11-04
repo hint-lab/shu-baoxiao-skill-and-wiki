@@ -301,7 +301,17 @@ class KnowledgeTests(unittest.TestCase):
     def test_portable_packages_include_data_and_not_user_state(self):
         with tempfile.TemporaryDirectory() as folder:
             packages = build.build_packages(Path(folder))
-            for path in packages[:2]:
+            self.assertEqual({path.name for path in packages}, {
+                "shu-baoxiao-codex.zip", "shu-baoxiao-workbuddy.zip",
+                "shu-baoxiao-doubao.zip", "shu-baoxiao-kimi-cli.zip",
+                "shu-baoxiao-deepseek-harness.zip", "shu-baoxiao-chat.zip",
+            })
+            hashes = json.loads((Path(folder) / "sha256.json").read_text())
+            for path in packages:
+                self.assertEqual(hashes[path.name], hashlib.sha256(path.read_bytes()).hexdigest())
+            for path in packages:
+                if path.name == "shu-baoxiao-chat.zip":
+                    continue
                 with zipfile.ZipFile(path) as archive:
                     names = archive.namelist()
                     self.assertIn("shu-baoxiao/SKILL.md", names)
@@ -324,11 +334,14 @@ class KnowledgeTests(unittest.TestCase):
                         for preview in doc["preview_images"]:
                             self.assertFalse(any(Path(name).name == Path(preview["path"]).name for name in names))
                         self.assertIn(asset["url"].encode(), archive.read("shu-baoxiao/references/knowledge/documents.jsonl"))
+                    self.assertTrue(all(name.startswith("shu-baoxiao/") and ".." not in Path(name).parts for name in names))
                     self.assertFalse(any("__pycache__" in name or "data/settings" in name for name in names))
                     if "workbuddy" in path.name:
                         skill = archive.read("shu-baoxiao/SKILL.md").decode()
                         for key in ("display_name:", "display_name_en:", "description_zh:", "description_en:", "version:", "author:"):
                             self.assertIn(key, skill)
+            for variant in ("doubao", "kimi-cli", "deepseek-harness"):
+                self.assertEqual(hashes[f"shu-baoxiao-{variant}.zip"], hashes["shu-baoxiao-codex.zip"])
             chat = Path(folder) / "chat/publication.txt"
             self.assertIn("https://cwc.shu.edu.cn/info/1113/4276.htm", chat.read_text())
             consultation = (Path(folder) / "chat/consultation.txt").read_text()
@@ -339,7 +352,9 @@ class KnowledgeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             first = build.build_packages(Path(folder) / "first")
             second = build.build_packages(Path(folder) / "second")
-            self.assertEqual([p.read_bytes() for p in first], [p.read_bytes() for p in second])
+            self.assertEqual([p.name for p in first], [p.name for p in second])
+            for left, right in zip(first, second):
+                self.assertEqual(hashlib.sha256(left.read_bytes()).digest(), hashlib.sha256(right.read_bytes()).digest())
 
 
 class MaintenanceTests(unittest.TestCase):

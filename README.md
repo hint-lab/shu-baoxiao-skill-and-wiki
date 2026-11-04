@@ -1,44 +1,69 @@
-# shu-baoxiao · 上海大学报销助手
+<p align="center">
+  <img src="assets/brand/readme-banner.svg" alt="上大报销助手 shu-baoxiao：查依据、对材料、找表格" width="920">
+</p>
 
-查学校依据、核对已有材料、理解退回意见，让每笔报销的下一步更清楚。
+<p align="center">
+  <strong>先弄清报销要求，再把材料备齐。</strong><br>
+  面向上海大学师生的报销资料库，也能装进你常用的 AI。
+</p>
 
-`shu-baoxiao` 由 [HINT Lab](https://www.hintlab.cn) 维护，提供上海大学报销资料 Wiki、可安装的 AI 技能和可直接用于对话的场景资料包。你可以自己阅读资料，也可以让已有的 AI 工具结合学校原文检查材料。
+<p align="center">
+  <a href="wiki/Home.md">查看报销指南</a> &nbsp;·&nbsp;
+  <a href="#让-ai-帮你检查材料">安装 AI 助手</a> &nbsp;·&nbsp;
+  <a href="wiki/空白表格.md">查找表格</a> &nbsp;·&nbsp;
+  <a href="wiki/反馈与纠错.md">反馈问题</a>
+</p>
 
-本项目为社区整理。具体要求需结合业务日期、经费类型和人员身份核对学校原文；尚未读到的附件、未经核验的时效和需要人工确认的事项会明确标出。
+---
 
-## 选一种方式开始
+## 报销前，先把这几件事弄清楚
 
-| 你的使用方式 | 从这里开始 |
+| 你遇到的问题 | 这里能帮你做什么 |
 | --- | --- |
-| 直接阅读指南与资料 | 打开 [Wiki 首页](wiki/Home.md)，按报销事项查找学校依据 |
-| 在 Codex 中使用技能 | 下载 [Codex 技能包](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-codex.zip)，安装后调用 `$shu-baoxiao` |
-| 在 WorkBuddy 中导入技能 | 下载 [WorkBuddy 技能包](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-workbuddy.zip)，导入步骤见 [使用方法](wiki/使用方法.md#workbuddy)；客户端实际导入与对话效果仍待验收 |
-| 在豆包或其他聊天工具中使用 | 下载 [场景资料包](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-chat.zip)，把对应场景的 TXT 与问题一起交给 AI |
-| 实际办理不一致、被退回或遇到使用问题 | 打开[免登录匿名反馈表单](https://tcnrkcsneh6s.feishu.cn/share/base/form/shrcn1OtilSVxBkMSeYIFA7fcNg)，也可让有浏览器能力的AI代填；见[反馈说明](wiki/反馈与纠错.md) |
+| 这笔费用要准备哪些材料？ | 按差旅、版面费、专家咨询、劳务、采购等事项，查找材料要求和学校依据。 |
+| 文件都在手里，还是怕漏东西。 | 让 AI 对照学校资料检查已有文件，列出缺项、需要确认的情况和补齐办法。 |
+| 财务退回了，看不懂该怎么补。 | 结合退回意见和已有材料，解释问题对应哪份文件、下一步怎么处理。 |
+| 申请表、意见表、审批单去哪里找？ | 找到学校下载入口，以及已收录的空白表格副本。 |
 
-Codex 安装时，将 ZIP 中完整的 `shu-baoxiao` 文件夹放入 `~/.agents/skills/`。也可通过环境中的技能安装器安装本仓库的 `skills/shu-baoxiao`。升级时请替换旧版报销技能目录，避免同时加载两套技能。
+每项具体要求都应能追溯到学校来源。没有读到的附件、没有确认的适用条件，会保留为待确认。
 
-技能内置的资料检索在本地运行，返回提取文字与来源，由当前 AI 完成分析和回答，无需另配大模型 API Key。学校原件及原页预览保存在 GitHub，Skill 提供 GitHub 直接下载和学校官网入口；下载原件、查看预览需要联网。普通聊天工具使用资料包即可，具体步骤见 [完整使用说明](wiki/使用方法.md)。
+## 从这里开始
 
-## 把你的具体问题交给 AI
+**只想查要求：** 打开[报销指南](wiki/Home.md)，选择自己的事项，再看[常用材料清单](wiki/报销材料清单.md)。直接阅读即可，无需安装。
 
-Skill 内置[常用材料清单](wiki/报销材料清单.md)，按已核对的来源、适用条件和核对日期维护。常规事项先复用对应清单，来源变化、到复核日期或出现新情况时再查原文。每笔事项的核对状态保存在授权的本地目录，补件后继续更新。
+**想让 AI 检查文件：** 按下面的说明，把助手安装到你正在使用的 AI，再提供本次事项和已有材料。
 
-用户明确补充的[学院执行口径](wiki/学院执行口径.md)单独记录来源和范围，在相关检索及清单中显示；与官方书面依据存在差异时一并说明。
+**AI 没有技能安装入口：** 下载[场景资料包](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-chat.zip)，解压后把对应事项的 TXT 文件与问题一起交给 AI。[查看具体用法](wiki/使用方法.md#普通聊天工具)。
 
-安装技能后，可以这样开始：
+## 让 AI 帮你检查材料
 
-> 使用 $shu-baoxiao 检查我提供的版面费报销材料。先确认经费类型、币种和业务日期，再查学校原文。请说明已有材料、确实缺少的材料、条件成立才需要的材料和待确认事项，并给出补齐步骤与官方来源。
+这里的 **Skill（技能）**，就是一套给 AI 使用的报销工作说明和参考资料。安装后，AI 可以按这套流程查依据、对材料；你继续使用自己的 AI，无需为本助手另配大模型 API Key。
 
-也可以针对退回意见继续询问：
+选你已经在用的工具，点击名称查看下载和安装步骤：
 
-> 财务退回说“缺付款依据”。请结合我已有的文件和学校原文解释怎么补。无法读取的材料请标记待查看，不要直接判缺失，也不要编写不存在的证明。
+| 你使用的 AI | 安装包 | 安装后怎样开始 |
+| --- | --- | --- |
+| [Codex](wiki/使用方法.md#codex) | [下载](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-codex.zip) | 输入 `$shu-baoxiao`，再描述本次报销事项。 |
+| [WorkBuddy](wiki/使用方法.md#workbuddy) | [下载](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-workbuddy.zip) | 上传专用技能包，再让它使用“上大报销助手”。 |
+| [豆包桌面版](wiki/使用方法.md#豆包桌面版) | [下载](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-doubao.zip) | 在工作任务模式上传技能，在对话中选中后使用。 |
+| [Kimi CLI](wiki/使用方法.md#kimi-cli) | [下载](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-kimi-cli.zip) | 安装到技能目录后，输入 `/skill:shu-baoxiao`。 |
+| [DeepSeek Harness](wiki/使用方法.md#deepseek-harness) | [下载](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest/download/shu-baoxiao-deepseek-harness.zip) | 安装到技能目录后，让它使用 `shu-baoxiao` 检查材料。 |
 
-检查个人材料时，请向所用 AI 工具提供文件或授权相应目录，并说明本次事项、业务日期和经费情况。个人材料按宿主工具的权限与数据处理方式使用，不写入本项目的共享知识库。需要在本地归档一笔报销时，可参考 [个人材料整理](wiki/个人材料整理.md)。
+安装包可在[下载页](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/releases/latest)获取。各工具的安装位置、升级方法和[已验证范围](wiki/使用方法.md#安装后的检查)见使用说明；包检查通过与实际对话效果分别确认。
 
-## 按报销事项查资料
+装好后，把已有文件提供给 AI，直接说：
 
-| 事项 | 事项 |
+> 请用上大报销助手检查这笔版面费报销材料。先问清会影响判断的情况，再列出已有、缺少和待确认的材料，告诉我怎么补，并附学校依据。
+
+被退回时，可以接着说：
+
+> 财务退回说“缺付款依据”。请结合这些文件解释该怎么补。看不清的文件请标出来，不要直接当成缺失。
+
+涉及个人文件时，只向自己信任并授权的 AI 提供材料。需要在电脑里整理和保存本次核对结果，可参考[个人材料整理](wiki/个人材料整理.md)。
+
+## 按你的事项查资料
+
+| 报销事项 | 报销事项 |
 | --- | --- |
 | [国内差旅](wiki/travel.md) | [出国境与外汇](wiki/international.md) |
 | [版面费与出版费](wiki/publication.md) | [测试化验加工费](wiki/testing.md) |
@@ -46,42 +71,37 @@ Skill 内置[常用材料清单](wiki/报销材料清单.md)，按已核对的�
 | [会议费](wiki/meeting.md) | [公务接待与工作用餐](wiki/reception.md) |
 | [办公耗材与设备采购](wiki/procurement.md) | [系统操作与通用问题](wiki/general.md) |
 
-找文件和表格，可从 [学校资料总览](wiki/材料整理.md)、[全部资料目录](wiki/资料目录.md) 或 [表格入口与空白表格副本](wiki/空白表格.md) 进入。
+也可以直接查看[全部资料](wiki/资料目录.md)、[空白表格](wiki/空白表格.md)和[用户提供的学院执行口径](wiki/学院执行口径.md)。学院口径单独标注来源、范围和未核验状态，与学校原文分开呈现。
 
 横向项目结题、结余一次性奖励和绩效支取可查看[横向项目空白表格](skills/shu-baoxiao/references/horizontal-project.md)；对应来源页和表格目录也提供原表直接下载。
 
-制度、标准表和办理说明保留完整 Markdown；空白模板保留原件下载与必要说明。具体见[资料保留方式](wiki/资料保留方式.md)。
+学校原件、空白表格和原页预览保存在 GitHub，下载与查看需要联网；技能内保留可在本地检索的规则正文和来源链接。[查看资料保留方式](wiki/资料保留方式.md)。
 
-## 怎样看待资料和核对结果
+## 使用时，请留意
 
-资料库保留学校公开页面、附件入口、已提取文字和部分空白表格副本。初始资料来自 2026-06-30 快照，后续补充的资料分别记录获取时间；具体覆盖情况见 [资料目录](wiki/资料目录.md)。网页发布日期、文件版本年份和抓取时间都不等于规则生效日期。
+- **这是社区整理的助手。** 由 [HINT Lab](https://www.hintlab.cn) 维护，帮助准备和核对材料；具体办理仍以学校要求和财务审核为准。
+- **收录了文件，不等于确认它今天仍然适用。** 使用时需结合业务日期、经费类型、人员身份和后续文件。仅有附件入口、扫描识别未核对等情况，在资料页中另有标注。[查看资料覆盖情况](wiki/材料整理.md)。
+- **个人材料不要放进公开仓库。** 真实发票、账户、人员名单、签名和完整聊天记录，请留在授权环境内；反馈时只提交脱敏后的问题。
 
-- **有正文**：可以阅读提取内容；涉及金额、期限、身份条件或例外时，仍需核对原件及适用版本。
-- **只有入口或访问受阻**：只能说明找到了资料线索，不能据此声称已读附件或确认具体要求。见 [待补资料](wiki/待补资料.md) 和 [需要协助取得的资料](wiki/需要协助.md)。
-- **扫描件机器识别**：用于检索和定位，数字、表格、否定条件需对照原件。见 [机器识别待核对资料](wiki/待核对资料.md)。
+## 有问题，告诉我们
 
-AI 的核对结果用于准备材料和人工复核。材料存在、内容可读、信息匹配、审批通过与实际付款是不同状态，需要分别确认。
+发现清单与实际办理不一致、资料过时，或安装使用遇到问题，可填写[免登录反馈表单](https://tcnrkcsneh6s.feishu.cn/share/base/form/shrcn1OtilSVxBkMSeYIFA7fcNg)，内容由维护者查看。也可以让有浏览器能力的 AI 帮你整理脱敏反馈，并在你明确要求后提交。[反馈说明](wiki/反馈与纠错.md)
 
-## 本地检索
+愿意补充公开资料或修正内容，也欢迎通过 [GitHub Issues](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/issues) 或 Pull Request 参与。请附学校来源和具体差异；个人办理经历会保留为待核实线索。
 
-检索工具只需 Python 3.10+ 标准库，无需安装依赖或启动服务。在仓库根目录运行：
+<details>
+<summary>维护者与开发者：资料更新、本地检索和构建</summary>
+
+知识源保存在 `skills/shu-baoxiao/references/knowledge/documents.jsonl`。Wiki 阅读页、清单入口和安装包由同一份资料生成；更新后重新构建，不手工修改生成页。各平台共用一份报销技能，WorkBuddy 包另补充市场元数据。
+
+本地检索使用 Python 3.10+ 标准库，无需启动服务：
 
 ```bash
-# 查看资料快照、覆盖情况与完整性。
 python3 skills/shu-baoxiao/scripts/knowledge.py status --json
-
-# 搜索学校依据，取得文档 ID 与官方来源。
-python3 skills/shu-baoxiao/scripts/knowledge.py search "外币 版面费" --limit 6 --json
-
-# 将下面的文档 ID 替换为搜索结果中的 ID，阅读正文。
-python3 skills/shu-baoxiao/scripts/knowledge.py read '<文档ID>' --json
+python3 skills/shu-baoxiao/scripts/knowledge.py search "外币 版面费" --json
 ```
 
-复制整个 `skills/shu-baoxiao/` 目录后，也可从其他工作目录运行其中的脚本；路径以实际安装位置为准。检索本身不联网、不调用大模型。核对当前标准时，需要另外查看学校后续文件。
-
-## 维护与共建
-
-知识源位于 `skills/shu-baoxiao/references/knowledge/documents.jsonl`，场景索引位于 `skills/shu-baoxiao/references/scenarios.json`。Wiki 目录和原文阅读页从知识源生成，更新后统一构建：
+更新与检查：
 
 ```bash
 python3 tools/build.py
@@ -89,25 +109,12 @@ python3 -m unittest discover -s tests -v
 python3 tools/build.py --check
 ```
 
-构建会同步 Wiki 与技能参考资料，并在 `dist/` 生成 Codex、WorkBuddy 和聊天资料包及校验值。GitHub Actions 会验证并生成构建产物；发布后的技能更新需要使用者重新安装或显式同步。公开来源更新、附件导入、Word/PDF 提取和版本发布步骤见 [维护方法](wiki/维护方法.md)。
+构建产物位于 `dist/`，包括五种平台技能包、聊天资料包和 SHA-256 校验清单。发布到下载页后，使用者仍需更新自己安装的技能。
 
-纠错或补充资料时，请附官方来源、对应段落及适用条件。真实发票、人员名单、账户、签名、登录信息和个人报销案例原件请留在授权的本地环境，不要提交到仓库或公开 Issue。
+详见[维护方法](wiki/维护方法.md)。本仓库维护资料、技能和轻量工具；学校登录、自动代填与审批提交不在项目范围内。
 
-反馈首选[飞书匿名表单](https://tcnrkcsneh6s.feishu.cn/share/base/form/shrcn1OtilSVxBkMSeYIFA7fcNg)，不需要飞书或GitHub账号，内容由维护者在专用收件箱查看。2026-10-29已验证未登录提交及测试记录实际入表。有浏览器能力的AI可在使用者明确请求后代填并核对成功页；无此能力则提供脱敏草稿和链接。现阶段使用匿名表单，API暂不部署，表单URL不能直接POST；[GitHub Issues](https://github.com/hint-lab/shu-baoxiao-skill-and-wiki/issues)保留为可选公开渠道。详见[反馈与纠错](wiki/反馈与纠错.md)。
+</details>
 
-```text
-wiki/                         阅读指南、场景入口与资料目录
-skills/shu-baoxiao/            可独立安装和复制的技能
-  SKILL.md                    材料核对与证据使用流程
-  references/                 知识源、场景索引和原文阅读页
-  scripts/                    本地检索与 Word 结构提取
-  assets/                     事项清单和可公开的资料副本
-tools/                        公开来源维护、提取与打包工具
-tests/                        数据、检索、链接和独立运行检查
-```
+---
 
-本仓库维护 Wiki、技能和轻量资料工具，不包含学校登录、自动代填、提交审批或个人报销数据库。
-
-## 来源与许可
-
-学校官方入口：[上海大学财务处](https://cwc.shu.edu.cn/)。程序和原创指南采用 [Apache-2.0](LICENSE)；学校文件及摘录的权利属于原权利人，使用时请保留官方链接、标题和版本信息。详见 [来源说明](NOTICE.md)。
+由 [HINT Lab](https://www.hintlab.cn) 维护 · [Apache-2.0](LICENSE) · [学校资料来源与权利说明](NOTICE.md)
